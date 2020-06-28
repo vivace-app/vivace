@@ -1,6 +1,6 @@
 # VIVACE / ヴィヴァーチェ
 
-![VIVACE](https://github.com/smpny7/VIVACE/master/screenshot.jpg)
+![VIVACE](https://raw.githubusercontent.com/smpny7/VIVACE/master/screenshot.jpg)
 
 ### Complete around Autumn 2020
 #### 完成は2020年秋ごろ (学祭展示予定)
@@ -41,7 +41,7 @@ You can play with a keyboard, but we will not bear any responsibility.
 
 # Contributing / コントリビューション
 
-Please read [CONTRIBUTING.md](https://github.com/smpny7/VIVACE/blob/master/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](https://github.com/smpny7/VIVACE/blob/master/CONTRIBUTION.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 
 # Producer / 製作者
@@ -53,6 +53,6 @@ Please read [CONTRIBUTING.md](https://github.com/smpny7/VIVACE/blob/master/CONTR
 
 # License / ライセンス
 
-This project is licensed under the VIVACE Project - see the [LICENSE.md](https://github.com/smpny7/VIVACE/blob/master/LICENSE) file for details.
+This project is licensed under the VIVACE Project - see the [LICENSE.md](https://github.com/smpny7/VIVACE/blob/master/LICENCE) file for details.
 
 *©︎ 2020 VIVACE Project*
