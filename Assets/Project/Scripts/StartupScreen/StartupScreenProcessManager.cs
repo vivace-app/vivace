@@ -20,7 +20,7 @@ public class StartupScreenProcessManager : MonoBehaviour {
     public Sprite messageButtonSpriteError;
     public Text messageButtonLabel;
     public Text showConnecting;
-    bool _touchableFlag = true;
+    bool _touchableFlag = false;
     bool _playableFlag = false;
 
     // ------------------------------------------------------------------------------------
@@ -44,9 +44,11 @@ public class StartupScreenProcessManager : MonoBehaviour {
         public string expirationDate;
     }
 
-    void Start () {
+    async void Start () {
         audioSource = GetComponent<AudioSource> ();
         this.showVersion.text = "Ver." + thisVersion;
+        await Task.Delay (1000);
+        _touchableFlag = true;
     }
 
     void Update () {
@@ -116,9 +118,9 @@ public class StartupScreenProcessManager : MonoBehaviour {
     }
 
     private async void ScreenTransition () {
-        Debug.Log ("遊べるドン！");
+        Debug.Log ("難しさを選ぶドン！");
         await Task.Delay (1000);
-        // SceneManager.LoadScene ("GameScene");
+        SceneManager.LoadScene ("SelectScreen");
     }
 
     public void ButtonTappedController () {
