@@ -4,9 +4,9 @@
 
 ### Complete around Autumn 2020
 #### 完成は2020年秋ごろ (学祭展示予定)
-Create a rhythm game [VIVACE](https://smpny7.github.io/VIVACE) with Unity.<br />
+Create a rhythm game [VIVACE](https://smpny7.github.io/VIVACE-Web/) with Unity.<br />
 
-Official Web Site: <https://smpny7.github.io/VIVACE><br />
+Official Web Site: <https://smpny7.github.io/VIVACE-Web/><br />
 Receive Announcement: <https://oucrc.net>
 
 
