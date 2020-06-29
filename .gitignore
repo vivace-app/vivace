@@ -3,6 +3,13 @@
 # =============== #
 Assets/Project/Scripts/EnvDataStore.cs
 Assets/Project/Scripts/EnvDataStore.cs.meta
+Assets/Project/Music
+Assets/Project/Music.meta
+Assets/Project/CSV
+Assets/Project/CSV.meta
+Assets/Project/Sound
+Assets/Project/Sound.meta
+
 Temp/
 Obj/
 UnityGenerated/
