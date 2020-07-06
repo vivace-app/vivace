@@ -1,19 +1,19 @@
 # VIVACE / ヴィヴァーチェ
 
-![VIVACE](https://raw.githubusercontent.com/smpny7/VIVACE/master/screenshot.jpg)
+![VIVACE](https://raw.githubusercontent.com/smpny7/vivace/master/screenshot.jpg)
 
 ### Complete around Autumn 2020
 #### 完成は2020年秋ごろ (学祭展示予定)
-Create a rhythm game [VIVACE](https://smpny7.github.io/VIVACE-Web/) with Unity.<br />
+Create a rhythm game [VIVACE](https://smpny7.github.io/vivace-web/) with Unity.<br />
 
-Official Web Site: <https://smpny7.github.io/VIVACE-Web/><br />
+Official Web Site: <https://smpny7.github.io/vivace-web/><br />
 Receive Announcement: <https://oucrc.net>
 
 
 # Getting Started / スタートガイド
 
 Please download the latest version from the following URL.<br />
-<https://github.com/smpny7/VIVACE/releases>
+<https://github.com/smpny7/vivace/releases>
 
 ### For Windows(×86)
 Unzip the download file.
@@ -41,7 +41,7 @@ You can play with a keyboard, but we will not bear any responsibility.
 
 # Contributing / コントリビューション
 
-Please read [CONTRIBUTING.md](https://github.com/smpny7/VIVACE/blob/master/CONTRIBUTION.md) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](https://github.com/smpny7/vivace/blob/master/CONTRIBUTION.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 
 # Producer / 製作者
@@ -53,6 +53,6 @@ Please read [CONTRIBUTING.md](https://github.com/smpny7/VIVACE/blob/master/CONTR
 
 # License / ライセンス
 
-This project is licensed under the VIVACE Project - see the [LICENSE.md](https://github.com/smpny7/VIVACE/blob/master/LICENCE) file for details.
+This project is licensed under the VIVACE Project - see the [LICENSE.md](https://github.com/smpny7/vivace/blob/master/LICENCE) file for details.
 
 *©︎ 2020 VIVACE Project*
