@@ -3,6 +3,7 @@
 # =============== #
 Assets/Project/Scripts/EnvDataStore.cs
 Assets/Project/Scripts/EnvDataStore.cs.meta
+
 Temp/
 Obj/
 UnityGenerated/
@@ -33,6 +34,11 @@ ExportedObj/
 Icon?
 ehthumbs.db
 Thumbs.db
+
+# ===== #
+# Notes #
+# ===== #
+*.csv
 
 # ====== #
 # Sounds #
