@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using UnityEditor;
 using UnityEngine;
 
 public class PlayScreenProcessManager : MonoBehaviour {
@@ -13,7 +12,7 @@ public class PlayScreenProcessManager : MonoBehaviour {
     public int[] _lineNum;
 
     // -- Temporary Variable. -------------------------------------------------------------
-        private string csvFilePass = "Assets/Project/CSV/burningHeart.csv";
+    private string csvFilePass = "CSV/burningHeart";
     // ------------------------------------------------------------------------------------
 
     async void Start () {
@@ -31,7 +30,7 @@ public class PlayScreenProcessManager : MonoBehaviour {
     }
 
     void LoadCSV () {
-        TextAsset csv = AssetDatabase.LoadAssetAtPath<TextAsset> (csvFilePass) as TextAsset;
+        TextAsset csv = Resources.Load (csvFilePass) as TextAsset;
         StringReader reader = new StringReader (csv.text);
         while (reader.Peek () > -1) {
             string line = reader.ReadLine ();
