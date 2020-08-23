@@ -11,6 +11,9 @@ public class PlayScreenProcessManager : MonoBehaviour
     private float _startTime = 0;
     public float[] _timing;
     public int[] _lineNum;
+    private AudioSource[] _SoundEffects;
+    public static bool _isPlaying = true;
+    //public GameObject PauseButton;
 
     // -- Temporary Variable. -------------------------------------------------------------
     private string csvFilePass = "CSV/burningHeart";
@@ -22,6 +25,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         _lineNum = new int[1024];
         LoadCSV();
         _audioSource = GameObject.Find("Music").GetComponent<AudioSource>();
+        _SoundEffects = GameObject.Find("SoundEffect").GetComponents<AudioSource>();
         _startTime = Time.time;
         await Task.Delay(1950);
         _audioSource.Play();
@@ -29,7 +33,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     void Update()
     {
-        CheckNextNotes();
+        if (_isPlaying == true) CheckNextNotes();
     }
 
     void LoadCSV()
@@ -53,5 +57,33 @@ public class PlayScreenProcessManager : MonoBehaviour
     void SpawnNotes(int num)
     {
         Instantiate(Note[num], new Vector3(-0.676f + (0.338f * num), 8.4f, 4.5f), Quaternion.Euler(-30f, 0, 0));
+    }
+
+    public void SoundEffect(int num)
+    {
+        _SoundEffects[num].PlayOneShot(_SoundEffects[num].clip);
+        //Debug.Log ("SoundEffect Played.");
+    }
+
+    public async void Pause()
+    {
+        int i = 0;
+        if (_isPlaying == true)
+        {
+            Debug.Log("止まるドン！");
+            _isPlaying = false;
+        }
+        else if (_isPlaying == false)
+        {
+            Debug.Log("さぁ，再開するドン！");
+            for (i = 3; i > 0; i--)
+            {
+                await Task.Delay(1000);
+                Debug.Log(i);
+                SoundEffect(2);
+            }
+            await Task.Delay(1000);
+            _isPlaying = true;
+        }
     }
 }
