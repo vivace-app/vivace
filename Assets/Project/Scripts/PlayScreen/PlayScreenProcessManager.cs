@@ -9,11 +9,11 @@ public class PlayScreenProcessManager : MonoBehaviour
     private int _notesTotal = 0;
     private int _notesCount = 0;
     private float _startTime = 0;
+    private float _stoptime = 0;
     public float[] _timing;
     public int[] _lineNum;
     private AudioSource[] _SoundEffects;
     public static bool _isPlaying = true;
-    //public GameObject PauseButton;
 
     // -- Temporary Variable. -------------------------------------------------------------
     private string csvFilePass = "CSV/burningHeart";
@@ -72,6 +72,8 @@ public class PlayScreenProcessManager : MonoBehaviour
         {
             Debug.Log("止まるドン！");
             _isPlaying = false;
+            _stoptime = Time.time;
+            _audioSource.Pause();
         }
         else if (_isPlaying == false)
         {
@@ -84,6 +86,8 @@ public class PlayScreenProcessManager : MonoBehaviour
             }
             await Task.Delay(1000);
             _isPlaying = true;
+            _startTime = _startTime + (Time.time - _stoptime);
+            _audioSource.UnPause();
         }
     }
 }
