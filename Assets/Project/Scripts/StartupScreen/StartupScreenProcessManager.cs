@@ -147,7 +147,7 @@ public class StartupScreenProcessManager : MonoBehaviour
     {
         Debug.Log("難しさを選ぶドン！");
         await Task.Delay(1000);
-        SceneManager.LoadScene("SelectScreen");
+        SceneManager.LoadScene("SelectScene");
     }
 
     public void ButtonTappedController()
