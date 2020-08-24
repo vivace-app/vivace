@@ -1,11 +1,12 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class NotesScript : MonoBehaviour
 {
 
     private int isInLineLevel = 0;
-    //private PlayScreenProcessManager _gameManager;
+    private ProcessManager _gameManager;
     private KeyCode _lineKey;
     public int lineNum;
     // -- Temporary Variable. -------------------------------------------------------------
@@ -16,19 +17,19 @@ public class NotesScript : MonoBehaviour
     {
         // this.transform.localScale -= new Vector3 (0.285f, 0, 0.05f);
         this.transform.localScale -= new Vector3(0.285f, 0, 0.055f);
-        //_gameManager = GameObject.Find ("ProcessManager").GetComponent<_gameManager> (); //インスタンスに GameController.cs 情報を格納
-        //_lineKey = GameUtil.GetKeyCodeByLineNum (lineNum); //ノーツに割り当てられているキーを取得
+        _gameManager = GameObject.Find ("GameController").GetComponent<PlayScreenProcessManager> (); //インスタンスに GameController.cs 情報を格納
+        _lineKey = GameUtil.GetKeyCodeByLineNum (lineNum); //ノーツに割り当てられているキーを取得
     }
 
     void Update()
     {
-        if (PlayScreenProcessManager._isPlaying == true)
+        if (_gameManager._isPlaying == true)
         {
             this.transform.position += (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * Time.deltaTime * speed;
             if (this.transform.position.z < -9.3) Destroy(this.gameObject);
-            if (PlayScreenProcessManager._autoPlay == true && isInLineLevel == 4) //自動プレイ
+            if (_gameManager._autoPlay == true && isInLineLevel == 4) //自動プレイ
             {
-                //_gameManager.PerfectTimingFunc(lineNum);
+                _gameManager.PerfectTimingFunc(lineNum);
                 Destroy(this.gameObject);
             }
         }
@@ -79,15 +80,15 @@ public class NotesScript : MonoBehaviour
             switch (isInLineLevel)
             {
                 case 1:
-                    //_gameManager.SoundEffect(2);
+                    _gameManager.SoundEffect(2);
                     Destroy(this.gameObject);
                     break;
                 case 2:
-                    //_gameManager.GreatTimingFunc(lineNum);
+                    _gameManager.GreatTimingFunc(lineNum);
                     Destroy(this.gameObject);
                     break;
                 case 3:
-                    //_gameManager.PerfectTimingFunc(lineNum);
+                    _gameManager.PerfectTimingFunc(lineNum);
                     Destroy(this.gameObject);
                     break;
             }
