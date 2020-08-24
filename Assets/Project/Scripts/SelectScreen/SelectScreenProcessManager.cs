@@ -2,9 +2,13 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections;
+using System.Linq;
 
 public class SelectScreenProcessManager : MonoBehaviour
 {
+    public ToggleGroup toggleGroup;
+
     private async void ScreenTransition()
     {
         Debug.Log("さぁ，はじまるドン！");
@@ -14,6 +18,11 @@ public class SelectScreenProcessManager : MonoBehaviour
 
     public void PlayButtonTappedController()
     {
+        string selectedLabel = toggleGroup.ActiveToggles()
+            .First().GetComponentsInChildren<Text>()
+            .First(t => t.name == "Label").text;
+
+        Debug.Log("selected " + selectedLabel);
         ScreenTransition();
     }
 }
