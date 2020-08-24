@@ -5,6 +5,9 @@ public class NotesScript : MonoBehaviour
 {
 
     private int isInLineLevel = 0;
+    //private PlayScreenProcessManager _gameManager;
+    private KeyCode _lineKey;
+    public int lineNum;
     // -- Temporary Variable. -------------------------------------------------------------
     private float speed = 4.0f;
     // ------------------------------------------------------------------------------------
@@ -13,6 +16,8 @@ public class NotesScript : MonoBehaviour
     {
         // this.transform.localScale -= new Vector3 (0.285f, 0, 0.05f);
         this.transform.localScale -= new Vector3(0.285f, 0, 0.055f);
+        //_gameManager = GameObject.Find ("ProcessManager").GetComponent<_gameManager> (); //インスタンスに GameController.cs 情報を格納
+        //_lineKey = GameUtil.GetKeyCodeByLineNum (lineNum); //ノーツに割り当てられているキーを取得
     }
 
     void Update()
@@ -21,6 +26,11 @@ public class NotesScript : MonoBehaviour
         {
             this.transform.position += (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * Time.deltaTime * speed;
             if (this.transform.position.z < -9.3) Destroy(this.gameObject);
+            if (PlayScreenProcessManager._autoPlay == true && isInLineLevel == 4) //自動プレイ
+            {
+                //_gameManager.PerfectTimingFunc(lineNum);
+                Destroy(this.gameObject);
+            }
         }
     }
 
@@ -59,6 +69,29 @@ public class NotesScript : MonoBehaviour
         {
             isInLineLevel--;
             //Debug.Log("Perfect No.");
+        }
+    }
+
+    void CheckInput(KeyCode key)
+    {
+        if (Input.GetKeyDown(key) /*|| TouchCheck.CheckTouch (lineNum, _touchInput)*/)
+        { //キーの入力が確認できたら
+            switch (isInLineLevel)
+            {
+                case 1:
+                    //_gameManager.SoundEffect(2);
+                    Destroy(this.gameObject);
+                    break;
+                case 2:
+                    //_gameManager.GreatTimingFunc(lineNum);
+                    Destroy(this.gameObject);
+                    break;
+                case 3:
+                    //_gameManager.PerfectTimingFunc(lineNum);
+                    Destroy(this.gameObject);
+                    break;
+            }
+            //_laneEffect[lineNum].PlayLaneEffect ();
         }
     }
 }

@@ -12,8 +12,9 @@ public class PlayScreenProcessManager : MonoBehaviour
     private float _stoptime = 0;
     public float[] _timing;
     public int[] _lineNum;
-    private AudioSource[] _SoundEffects;
+    private static AudioSource[] _SoundEffects;
     public static bool _isPlaying = true;
+    public static bool _autoPlay = false;
 
     // -- Temporary Variable. -------------------------------------------------------------
     private string csvFilePass = "CSV/burningHeart";
@@ -59,7 +60,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         Instantiate(Note[num], new Vector3(-0.676f + (0.338f * num), 8.4f, 4.5f), Quaternion.Euler(-30f, 0, 0));
     }
 
-    public void SoundEffect(int num)
+    public static void SoundEffect(int num)
     {
         _SoundEffects[num].PlayOneShot(_SoundEffects[num].clip);
         //Debug.Log ("SoundEffect Played.");
@@ -89,5 +90,23 @@ public class PlayScreenProcessManager : MonoBehaviour
             _startTime = _startTime + (Time.time - _stoptime);
             _audioSource.UnPause();
         }
+    }
+
+    public void PerfectTimingFunc(int num)
+    {
+        // Debug.Log ("Line:" + num + " Perfect!"); //ログ出力
+        // Debug.Log (GetMusicTime ()); //ログ出力
+        //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
+        SoundEffect(0); //Perfectサウンド（引数0）を再生
+        //_combo++; //コンボ数を1加算
+        //AddScore(1); //スコア加算(倍率はPerfectなので1)
+    }
+
+    public void GreatTimingFunc(int num)
+    {
+        SoundEffect(1); //Greatサウンド再生
+        //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
+        //_combo++; //コンボ数を1加算
+        //AddScore(0.75f); //スコア加算(倍率はGreatなので0.75)
     }
 }
