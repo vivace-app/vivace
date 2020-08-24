@@ -13,8 +13,8 @@ public class PlayScreenProcessManager : MonoBehaviour
     public float[] _timing;
     public int[] _lineNum;
     private static AudioSource[] _SoundEffects;
-    public static bool _isPlaying = true;
-    public static bool _autoPlay = false;
+    public bool _isPlaying = true;
+    public bool _autoPlay = false;
 
     // -- Temporary Variable. -------------------------------------------------------------
     private string csvFilePass = "CSV/burningHeart";
@@ -60,7 +60,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         Instantiate(Note[num], new Vector3(-0.676f + (0.338f * num), 8.4f, 4.5f), Quaternion.Euler(-30f, 0, 0));
     }
 
-    public static void SoundEffect(int num)
+    public void SoundEffect(int num)
     {
         _SoundEffects[num].PlayOneShot(_SoundEffects[num].clip);
         //Debug.Log ("SoundEffect Played.");
