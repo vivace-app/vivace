@@ -10,7 +10,7 @@ public class NotesScript : MonoBehaviour
     private KeyCode _lineKey;
     public int lineNum;
     // -- Temporary Variable. -------------------------------------------------------------
-    private float speed = 4.0f;
+    private float speed = 3.0f;
     // ------------------------------------------------------------------------------------
 
     void Start()
@@ -46,13 +46,16 @@ public class NotesScript : MonoBehaviour
         if (other.gameObject.tag == "PerfectJudge")
         {
             isInLineLevel++;
-            if (PlayScreenProcessManager._autoPlay == true) //自動プレイ
+            //Debug.Log("Perfect OK.");
+        }
+        if (other.gameObject.tag == "AutoJudge")
+        {
+        if (PlayScreenProcessManager._autoPlay == true) //自動プレイ
             {
                 PlayScreenProcessManager.PerfectTimingFunc(lineNum);
                 //Debug.Log("Autoplayed!");
                 Destroy(this.gameObject);
             }
-            //Debug.Log("Perfect OK.");
         }
     }
 

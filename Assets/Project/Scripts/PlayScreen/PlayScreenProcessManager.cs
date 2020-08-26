@@ -14,7 +14,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     public int[] _lineNum;
     private static AudioSource[] _SoundEffects;
     public static bool _isPlaying = true;
-    public static bool _autoPlay = true; //自動プレイ用
+    public static bool _autoPlay = false; //自動プレイ用
 
     // -- Temporary Variable. -------------------------------------------------------------
     private string csvFilePass = "CSV/burningHeart";
@@ -24,11 +24,12 @@ public class PlayScreenProcessManager : MonoBehaviour
     {
         _timing = new float[1024];
         _lineNum = new int[1024];
+        await Task.Delay(1000);
         LoadCSV();
         _audioSource = GameObject.Find("Music").GetComponent<AudioSource>();
         _SoundEffects = GameObject.Find("SoundEffect").GetComponents<AudioSource>();
         _startTime = Time.time;
-        await Task.Delay(1950);
+        await Task.Delay(2550);
         _audioSource.Play();
     }
 
