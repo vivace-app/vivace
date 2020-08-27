@@ -32,6 +32,8 @@ public class PlayScreenProcessManager : MonoBehaviour
     {
         _timing = new float[1024];
         _lineNum = new int[1024];
+        ComboText.text = _combo.ToString("D");
+        ScoreText.text = ((int) Math.Round (_score, 0, MidpointRounding.AwayFromZero)).ToString ("D7");
         await Task.Delay(1000);
         LoadCSV();
         _audioSource = GameObject.Find("Music").GetComponent<AudioSource>();
@@ -39,8 +41,6 @@ public class PlayScreenProcessManager : MonoBehaviour
         _startTime = Time.time;
         await Task.Delay(2550);
         _audioSource.Play();
-        ComboText.text = _combo.ToString("D");
-        ScoreText.text = ((int) Math.Round (_score, 0, MidpointRounding.AwayFromZero)).ToString ("D7");
     }
 
     void Update()
@@ -141,7 +141,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     public static void PerfectTimingFunc(int num)
     {
-        PlayScreenProcessManager a = new PlayScreenProcessManager();
+        PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         // Debug.Log ("Line:" + num + " Perfect!"); //ログ出力
         // Debug.Log (GetMusicTime ()); //ログ出力
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
@@ -155,7 +155,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     public static void GreatTimingFunc(int num)
     {
-        PlayScreenProcessManager a = new PlayScreenProcessManager();
+        PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         SoundEffect(1); //Greatサウンド再生
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
         a._combo++; //コンボ数を1加算
@@ -167,7 +167,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     public static void GoodTimingFunc(int num)
     {
-        PlayScreenProcessManager a = new PlayScreenProcessManager();
+        PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         SoundEffect(2); //Goodサウンド再生
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
         a._combo++; //コンボ数を1加算
@@ -179,7 +179,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     public static void MissTimingFunc(int num)
     {
-        PlayScreenProcessManager a = new PlayScreenProcessManager();
+        PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
         a._combo = 0; //コンボ数を初期化
         a._misss++; //累計Miss数を1加算
