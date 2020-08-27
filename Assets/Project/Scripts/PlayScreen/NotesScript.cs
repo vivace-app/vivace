@@ -26,7 +26,11 @@ public class NotesScript : MonoBehaviour
         if (PlayScreenProcessManager._isPlaying == true)
         {
             this.transform.position += (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * Time.deltaTime * speed;
-            if (this.transform.position.z < -9.3) Destroy(this.gameObject);
+            if (this.transform.position.z < -9.3)
+            {
+                //PlayScreenProcessManager.MissTimingFunc(lineNum); //Missのときの関数
+                Destroy(this.gameObject);
+            }
             if (isInLineLevel >= 1) CheckInput(_lineKey); //キーを押されるかのチェック
         }
     }
@@ -50,7 +54,7 @@ public class NotesScript : MonoBehaviour
         }
         if (other.gameObject.tag == "AutoJudge")
         {
-        if (PlayScreenProcessManager._autoPlay == true) //自動プレイ
+            if (PlayScreenProcessManager._autoPlay == true) //自動プレイ
             {
                 PlayScreenProcessManager.PerfectTimingFunc(lineNum);
                 //Debug.Log("Autoplayed!");
@@ -86,7 +90,7 @@ public class NotesScript : MonoBehaviour
             switch (isInLineLevel)
             {
                 case 1:
-                    PlayScreenProcessManager.SoundEffect(2);
+                    //PlayScreenProcessManager.GoodTimingFunc(lineNum); //Goodのときの関数
                     Destroy(this.gameObject);
                     break;
                 case 2:
