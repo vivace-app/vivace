@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading.Tasks;
+
 
 public class SwipeMenu : MonoBehaviour
 {
@@ -9,6 +11,7 @@ public class SwipeMenu : MonoBehaviour
     float scroll_pos = 0;
     float distance;
     float[] pos;
+    private AudioSource[] _AudioSource; //楽曲情報格納
 
     void Start()
     {
@@ -18,6 +21,7 @@ public class SwipeMenu : MonoBehaviour
         {
             pos[i] = distance * i;
         }
+        _AudioSource = GameObject.Find("Musics").GetComponents<AudioSource>(); //楽曲情報取得
     }
 
     void Update()
@@ -54,6 +58,9 @@ public class SwipeMenu : MonoBehaviour
                 transform.GetChild(i).Find("Hard").gameObject.SetActive(true);
                 transform.GetChild(i).Find("Demon").gameObject.SetActive(true);
                 transform.GetChild(i).Find("PlayMusic").gameObject.SetActive(true);
+
+                SelectedMusic(i); //楽曲再生の実行を試みる（1フレーム毎）
+
                 for (int cnt = 0; cnt < pos.Length; cnt++)
                 {
                     if (i != cnt)
@@ -76,5 +83,27 @@ public class SwipeMenu : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void SelectedMusic(int num) //num番目の曲をループで再生
+    {
+        for (int i = 0; i < pos.Length; i++)
+        {
+            if (i == num)
+            {
+                if (_AudioSource[i].isPlaying == false) //選択中の楽曲がプレビュー再生されていないとき
+                {
+                    _AudioSource[num].Play();
+                }
+            }
+            else
+            {
+                if (_AudioSource[i].isPlaying == true) //非選択の楽曲がプレビュー再生されているとき
+                {
+                    _AudioSource[i].Stop();
+                }
+            }
+        }
+
     }
 }
