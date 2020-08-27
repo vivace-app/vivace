@@ -32,6 +32,8 @@ public class PlayScreenProcessManager : MonoBehaviour
     {
         _timing = new float[1024];
         _lineNum = new int[1024];
+        ComboText.text = _combo.ToString("D");
+        ScoreText.text = ((int) Math.Round (_score, 0, MidpointRounding.AwayFromZero)).ToString ("D7");
         await Task.Delay(1000);
         LoadCSV();
         _audioSource = GameObject.Find("Music").GetComponent<AudioSource>();
@@ -39,8 +41,6 @@ public class PlayScreenProcessManager : MonoBehaviour
         _startTime = Time.time;
         await Task.Delay(2550);
         _audioSource.Play();
-        ComboText.text = _combo.ToString();
-        ScoreText.text = ((int) Math.Round (_score, 0, MidpointRounding.AwayFromZero)).ToString ("D7");
     }
 
     void Update()
@@ -141,49 +141,49 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     public static void PerfectTimingFunc(int num)
     {
-        PlayScreenProcessManager a = new PlayScreenProcessManager();
+        PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         // Debug.Log ("Line:" + num + " Perfect!"); //ログ出力
         // Debug.Log (GetMusicTime ()); //ログ出力
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
         SoundEffect(0); //Perfectサウンド（引数0）を再生
         a._combo++; //コンボ数を1加算
         a._perfects++; //累計Perfect数を1加算
-        a.ComboText.text = a._combo.ToString();
+        a.ComboText.text = a._combo.ToString("D");
         a.AddScore(1); //スコア加算(倍率はPerfectなので1)
         Debug.Log("PerfectTimingFunc"); //ログ出力
     }
 
     public static void GreatTimingFunc(int num)
     {
-        PlayScreenProcessManager a = new PlayScreenProcessManager();
+        PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         SoundEffect(1); //Greatサウンド再生
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
         a._combo++; //コンボ数を1加算
         a._greats++; //累計Great数を1加算
-        a.ComboText.text = a._combo.ToString();
+        a.ComboText.text = a._combo.ToString("D");
         a.AddScore(0.75); //スコア加算(倍率はGreatなので0.75)
         Debug.Log("GreatTimingFunc"); //ログ出力
     }
 
     public static void GoodTimingFunc(int num)
     {
-        PlayScreenProcessManager a = new PlayScreenProcessManager();
+        PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         SoundEffect(2); //Goodサウンド再生
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
         a._combo++; //コンボ数を1加算
         a._goods++; //累計Good数を1加算
-        a.ComboText.text = a._combo.ToString(); //コンボ数を1加算
+        a.ComboText.text = a._combo.ToString("D"); //コンボ数を1加算
         a.AddScore(0.25); //スコア加算(倍率はGoodなので0.25)
         Debug.Log("GoodTimingFunc"); //ログ出力
     }
 
     public static void MissTimingFunc(int num)
     {
-        PlayScreenProcessManager a = new PlayScreenProcessManager();
+        PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
         a._combo = 0; //コンボ数を初期化
         a._misss++; //累計Miss数を1加算
-        a.ComboText.text = a._combo.ToString();
+        a.ComboText.text = a._combo.ToString("D");
         //スコアはあげないよ！ｗ
         Debug.Log("MissTimingFunc"); //ログ出力
     }
