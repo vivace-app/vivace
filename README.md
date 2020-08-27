@@ -4,15 +4,15 @@
 
 ### Complete around Autumn 2020
 #### 完成は2020年秋ごろ (学祭展示予定)
-Create a rhythm game [VIVACE](https://smpny7.github.io/vivace-web/) with Unity.<br />
+Creating rhythm game [VIVACE](https://smpny7.github.io/vivace-web/) with Unity.<br />
 
 Official Web Site: <https://smpny7.github.io/vivace-web/><br />
-Receive Announcement: <https://oucrc.net>
+-> To Receive Announcement: <https://oucrc.net>
 
 
 # Getting Started / スタートガイド
 
-Please download the latest version from the following URL.<br />
+Please download the latest VIVACE from the following URL.<br />
 <https://github.com/smpny7/vivace/releases>
 
 ### For Windows(×86)
@@ -26,8 +26,8 @@ And install `VIVACE.apk` file on your Android.
 
 # Prerequisites / 必要条件
 
-**This software requires a touch input device!**<br />
-You can play with a keyboard, but we will not bear any responsibility.
+**This software requires touch input device !**<br />
+You can play with keyboard, but we will not bear any responsibility.
 
 
 ### Unity Player system requirements
