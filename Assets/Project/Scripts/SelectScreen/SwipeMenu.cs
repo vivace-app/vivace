@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Threading.Tasks;
-
 
 public class SwipeMenu : MonoBehaviour
 {
