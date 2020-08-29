@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Text;
 
 public class StartupScreenProcessManager : MonoBehaviour
 {
@@ -20,24 +21,32 @@ public class StartupScreenProcessManager : MonoBehaviour
     public Sprite messageButtonSpriteInfo;
     public Sprite messageButtonSpriteError;
     public Text messageButtonLabel;
+    public GameObject registerPanel = null;
+    public Text registerTitle;
+    public Text registerText;
+    public Text registerPlaceholder;
+    public Text registerBottom;
     public Text showConnecting;
+    public Text inputUserName;
     bool _touchableFlag = false;
     bool _playableFlag = false;
+    bool _isRecoveryMode = false;
 
     // ------------------------------------------------------------------------------------
 
     static readonly string thisVersion = EnvDataStore.thisVersion;
-    static readonly string licenceApiUrl = EnvDataStore.licenceApiUrl;
-    static readonly bool ignoreNetworkProcess = true; // Allow setting to true only on emulator.
+    static readonly string licenceApiUri = EnvDataStore.licenceApiUri;
+    static readonly string registerApiUri = EnvDataStore.registerApiUri;
+    static readonly string recoveryApiUri = EnvDataStore.recoveryApiUri;
+    static readonly bool ignoreNetworkProcess = false; // Allow setting to true only on emulator.
 
     // ------------------------------------------------------------------------------------
 
     [Serializable]
-    public class jsonResponse
+    public class licenseResponse
     {
-        public string currentVersion;
-        public string currentTime;
-        public List<versionList> supportedVersions;
+        public bool success;
+        public List<versionList> version;
     }
 
     [Serializable]
@@ -45,6 +54,24 @@ public class StartupScreenProcessManager : MonoBehaviour
     {
         public string version;
         public string expirationDate;
+    }
+
+    [Serializable]
+    public class registerResponse
+    {
+        public bool success;
+        public string msg;
+        public string name;
+        public string token;
+    }
+
+    [Serializable]
+    public class recoveryResponse
+    {
+        public bool success;
+        public string msg;
+        public string name;
+        public string token;
     }
 
     async void Start()
@@ -81,12 +108,12 @@ public class StartupScreenProcessManager : MonoBehaviour
     {
         if (ignoreNetworkProcess)
         {
-            ScreenTransition();
+            UserCheck();
         }
         else
         {
             this.showConnecting.text = "Connecting Server ...";
-            UnityWebRequest www = UnityWebRequest.Get(licenceApiUrl);
+            UnityWebRequest www = UnityWebRequest.Get(licenceApiUri);
             yield return www.SendWebRequest();
             if (www.isNetworkError || www.isHttpError)
             {
@@ -95,42 +122,49 @@ public class StartupScreenProcessManager : MonoBehaviour
             }
             else
             {
-                JsonCheck(www.downloadHandler.text);
+                LicenseCheck(www.downloadHandler.text);
             }
         }
     }
 
-    private void JsonCheck(string data)
+    private void LicenseCheck(string data)
     {
-        jsonResponse jsnData = JsonUtility.FromJson<jsonResponse>(data);
-        DateTime dtLocal = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-        DateTime dtServer = DateTime.Parse(jsnData.currentTime);
-        TimeSpan ts = dtLocal - dtServer;
+        DateTime dtLocal = new DateTime();
+        DateTime dtServer = new DateTime();
+        string latestVersion = String.Empty;
 
-        if (ts.Duration() > new TimeSpan(0, 5, 0))
+        licenseResponse jsnData = JsonUtility.FromJson<licenseResponse>(data);
+
+        if (jsnData.success)
         {
-            Debug.LogError("現在時刻が正常に設定されていません");
-            ShowDialog(2, 0);
-        }
-        else if (thisVersion != jsnData.currentVersion)
-        {
-            foreach (versionList x in jsnData.supportedVersions)
+            foreach (versionList x in jsnData.version)
             {
-                if (thisVersion == x.version)
+                latestVersion = x.version;
+            }
+
+            foreach (versionList x in jsnData.version)
+            {
+                if (thisVersion == latestVersion)
+                {
+                    this.showConnecting.text = "";
+                    UserCheck();
+                    break;
+                }
+                else if (thisVersion == x.version)
                 {
                     dtLocal = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
                     dtServer = DateTime.Parse(x.expirationDate);
-                    if (dtServer - dtLocal >= new TimeSpan(0, 0, 0))
+                    if (dtServer - dtLocal < new TimeSpan(0, 0, 0))
                     {
-                        Debug.LogError("最新版が更新されています．このバージョンの有効期限はあと" + (dtServer - dtLocal).Days + "日です．");
-                        _playableFlag = true;
-                        ShowDialog(0, (dtServer - dtLocal).Days);
+                        Debug.LogError("このバージョンのサポートは終了しています．");
+                        ShowDialog(3, 0);
                         break;
                     }
                     else
                     {
-                        Debug.LogError("このバージョンのサポートは終了しています．");
-                        ShowDialog(3, 0);
+                        Debug.LogError("最新版が更新されています．このバージョンの有効期限はあと" + (dtServer - dtLocal).Days + "日です．");
+                        _playableFlag = true;
+                        ShowDialog(0, (dtServer - dtLocal).Days);
                         break;
                     }
                 }
@@ -139,12 +173,15 @@ public class StartupScreenProcessManager : MonoBehaviour
         else
         {
             this.showConnecting.text = "";
-            ScreenTransition();
+            Debug.LogError("ネットワークに接続できません．");
+            ShowDialog(1, 0);
         }
     }
 
     private async void ScreenTransition()
     {
+        Debug.Log("NAME: " + PlayerPrefs.GetString("name"));
+        Debug.Log("NAME: " + PlayerPrefs.GetString("jwt"));
         Debug.Log("難しさを選ぶドン！");
         await Task.Delay(1000);
         SceneManager.LoadScene("SelectScene");
@@ -154,12 +191,20 @@ public class StartupScreenProcessManager : MonoBehaviour
     {
         if (_playableFlag)
         {
-            ScreenTransition();
+            UserCheck();
         }
         else
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
+    }
+
+    public void UserCheck()
+    {
+        if (PlayerPrefs.HasKey("name") && PlayerPrefs.HasKey("jwt"))
+            ScreenTransition();
+        else
+            ShowRegisterDialog(0);
     }
 
     private void ShowDialog(int arg, int day)
@@ -207,6 +252,144 @@ public class StartupScreenProcessManager : MonoBehaviour
                 this.messageButtonLabel.text = "Restart";
                 this.showConnecting.text = "";
                 panel.SetActive(true);
+                break;
+        }
+    }
+
+    public void ContinueButtonTappedController()
+    {
+        if (_isRecoveryMode)
+            StartCoroutine(RecoveryNetworkProcess());
+        else
+            StartCoroutine(RegisterNetworkProcess());
+    }
+
+    public void BottomButtonTappedController()
+    {
+        if (_isRecoveryMode)
+        {
+            _isRecoveryMode = false;
+            ShowRegisterDialog(0);
+        }
+        else
+        {
+            _isRecoveryMode = true;
+            ShowRegisterDialog(1);
+        }
+    }
+
+    IEnumerator RegisterNetworkProcess()
+    {
+        if (this.inputUserName.text.Length >= 3 && this.inputUserName.text.Length <= 15)
+        {
+            this.showConnecting.text = "Connecting Server ...";
+            WWWForm form = new WWWForm();
+            form.AddField("name", this.inputUserName.text);
+            UnityWebRequest www = UnityWebRequest.Post(registerApiUri, form);
+            yield return www.SendWebRequest();
+            if (www.isNetworkError)
+            {
+                Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
+                ShowDialog(1, 0);
+            }
+            else
+            {
+                UserRegistCheck(www.downloadHandler.text);
+            }
+        }
+        else
+        {
+            this.registerText.text = "Please enter between 3 and 15 characters.";
+        }
+    }
+
+    async private void UserRegistCheck(string data)
+    {
+        registerResponse jsnData = JsonUtility.FromJson<registerResponse>(data);
+
+        if (jsnData.success)
+        {
+            this.showConnecting.text = "";
+            this.registerText.text = "";
+            PlayerPrefs.SetString("name", jsnData.name);
+            PlayerPrefs.SetString("jwt", jsnData.token);
+            await Task.Delay(1000);
+            ScreenTransition();
+        }
+        else if (!jsnData.success)
+        {
+            this.registerText.text = "This name is already in use.";
+        }
+    }
+
+    IEnumerator RecoveryNetworkProcess()
+    {
+        if (this.inputUserName.text.Length == 8)
+        {
+            this.showConnecting.text = "Connecting Server ...";
+            WWWForm form = new WWWForm();
+            form.AddField("code", this.inputUserName.text);
+            UnityWebRequest www = UnityWebRequest.Post(recoveryApiUri, form);
+            yield return www.SendWebRequest();
+            if (www.isNetworkError)
+            {
+                Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
+                ShowDialog(1, 0);
+            }
+            else
+            {
+                RecoveryCodeCheck(www.downloadHandler.text);
+            }
+        }
+        else
+        {
+            this.registerText.text = "Please enter 8 characters.";
+        }
+    }
+
+    async private void RecoveryCodeCheck(string data)
+    {
+        recoveryResponse jsnData = JsonUtility.FromJson<recoveryResponse>(data);
+
+        if (jsnData.success)
+        {
+            this.showConnecting.text = "";
+            this.registerText.text = "";
+            PlayerPrefs.SetString("name", jsnData.name);
+            PlayerPrefs.SetString("jwt", jsnData.token);
+            await Task.Delay(1000);
+            ScreenTransition();
+        }
+        else if (!jsnData.success)
+        {
+            this.showConnecting.text = "";
+            this.registerText.text = "This code is invalid.";
+        }
+    }
+
+    private void ShowRegisterDialog(int arg)
+    {
+        // Argument:
+        //      0 -> Create
+        //      1 -> Restore
+
+        switch (arg)
+        {
+            case 0:
+                this.registerTitle.text = "ENTER  YOUR  NAME";
+                this.registerText.text = "";
+                this.registerPlaceholder.text = "Your Name...";
+                this.registerBottom.text = "Do you have Recovery Code ?";
+                this.showConnecting.text = "";
+                registerPanel.SetActive(true);
+                break;
+            case 1:
+                this.registerTitle.text = "ENTER  ISSUE  CODE";
+                this.registerText.text = "";
+                this.registerPlaceholder.text = "Your Code...";
+                this.registerBottom.text = "↩ Back to Create Account";
+                this.showConnecting.text = "";
+                registerPanel.SetActive(true);
                 break;
         }
     }
