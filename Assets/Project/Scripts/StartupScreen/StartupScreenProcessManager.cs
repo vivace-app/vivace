@@ -138,9 +138,7 @@ public class StartupScreenProcessManager : MonoBehaviour
         if (jsnData.success)
         {
             foreach (versionList x in jsnData.version)
-            {
                 latestVersion = x.version;
-            }
 
             foreach (versionList x in jsnData.version)
             {
