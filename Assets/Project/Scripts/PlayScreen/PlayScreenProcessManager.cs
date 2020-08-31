@@ -21,7 +21,9 @@ public class PlayScreenProcessManager : MonoBehaviour
     public static bool _autoPlay = false; //自動プレイ用
     public int _combo = 0; //コンボ数
     public int _perfects = 0, _greats = 0, _goods = 0, _misss = 0;
+    public static int r_perfects = 0, r_greats = 0, r_goods = 0, r_misss = 0; //リザルト画面用
     public double _score = 0; //得点
+    public static double r_score = 0; //リザルト画面用
     public double _basescore = 0; //基礎点:ノーツ1つあたりのスコア
 
     // -- Temporary Variable. -------------------------------------------------------------
@@ -88,11 +90,12 @@ public class PlayScreenProcessManager : MonoBehaviour
         { //コンボ数が30未満のときは単に基礎点*倍率を加算
             ScoreTemp = _basescore * magni;
         }
-        for (int i = 0; i < 15; i++) //100分割したものを33ミリ秒ごとに15回加算()
+        for (int i = 0; i < 15; i++) //15分割したものを33ミリ秒ごとに15回加算()
         {
             _score += ScoreTemp / 15;
             ScoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7"); //四捨五入して型変換を行い表示を更新
             await Task.Delay(33);
+            r_score = _score;
         }
     }
 
@@ -148,6 +151,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         SoundEffect(0); //Perfectサウンド（引数0）を再生
         a._combo++; //コンボ数を1加算
         a._perfects++; //累計Perfect数を1加算
+        r_perfects++; //リザルト画面用
         a.ComboText.text = a._combo.ToString("D");
         a.AddScore(1); //スコア加算(倍率はPerfectなので1)
         Debug.Log("PerfectTimingFunc"); //ログ出力
@@ -160,6 +164,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
         a._combo++; //コンボ数を1加算
         a._greats++; //累計Great数を1加算
+        r_greats++; //リザルト画面用
         a.ComboText.text = a._combo.ToString("D");
         a.AddScore(0.75); //スコア加算(倍率はGreatなので0.75)
         Debug.Log("GreatTimingFunc"); //ログ出力
@@ -172,6 +177,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
         a._combo++; //コンボ数を1加算
         a._goods++; //累計Good数を1加算
+        r_goods++; //リザルト画面用
         a.ComboText.text = a._combo.ToString("D"); //コンボ数を1加算
         a.AddScore(0.25); //スコア加算(倍率はGoodなので0.25)
         Debug.Log("GoodTimingFunc"); //ログ出力
@@ -183,6 +189,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
         a._combo = 0; //コンボ数を初期化
         a._misss++; //累計Miss数を1加算
+        r_misss++; //リザルト画面用
         a.ComboText.text = a._combo.ToString("D");
         //スコアはあげないよ！ｗ
         Debug.Log("MissTimingFunc"); //ログ出力
