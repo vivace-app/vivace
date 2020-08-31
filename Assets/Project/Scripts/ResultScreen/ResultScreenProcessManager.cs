@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
@@ -14,6 +15,7 @@ public class ResultScreenProcessManager : MonoBehaviour
 
     public Text[] scoreListName = new Text[9];
     public Text[] scoreListScore = new Text[9];
+    public Text RsltPerfects, RsltGreats, RsltGoods, RsltMisss, RsltTotal;
 
     // ------------------------------------------------------------------------------------
 
@@ -37,7 +39,16 @@ public class ResultScreenProcessManager : MonoBehaviour
 
     private void Start()
     {
+        // --- TEMP ---------------------------------------------------------------------------
+        PlayScreenProcessManager.r_perfects = 100;
+        PlayScreenProcessManager.r_greats = 63;
+        PlayScreenProcessManager.r_goods = 37;
+        PlayScreenProcessManager.r_misss = 17;
+        PlayScreenProcessManager.r_score = 867553;
+        // ------------------------------------------------------------------------------------
+
         StartCoroutine(GetTopTenNetworkProcess());
+        CountsDelayer();
     }
 
     private void PlayScreenTransition()
@@ -98,5 +109,29 @@ public class ResultScreenProcessManager : MonoBehaviour
         {
             Debug.LogError("データの取得に失敗しました．");
         }
+    }
+    private async void CountsAnime(int sep, double value, Text scoreboard)
+    {
+        double valueshow = 0;
+        scoreboard.text = ((int)Math.Round(valueshow, 0, MidpointRounding.AwayFromZero)).ToString("D"); //表示を初期化
+
+        for (int i = 0; i < sep; i++) //sep分割したものを33ミリ秒ごとにsep回加算()
+        {
+            valueshow += value / sep;
+            scoreboard.text = ((int)Math.Round(valueshow, 0, MidpointRounding.AwayFromZero)).ToString("D"); //四捨五入して型変換を行い表示を更新
+            await Task.Delay(33);
+        }
+    }
+    private async void CountsDelayer()
+    {
+        CountsAnime(15, PlayScreenProcessManager.r_perfects, RsltPerfects);
+        await Task.Delay(250);
+        CountsAnime(15, PlayScreenProcessManager.r_greats, RsltGreats);
+        await Task.Delay(250);
+        CountsAnime(15, PlayScreenProcessManager.r_goods, RsltGoods);
+        await Task.Delay(250);
+        CountsAnime(15, PlayScreenProcessManager.r_misss, RsltMisss);
+        await Task.Delay(250);
+        CountsAnime(45, PlayScreenProcessManager.r_score, RsltTotal);
     }
 }
