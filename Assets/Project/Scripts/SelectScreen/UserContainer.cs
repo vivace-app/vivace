@@ -1,15 +1,25 @@
 using System;
-//using System.Collections;
-//using System.Collections.Generic;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UserContainer
+public class UserContainer : MonoBehaviour
 {
-    string UserName = "Chishige";
-    /*void Start()
+    public string Name = "Default";
+    public Text Displayed;
+
+    void Start()
     {
         int len = 0;
-        if(UserName != NULL) 
-    }*/
+        int x = 1000;
+
+        Vector3 pos = this.gameObject.transform.position;
+        if(Name != null) len = Name.Length;
+        else Debug.Log("UserName Get Error.");
+
+        Displayed.text = Name;
+        Debug.Log("String Length: "+ len);
+        //this.gameObject.transform.translate (0 + x, pos.y, pos.z);
+    }
 }
