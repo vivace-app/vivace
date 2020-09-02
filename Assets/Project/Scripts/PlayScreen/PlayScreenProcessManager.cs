@@ -106,7 +106,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     void SpawnNotes(int num)
     {
-        Debug.Log(num);
+        //Debug.Log(num);
         Instantiate(Note[num], new Vector3(-0.676f + (0.338f * num), 8.4f, 4.5f), Quaternion.Euler(-30f, 0, 0));
     }
 
@@ -121,18 +121,18 @@ public class PlayScreenProcessManager : MonoBehaviour
         int i = 0;
         if (_isPlaying == true)
         {
-            Debug.Log("止まるドン！");
+            //Debug.Log("止まるドン！");
             _isPlaying = false;
             _stoptime = Time.time;
             _audioSource.Pause();
         }
         else if (_isPlaying == false)
         {
-            Debug.Log("さぁ，再開するドン！");
+            //Debug.Log("さぁ，再開するドン！");
             for (i = 3; i > 0; i--)
             {
                 await Task.Delay(1000);
-                Debug.Log(i);
+                //Debug.Log(i);
                 SoundEffect(2);
             }
             await Task.Delay(1000);
@@ -154,7 +154,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         r_perfects++; //リザルト画面用
         a.ComboText.text = a._combo.ToString("D");
         a.AddScore(1); //スコア加算(倍率はPerfectなので1)
-        Debug.Log("PerfectTimingFunc"); //ログ出力
+        //Debug.Log("PerfectTimingFunc"); //ログ出力
     }
 
     public static void GreatTimingFunc(int num)
@@ -167,7 +167,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         r_greats++; //リザルト画面用
         a.ComboText.text = a._combo.ToString("D");
         a.AddScore(0.75); //スコア加算(倍率はGreatなので0.75)
-        Debug.Log("GreatTimingFunc"); //ログ出力
+        //Debug.Log("GreatTimingFunc"); //ログ出力
     }
 
     public static void GoodTimingFunc(int num)
@@ -180,7 +180,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         r_goods++; //リザルト画面用
         a.ComboText.text = a._combo.ToString("D"); //コンボ数を1加算
         a.AddScore(0.25); //スコア加算(倍率はGoodなので0.25)
-        Debug.Log("GoodTimingFunc"); //ログ出力
+        //Debug.Log("GoodTimingFunc"); //ログ出力
     }
 
     public static void MissTimingFunc(int num)
@@ -192,6 +192,6 @@ public class PlayScreenProcessManager : MonoBehaviour
         r_misss++; //リザルト画面用
         a.ComboText.text = a._combo.ToString("D");
         //スコアはあげないよ！ｗ
-        Debug.Log("MissTimingFunc"); //ログ出力
+        //Debug.Log("MissTimingFunc"); //ログ出力
     }
 }
