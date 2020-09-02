@@ -18,7 +18,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     public int[] _lineNum;
     private static AudioSource[] _SoundEffects;
     public static bool _isPlaying = true;
-    public static bool _autoPlay = false; //自動プレイ用
+    public static bool _autoPlay = true; //自動プレイ用
     public int _combo = 0; //コンボ数
     public int _perfects = 0, _greats = 0, _goods = 0, _misss = 0;
     public static int r_perfects = 0, r_greats = 0, r_goods = 0, r_misss = 0; //リザルト画面用
