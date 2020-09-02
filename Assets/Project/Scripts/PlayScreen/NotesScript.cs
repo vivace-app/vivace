@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using System.Threading.Tasks;
 
 public class NotesScript : MonoBehaviour
 {
@@ -31,7 +32,7 @@ public class NotesScript : MonoBehaviour
                 PlayScreenProcessManager.MissTimingFunc(lineNum); //Missのときの関数
                 Destroy(this.gameObject);
             }
-            if (isInLineLevel >= 1) CheckInput(_lineKey); //キーを押されるかのチェック
+            if (isInLineLevel >= 1 && PlayScreenProcessManager._autoPlay == false) CheckInput(_lineKey); //キーを押されるかのチェック
         }
     }
 
@@ -51,15 +52,7 @@ public class NotesScript : MonoBehaviour
         {
             isInLineLevel++;
             //Debug.Log("Perfect OK.");
-        }
-        if (other.gameObject.tag == "AutoJudge")
-        {
-            if (PlayScreenProcessManager._autoPlay == true) //自動プレイ
-            {
-                PlayScreenProcessManager.PerfectTimingFunc(lineNum);
-                //Debug.Log("Autoplayed!");
-                Destroy(this.gameObject);
-            }
+            if (PlayScreenProcessManager._autoPlay == true) AutoPlayFunc(); //自動プレイ
         }
     }
 
@@ -80,6 +73,14 @@ public class NotesScript : MonoBehaviour
             isInLineLevel--;
             //Debug.Log("Perfect No.");
         }
+    }
+
+    async void AutoPlayFunc()
+    {
+        await Task.Delay(40);
+        PlayScreenProcessManager.PerfectTimingFunc(lineNum);
+        //Debug.Log("Autoplayed!");
+        Destroy(this.gameObject);
     }
 
     void CheckInput(KeyCode key)
