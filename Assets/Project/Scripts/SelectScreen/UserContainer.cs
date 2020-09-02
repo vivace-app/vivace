@@ -22,15 +22,13 @@ public class UserContainer : MonoBehaviour
         //Debug.Log("default_box_width: "+ box_width);
         //Debug.Log("default_box_height: "+ box_height);
 
-        Vector3 pos = this.gameObject.transform.position;
-
-        if(Name != null) len = Name.Length;
+        if (Name != null) len = Name.Length;
         else len = 0;
         //Debug.Log("String Length: "+ len);
 
         RectTransform rt = gameObject.GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2 (box_width + box_width_diff * (-standard_length + len) ,box_height);
-        rt.localPosition = new Vector3 (box_x - box_width_diff * (-standard_length + len) / 2.0f , box_y, box_z);
+        rt.sizeDelta = new Vector2(box_width + box_width_diff * (-standard_length + len), box_height);
+        rt.localPosition = new Vector3(box_x - box_width_diff * (-standard_length + len) / 2.0f, box_y, box_z);
         //Debug.Log("after_box_width: "+ box_width);
 
         Displayed.text = String.Concat("Welcome " + Name);
