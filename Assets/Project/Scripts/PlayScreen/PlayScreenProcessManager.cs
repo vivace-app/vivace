@@ -25,6 +25,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     public double _score = 0; //得点
     public static double r_score = 0; //リザルト画面用
     public double _basescore = 0; //基礎点:ノーツ1つあたりのスコア
+    public float _NotesSpeedIndex = 5.0f; //ノーツ落下速度の設定用
 
     // -- Temporary Variable. -------------------------------------------------------------
     private string csvFilePass = "CSV/burningHeart";
@@ -35,7 +36,8 @@ public class PlayScreenProcessManager : MonoBehaviour
         _timing = new float[1024];
         _lineNum = new int[1024];
         ComboText.text = _combo.ToString("D");
-        ScoreText.text = ((int) Math.Round (_score, 0, MidpointRounding.AwayFromZero)).ToString ("D7");
+        ScoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
+        AdjustJudgeRange();
         await Task.Delay(1000);
         LoadCSV();
         _audioSource = GameObject.Find("Music").GetComponent<AudioSource>();
@@ -198,5 +200,15 @@ public class PlayScreenProcessManager : MonoBehaviour
         a.JudgeText.text = "Miss!";
         //スコアはあげないよ！ｗ
         //Debug.Log("MissTimingFunc"); //ログ出力
+    }
+
+    public void AdjustJudgeRange()
+    {
+        Transform PRange = GameObject.Find("PerfectJudgeLine").GetComponent<Transform>();
+        PRange.transform.localScale = new Vector3(1.8f, 0.1f, _NotesSpeedIndex * 0.08f);
+        Transform GrRange = GameObject.Find("GreatJudgeLine").GetComponent<Transform>();
+        GrRange.transform.localScale = new Vector3(1.8f, 0.1f, _NotesSpeedIndex * 0.14f);
+        Transform GoRange = GameObject.Find("GoodJudgeLine").GetComponent<Transform>();
+        GoRange.transform.localScale = new Vector3(1.8f, 0.1f, _NotesSpeedIndex * 0.2f);
     }
 }
