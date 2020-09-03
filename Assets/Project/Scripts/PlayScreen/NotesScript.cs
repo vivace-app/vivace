@@ -26,7 +26,7 @@ public class NotesScript : MonoBehaviour
     {
         if (PlayScreenProcessManager._isPlaying == true)
         {
-            this.transform.position += (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * Time.deltaTime * speed * _gameManager._NotesSpeedIndex;
+            this.transform.position += (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * Time.deltaTime * speed * PlayScreenProcessManager._notesSpeedIndex;
             if (this.transform.position.z < -9.3)
             {
                 PlayScreenProcessManager.MissTimingFunc(lineNum); //Missのときの関数
@@ -77,10 +77,10 @@ public class NotesScript : MonoBehaviour
 
     async void AutoPlayFunc()
     {
-        await Task.Delay(40);
+        await Task.Delay(20);
+        Destroy(this.gameObject);
         _gameManager.PerfectTimingFunc(lineNum);
         //Debug.Log("Autoplayed!");
-        Destroy(this.gameObject);
     }
 
     void CheckInput(KeyCode key)
@@ -91,16 +91,16 @@ public class NotesScript : MonoBehaviour
             switch (isInLineLevel) //1：Good，2：Great，3：Perfect
             {
                 case 1:
-                    _gameManager.GoodTimingFunc(lineNum); //Goodのときの関数
                     Destroy(this.gameObject);
+                    _gameManager.GoodTimingFunc(lineNum); //Goodのときの関数
                     break;
                 case 2:
-                    _gameManager.GreatTimingFunc(lineNum); //Greatのときの関数
                     Destroy(this.gameObject);
+                    _gameManager.GreatTimingFunc(lineNum); //Greatのときの関数
                     break;
                 case 3:
-                    _gameManager.PerfectTimingFunc(lineNum); //Perfectのときの関数
                     Destroy(this.gameObject);
+                    _gameManager.PerfectTimingFunc(lineNum); //Perfectのときの関数
                     break;
             }
             //_laneEffect[lineNum].PlayLaneEffect ();
