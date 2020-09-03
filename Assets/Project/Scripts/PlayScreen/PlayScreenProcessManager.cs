@@ -112,7 +112,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         Instantiate(Note[num], new Vector3(-0.676f + (0.338f * num), 8.4f, 4.5f), Quaternion.Euler(-30f, 0, 0));
     }
 
-    public static void SoundEffect(int num)
+    public void SoundEffect(int num)
     {
         _SoundEffects[num].PlayOneShot(_SoundEffects[num].clip);
         //Debug.Log ("SoundEffect Played.");
@@ -144,7 +144,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         }
     }
 
-    public static void PerfectTimingFunc(int num)
+    public void PerfectTimingFunc(int num)
     {
         PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         // Debug.Log ("Line:" + num + " Perfect!"); //ログ出力
@@ -161,7 +161,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         //Debug.Log("PerfectTimingFunc"); //ログ出力
     }
 
-    public static void GreatTimingFunc(int num)
+    public void GreatTimingFunc(int num)
     {
         PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         SoundEffect(1); //Greatサウンド再生
@@ -175,7 +175,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         //Debug.Log("GreatTimingFunc"); //ログ出力
     }
 
-    public static void GoodTimingFunc(int num)
+    public void GoodTimingFunc(int num)
     {
         PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         SoundEffect(2); //Goodサウンド再生

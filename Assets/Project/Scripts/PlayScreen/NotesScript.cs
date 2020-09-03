@@ -7,18 +7,18 @@ public class NotesScript : MonoBehaviour
 {
 
     private int isInLineLevel = 0;
-    //private PlayScreenProcessManager _gameManager;
+    private PlayScreenProcessManager _gameManager;
     private KeyCode _lineKey;
     public int lineNum;
     // -- Temporary Variable. -------------------------------------------------------------
-    private float speed = 3.0f;
+    private float speed = 0.6f;
     // ------------------------------------------------------------------------------------
 
     void Start()
     {
         // this.transform.localScale -= new Vector3 (0.285f, 0, 0.05f);
         this.transform.localScale -= new Vector3(0.285f, 0, 0.055f);
-        //_gameManager = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>(); //インスタンスに GameController.cs 情報を格納
+        _gameManager = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>(); //インスタンスに GameController.cs 情報を格納
         _lineKey = GameUtil.GetKeyCodeByLineNum(lineNum); //ノーツに割り当てられているキーを取得
     }
 
@@ -26,7 +26,7 @@ public class NotesScript : MonoBehaviour
     {
         if (PlayScreenProcessManager._isPlaying == true)
         {
-            this.transform.position += (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * Time.deltaTime * speed;
+            this.transform.position += (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * Time.deltaTime * speed * _gameManager._NotesSpeedIndex;
             if (this.transform.position.z < -9.3)
             {
                 PlayScreenProcessManager.MissTimingFunc(lineNum); //Missのときの関数
@@ -78,7 +78,7 @@ public class NotesScript : MonoBehaviour
     async void AutoPlayFunc()
     {
         await Task.Delay(40);
-        PlayScreenProcessManager.PerfectTimingFunc(lineNum);
+        _gameManager.PerfectTimingFunc(lineNum);
         //Debug.Log("Autoplayed!");
         Destroy(this.gameObject);
     }
@@ -91,15 +91,15 @@ public class NotesScript : MonoBehaviour
             switch (isInLineLevel) //1：Good，2：Great，3：Perfect
             {
                 case 1:
-                    PlayScreenProcessManager.GoodTimingFunc(lineNum); //Goodのときの関数
+                    _gameManager.GoodTimingFunc(lineNum); //Goodのときの関数
                     Destroy(this.gameObject);
                     break;
                 case 2:
-                    PlayScreenProcessManager.GreatTimingFunc(lineNum); //Greatのときの関数
+                    _gameManager.GreatTimingFunc(lineNum); //Greatのときの関数
                     Destroy(this.gameObject);
                     break;
                 case 3:
-                    PlayScreenProcessManager.PerfectTimingFunc(lineNum); //Perfectのときの関数
+                    _gameManager.PerfectTimingFunc(lineNum); //Perfectのときの関数
                     Destroy(this.gameObject);
                     break;
             }
