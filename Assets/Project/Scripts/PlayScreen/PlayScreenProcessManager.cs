@@ -25,6 +25,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     public double _score = 0; //得点
     public static double r_score = 0; //リザルト画面用
     public double _basescore = 0; //基礎点:ノーツ1つあたりのスコア
+    public static float _notesSpeedIndex = 5.0f; //ノーツ落下速度の設定用(1.0f~10.0fまで動作確認)
 
     // -- Temporary Variable. -------------------------------------------------------------
     private string csvFilePass = "CSV/burningHeart";
@@ -35,13 +36,15 @@ public class PlayScreenProcessManager : MonoBehaviour
         _timing = new float[1024];
         _lineNum = new int[1024];
         ComboText.text = _combo.ToString("D");
-        ScoreText.text = ((int) Math.Round (_score, 0, MidpointRounding.AwayFromZero)).ToString ("D7");
+        ScoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
+        AdjustJudgeRange();
         await Task.Delay(1000);
         LoadCSV();
         _audioSource = GameObject.Find("Music").GetComponent<AudioSource>();
         _SoundEffects = GameObject.Find("SoundEffect").GetComponents<AudioSource>();
         _startTime = Time.time;
-        await Task.Delay(2550);
+        float delay_time = 12800 / _notesSpeedIndex;
+        await Task.Delay((int)delay_time);
         _audioSource.Play();
     }
 
@@ -110,7 +113,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         Instantiate(Note[num], new Vector3(-0.676f + (0.338f * num), 8.4f, 4.5f), Quaternion.Euler(-30f, 0, 0));
     }
 
-    public static void SoundEffect(int num)
+    public void SoundEffect(int num)
     {
         _SoundEffects[num].PlayOneShot(_SoundEffects[num].clip);
         //Debug.Log ("SoundEffect Played.");
@@ -142,7 +145,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         }
     }
 
-    public static void PerfectTimingFunc(int num)
+    public void PerfectTimingFunc(int num)
     {
         PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         // Debug.Log ("Line:" + num + " Perfect!"); //ログ出力
@@ -159,7 +162,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         //Debug.Log("PerfectTimingFunc"); //ログ出力
     }
 
-    public static void GreatTimingFunc(int num)
+    public void GreatTimingFunc(int num)
     {
         PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         SoundEffect(1); //Greatサウンド再生
@@ -173,7 +176,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         //Debug.Log("GreatTimingFunc"); //ログ出力
     }
 
-    public static void GoodTimingFunc(int num)
+    public void GoodTimingFunc(int num)
     {
         PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         SoundEffect(2); //Goodサウンド再生
@@ -198,5 +201,15 @@ public class PlayScreenProcessManager : MonoBehaviour
         a.JudgeText.text = "Miss!";
         //スコアはあげないよ！ｗ
         //Debug.Log("MissTimingFunc"); //ログ出力
+    }
+
+    public void AdjustJudgeRange()
+    {
+        Transform PRange = GameObject.Find("PerfectJudgeLine").GetComponent<Transform>();
+        PRange.transform.localScale = new Vector3(1.8f, 0.1f, _notesSpeedIndex * 0.08f);
+        Transform GrRange = GameObject.Find("GreatJudgeLine").GetComponent<Transform>();
+        GrRange.transform.localScale = new Vector3(1.8f, 0.1f, _notesSpeedIndex * 0.14f);
+        Transform GoRange = GameObject.Find("GoodJudgeLine").GetComponent<Transform>();
+        GoRange.transform.localScale = new Vector3(1.8f, 0.1f, _notesSpeedIndex * 0.2f);
     }
 }
