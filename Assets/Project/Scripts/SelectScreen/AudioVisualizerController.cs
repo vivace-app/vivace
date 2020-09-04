@@ -4,9 +4,9 @@ public class AudioVisualizerController : MonoBehaviour
 {
     public AudioSpectrum spectrum;
     public Transform[] cubes;
-    public float scale = 100.0f;
+    public float scale = 60.0f;
 
-    private void Update()
+    void Update()
     {
         for ( int i = 0; i < cubes.Length; i++ )
         {
