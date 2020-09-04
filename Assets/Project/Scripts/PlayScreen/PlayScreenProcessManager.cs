@@ -33,17 +33,19 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     async void Start()
     {
+        float delay_time = 0;
+
         _timing = new float[1024];
         _lineNum = new int[1024];
         ComboText.text = _combo.ToString("D");
         ScoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
         AdjustJudgeRange();
-        await Task.Delay(1000);
-        LoadCSV();
+        delay_time = 12800 / _notesSpeedIndex;
         _audioSource = GameObject.Find("Music").GetComponent<AudioSource>();
         _SoundEffects = GameObject.Find("SoundEffect").GetComponents<AudioSource>();
+        await Task.Delay(1000);
+        LoadCSV();
         _startTime = Time.time;
-        float delay_time = 12800 / _notesSpeedIndex;
         await Task.Delay((int)delay_time);
         _audioSource.Play();
     }
