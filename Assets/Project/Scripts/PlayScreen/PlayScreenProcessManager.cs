@@ -75,9 +75,37 @@ public class PlayScreenProcessManager : MonoBehaviour
         }
     }
 
-    public async void AddScore(double magni)
+    public async void AddScore(int swi)
     { //加点のための関数,引数magniは判定ごとのスコア倍率
-        double ScoreTemp = 0;
+        double magni = 0, ScoreTemp = 0;
+        switch (swi)
+        {
+            case 0: //Perfect
+                magni = 1; //加算倍率は1
+                _combo++; //コンボ数を1加算
+                r_perfects = ++_perfects; //累計Perfect数を1加算
+                JudgeText.text = "Perfect!";
+                break;
+            case 1: //Great
+                magni = 0.75; //加算倍率は0.75
+                _combo++; //コンボ数を1加算
+                r_greats = ++_greats; //累計Great数を1加算
+                JudgeText.text = "Great!";
+                break;
+            case 2: //Good
+                magni = 0.25; //加算倍率は0.25
+                _combo = 0; //コンボ数を初期化
+                r_goods = ++_goods; //累計Good数を1加算
+                JudgeText.text = "Good!";
+                break;
+            case 3: //Miss
+                magni = 0; //加算倍率は0
+                _combo = 0; //コンボ数を初期化
+                r_misss = ++_misss; //累計Miss数を1加算
+                JudgeText.text = "Miss!";
+                break;
+        }
+        ComboText.text = _combo.ToString("D"); //表示に反映
         if (_notesTotal >= 30)
         { //コンボ数が30以上のときにはスコアは以下の通り傾斜加算
             if (_combo <= 10) //コンボ数が10以下のとき
@@ -152,12 +180,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         // Debug.Log (GetMusicTime ()); //ログ出力
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
         SoundEffect(0); //Perfectサウンド（引数0）を再生
-        a._combo++; //コンボ数を1加算
-        a._perfects++; //累計Perfect数を1加算
-        r_perfects++; //リザルト画面用
-        a.ComboText.text = a._combo.ToString("D");
-        a.JudgeText.text = "Perfect!";
-        a.AddScore(1); //スコア加算(倍率はPerfectなので1)
+        a.AddScore(0); //スコア加算
 
         //Debug.Log("PerfectTimingFunc"); //ログ出力
     }
@@ -167,12 +190,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         SoundEffect(1); //Greatサウンド再生
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
-        a._combo++; //コンボ数を1加算
-        a._greats++; //累計Great数を1加算
-        r_greats++; //リザルト画面用
-        a.ComboText.text = a._combo.ToString("D");
-        a.JudgeText.text = "Great!";
-        a.AddScore(0.75); //スコア加算(倍率はGreatなので0.75)
+        a.AddScore(1); //スコア加算(倍率はGreatなので0.75)
         //Debug.Log("GreatTimingFunc"); //ログ出力
     }
 
@@ -181,12 +199,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         SoundEffect(2); //Goodサウンド再生
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
-        a._combo = 0; //コンボ数を初期化
-        a._goods++; //累計Good数を1加算
-        r_goods++; //リザルト画面用
-        a.ComboText.text = a._combo.ToString("D"); //コンボ数を1加算
-        a.JudgeText.text = "Good!";
-        a.AddScore(0.25); //スコア加算(倍率はGoodなので0.25)
+        a.AddScore(2); //スコア加算(倍率はGoodなので0.25)
         //Debug.Log("GoodTimingFunc"); //ログ出力
     }
 
@@ -194,12 +207,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     {
         PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
-        a._combo = 0; //コンボ数を初期化
-        a._misss++; //累計Miss数を1加算
-        r_misss++; //リザルト画面用
-        a.ComboText.text = a._combo.ToString("D");
-        a.JudgeText.text = "Miss!";
-        //スコアはあげないよ！ｗ
+        a.AddScore(3); //スコア加算(スコアはあげないよ！ｗ)
         //Debug.Log("MissTimingFunc"); //ログ出力
     }
 
