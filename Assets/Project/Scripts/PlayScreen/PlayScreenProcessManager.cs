@@ -94,25 +94,25 @@ public class PlayScreenProcessManager : MonoBehaviour
                 case 0: //Perfect
                     magni = 1; //加算倍率は1
                     _combo++; //コンボ数を1加算
-                    r_perfects = ++_perfects; //累計Perfect数を1加算
+                    _perfects++; //累計Perfect数を1加算
                     JudgeText.text = "Perfect!";
                     break;
                 case 1: //Great
                     magni = 0.75; //加算倍率は0.75
                     _combo++; //コンボ数を1加算
-                    r_greats = ++_greats; //累計Great数を1加算
+                    _greats++; //累計Great数を1加算
                     JudgeText.text = "Great!";
                     break;
                 case 2: //Good
                     magni = 0.25; //加算倍率は0.25
                     _combo = 0; //コンボ数を初期化
-                    r_goods = ++_goods; //累計Good数を1加算
+                    _goods++; //累計Good数を1加算
                     JudgeText.text = "Good!";
                     break;
                 case 3: //Miss
                     magni = 0; //加算倍率は0
                     _combo = 0; //コンボ数を初期化
-                    r_misss = ++_misss; //累計Miss数を1加算
+                    _misss++; //累計Miss数を1加算
                     JudgeText.text = "Miss!";
                     break;
             }
@@ -137,7 +137,6 @@ public class PlayScreenProcessManager : MonoBehaviour
                 _score += ScoreTemp / 15;
                 ScoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7"); //四捨五入して型変換を行い表示を更新
                 await Task.Delay(33);
-                r_score = _score;
             }
         }
 
@@ -233,6 +232,11 @@ public class PlayScreenProcessManager : MonoBehaviour
 
         public async void ChangeScene()
         {
+            r_score = _score;
+            r_perfects = _perfects;
+            r_greats = _greats;
+            r_goods = _goods;
+            r_misss = _misss;
             Debug.Log("3秒後にスコア画面に移行します．");
             await Task.Delay(3000);
             SceneManager.LoadScene("ResultScene");
