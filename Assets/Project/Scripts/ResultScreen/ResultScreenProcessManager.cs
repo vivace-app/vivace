@@ -40,11 +40,11 @@ public class ResultScreenProcessManager : MonoBehaviour
     private void Start()
     {
         // --- TEMP ---------------------------------------------------------------------------
-        PlayScreenProcessManager.r_perfects = 100;
-        PlayScreenProcessManager.r_greats = 63;
-        PlayScreenProcessManager.r_goods = 37;
-        PlayScreenProcessManager.r_misss = 17;
-        PlayScreenProcessManager.r_score = 867553;
+        //PlayScreenProcessManager.r_perfects = 100;
+        //PlayScreenProcessManager.r_greats = 63;
+        //PlayScreenProcessManager.r_goods = 37;
+        //PlayScreenProcessManager.r_misss = 17;
+        //PlayScreenProcessManager.r_score = 867553;
         // ------------------------------------------------------------------------------------
 
         StartCoroutine(GetTopTenNetworkProcess());
