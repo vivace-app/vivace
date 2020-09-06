@@ -9,6 +9,8 @@ Obj/
 UnityGenerated/
 Library/
 
+*.meta
+
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
 # ===================================== #
