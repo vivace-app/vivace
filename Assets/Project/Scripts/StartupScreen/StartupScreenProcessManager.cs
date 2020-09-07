@@ -31,6 +31,7 @@ public class StartupScreenProcessManager : MonoBehaviour
     bool _touchableFlag = false;
     bool _playableFlag = false;
     bool _isRecoveryMode = false;
+    bool _continueButtonFlag = true; //trueのとき，Continueボタンを使用可能
 
     // ------------------------------------------------------------------------------------
 
@@ -76,6 +77,7 @@ public class StartupScreenProcessManager : MonoBehaviour
 
     async void Start()
     {
+        //PlayerPrefs.DeleteAll(); //ユーザ情報を初期化したい場合にコメントアウトを解除
         audioSource = GetComponent<AudioSource>();
         this.showVersion.text = "Ver." + thisVersion;
         await Task.Delay(1000);
@@ -256,10 +258,15 @@ public class StartupScreenProcessManager : MonoBehaviour
 
     public void ContinueButtonTappedController()
     {
-        if (_isRecoveryMode)
-            StartCoroutine(RecoveryNetworkProcess());
-        else
-            StartCoroutine(RegisterNetworkProcess());
+        if (_continueButtonFlag)
+        {
+            Debug.Log("Continued!");
+            _continueButtonFlag = false; //Continueボタンの連打を禁止
+            if (_isRecoveryMode)
+                StartCoroutine(RecoveryNetworkProcess());
+            else
+                StartCoroutine(RegisterNetworkProcess());
+        }
     }
 
     public void BottomButtonTappedController()
@@ -289,6 +296,7 @@ public class StartupScreenProcessManager : MonoBehaviour
             {
                 Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
                 ShowDialog(1, 0);
+                _continueButtonFlag = true; //Continueボタンを再度有効化
             }
             else
             {
@@ -298,6 +306,7 @@ public class StartupScreenProcessManager : MonoBehaviour
         else
         {
             this.registerText.text = "Please enter between 3 and 15 characters.";
+            _continueButtonFlag = true; //Continueボタンを再度有効化
         }
     }
 
@@ -317,6 +326,7 @@ public class StartupScreenProcessManager : MonoBehaviour
         else if (!jsnData.success)
         {
             this.registerText.text = "This name is already in use.";
+            _continueButtonFlag = true; //Continueボタンを再度有効化
         }
     }
 
@@ -333,6 +343,7 @@ public class StartupScreenProcessManager : MonoBehaviour
             {
                 Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
                 ShowDialog(1, 0);
+                _continueButtonFlag = true; //Continueボタンを再度有効化
             }
             else
             {
@@ -342,6 +353,7 @@ public class StartupScreenProcessManager : MonoBehaviour
         else
         {
             this.registerText.text = "Please enter 8 characters.";
+            _continueButtonFlag = true; //Continueボタンを再度有効化
         }
     }
 
@@ -362,6 +374,7 @@ public class StartupScreenProcessManager : MonoBehaviour
         {
             this.showConnecting.text = "";
             this.registerText.text = "This code is invalid.";
+            _continueButtonFlag = true; //Continueボタンを再度有効化
         }
     }
 
