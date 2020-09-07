@@ -16,7 +16,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     private int _notesTotal = 0;
     private int _notesCount = 0;
     private float _startTime = 0;
-    private float _stoptime = 0;
+    private float _stoptime = 0; //ポーズ時間を計測
     public float[] _timing;
     public int[] _lineNum;
     private static AudioSource[] _SoundEffects; //効果音用変数
@@ -47,7 +47,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         ColorUtility.TryParseHtmlString(Great16, out Great_c);
         ColorUtility.TryParseHtmlString(Good16, out Good_c);
         ColorUtility.TryParseHtmlString(Miss16, out Miss_c);
-        AdjustJudgeRange();
+        AdjustJudgeRange(); //ノーツ落下速度に合わせて判定オブジェクトの高さを変化
         delay_time = 12800 / _notesSpeedIndex; //遅延開始時間の計算
         _audioSource = GameObject.Find("Music").GetComponent<AudioSource>();
         _SoundEffects = GameObject.Find("SoundEffect").GetComponents<AudioSource>();
@@ -56,8 +56,8 @@ public class PlayScreenProcessManager : MonoBehaviour
         _startTime = Time.time;
         await Task.Delay((int)delay_time); //開始タイミングの調整
         _audioSource.Play();
-        await Task.Delay(10);
-        playedFlag = true;
+        await Task.Delay(10); //playedFlagの変数代入をずらして誤作動を防止
+        playedFlag = true; //楽曲が1回以上再生されたことを確認
     }
 
     void Update()
@@ -65,7 +65,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         if (_isPlaying == true) CheckNextNotes();
         if (playedFlag == true && _audioSource.isPlaying == false)
         {
-            playedFlag = false;
+            playedFlag = false; //何度も処理が呼び出されないようにする
             ChangeScene(); //楽曲が一度でも再生され，最後まで再生が終了したとき
         }
     }
@@ -172,23 +172,24 @@ public class PlayScreenProcessManager : MonoBehaviour
         if (_isPlaying == true)
         {
             //Debug.Log("止まるドン！");
-            _isPlaying = false;
-            _stoptime = Time.time;
-            _audioSource.pitch = 0.0f;
+            _isPlaying = false; //ポーズ中であることを変数に代入
+            _stoptime = Time.time; //ポーズした時刻を代入
+            _audioSource.pitch = 0.0f; //楽曲再生速度を0にする(Pauseを使うと楽曲終了判定が誤作動するため)
         }
         else if (_isPlaying == false)
         {
             //Debug.Log("さぁ，再開するドン！");
-            for (int i = 3; i > 0; i--)
+            for (int i = 3; i > 0; i--) //再開のカウントダウン
             {
                 await Task.Delay(1000);
                 //Debug.Log(i);
                 SoundEffect(2);
             }
             await Task.Delay(1000);
-            _isPlaying = true;
-            _startTime = _startTime + (Time.time - _stoptime);
-            _audioSource.pitch = 1.0f;
+            _isPlaying = true; //プレイ中であることを変数に代入
+            _startTime = _startTime + (Time.time - _stoptime); //開始時間をポーズ時間分加算
+            Task.Delay(10); //ノーツと楽曲がずれるのを補正
+            _audioSource.pitch = 1.0f; //楽曲再生速度を1にする(等速再生)
         }
     }
 
@@ -233,11 +234,11 @@ public class PlayScreenProcessManager : MonoBehaviour
     public void AdjustJudgeRange()
     {
         Transform PRange = GameObject.Find("PerfectJudgeLine").GetComponent<Transform>();
-        PRange.transform.localScale = new Vector3(1.8f, 0.1f, _notesSpeedIndex * 0.08f);
+        PRange.transform.localScale = new Vector3(1.8f, 0.1f, _notesSpeedIndex * 0.08f); //Perfect判定オブジェクトの高さを変更
         Transform GrRange = GameObject.Find("GreatJudgeLine").GetComponent<Transform>();
-        GrRange.transform.localScale = new Vector3(1.8f, 0.1f, _notesSpeedIndex * 0.14f);
+        GrRange.transform.localScale = new Vector3(1.8f, 0.1f, _notesSpeedIndex * 0.14f); //Great判定オブジェクトの高さを変更
         Transform GoRange = GameObject.Find("GoodJudgeLine").GetComponent<Transform>();
-        GoRange.transform.localScale = new Vector3(1.8f, 0.1f, _notesSpeedIndex * 0.2f);
+        GoRange.transform.localScale = new Vector3(1.8f, 0.1f, _notesSpeedIndex * 0.2f); //Good判定オブジェクトの高さを変更
     }
 
     public async void ChangeScene()

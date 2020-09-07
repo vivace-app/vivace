@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 public class NotesScript : MonoBehaviour
 {
 
-    private int isInLineLevel = 0;
+    private int isInLineLevel = 0; //ノーツのタイミング判定レベル変数(1・5：Good，2・4：Great，3：Perfect，0・6：判定なし)
     private PlayScreenProcessManager _gameManager;
     private KeyCode _lineKey;
     public int lineNum;
@@ -24,7 +24,7 @@ public class NotesScript : MonoBehaviour
 
     void Update()
     {
-        if (PlayScreenProcessManager._isPlaying == true)
+        if (PlayScreenProcessManager._isPlaying == true) //プレイ中のとき
         {
             this.transform.position += (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * Time.deltaTime * speed * PlayScreenProcessManager._notesSpeedIndex;
             if (this.transform.position.z < -9.3)
@@ -36,7 +36,7 @@ public class NotesScript : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other) //オブジェクトと衝突するたび，インクリメント
     {
         if (other.gameObject.tag == "GoodJudge")
         {
@@ -56,26 +56,26 @@ public class NotesScript : MonoBehaviour
         }
     }
 
-    void OnTriggerExit(Collider other)
+    void OnTriggerExit(Collider other) //オブジェクトから脱出するたびにインクリメント
     {
         if (other.gameObject.tag == "GoodJudge")
         {
-            isInLineLevel--;
+            isInLineLevel++;
             //Debug.Log("Bad No.");
         }
         if (other.gameObject.tag == "GreatJudge")
         {
-            isInLineLevel--;
+            isInLineLevel++;
             //Debug.Log("Great No.");
         }
         if (other.gameObject.tag == "PerfectJudge")
         {
-            isInLineLevel--;
+            isInLineLevel++;
             //Debug.Log("Perfect No.");
         }
     }
 
-    async void AutoPlayFunc()
+    async void AutoPlayFunc() //自動プレイ関数
     {
         await Task.Delay(20);
         Destroy(this.gameObject);
@@ -88,7 +88,7 @@ public class NotesScript : MonoBehaviour
         if (Input.GetKeyDown(key) /*|| TouchCheck.CheckTouch (lineNum, _touchInput)*/)
         { //キーの入力が確認できたら
             Debug.Log("Key pushed!");
-            switch (isInLineLevel) //1：Good，2：Great，3：Perfect
+            switch (isInLineLevel) //1：Good，2：Great，3：Perfect，4：Great，5：Good
             {
                 case 1:
                     Destroy(this.gameObject);
@@ -101,6 +101,14 @@ public class NotesScript : MonoBehaviour
                 case 3:
                     Destroy(this.gameObject);
                     _gameManager.PerfectTimingFunc(lineNum); //Perfectのときの関数
+                    break;
+                case 4:
+                    Destroy(this.gameObject);
+                    _gameManager.GreatTimingFunc(lineNum); //Greatのときの関数
+                    break;
+                case 5:
+                    Destroy(this.gameObject);
+                    _gameManager.GoodTimingFunc(lineNum); //Goodのときの関数
                     break;
             }
             //_laneEffect[lineNum].PlayLaneEffect ();
