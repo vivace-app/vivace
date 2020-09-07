@@ -22,6 +22,7 @@ public class UserContainer : MonoBehaviour
         //Debug.Log("default_box_width: "+ box_width);
         //Debug.Log("default_box_height: "+ box_height);
 
+        Name = PlayerPrefs.GetString("name"); //ユーザ名を取得
         if (Name != null) len = Name.Length; //ユーザ名があれば文字数を格納
         else len = 0; //ユーザ名が0文字の場合
         //Debug.Log("String Length: "+ len);
