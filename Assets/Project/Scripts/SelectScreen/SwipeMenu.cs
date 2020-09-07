@@ -57,7 +57,7 @@ public class SwipeMenu : MonoBehaviour
                 transform.GetChild(i).Find("Demon").gameObject.SetActive(true);
                 transform.GetChild(i).Find("PlayMusic").gameObject.SetActive(true);
 
-                SelectedMusic(i); //楽曲再生の実行を試みる（1フレーム毎）
+                SelectedMusic(i); //楽曲再生の実行と停止を行う（1フレーム毎）
 
                 for (int cnt = 0; cnt < pos.Length; cnt++)
                 {
@@ -87,18 +87,18 @@ public class SwipeMenu : MonoBehaviour
     {
         for (int i = 0; i < pos.Length; i++)
         {
-            if (i == num)
+            if (i == num) //*numは現在選択中の楽曲通し番号
             {
                 if (_AudioSource[i].isPlaying == false) //選択中の楽曲がプレビュー再生されていないとき
                 {
-                    _AudioSource[num].Play();
+                    _AudioSource[num].Play(); //選択中の楽曲を再生
                 }
             }
             else
             {
                 if (_AudioSource[i].isPlaying == true) //非選択の楽曲がプレビュー再生されているとき
                 {
-                    _AudioSource[i].Stop();
+                    _AudioSource[i].Stop(); //非選択の楽曲の再生を停止
                 }
             }
         }
