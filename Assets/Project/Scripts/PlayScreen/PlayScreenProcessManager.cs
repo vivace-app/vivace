@@ -30,7 +30,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     public static float _notesSpeedIndex = 5.0f; //ノーツ落下速度の設定用(1.0f~10.0fまで動作確認)
 
     // -- Temporary Variable. -------------------------------------------------------------
-    private string csvFilePass = "CSV/burningHeart";
+    private string csvFilePass = "CSV/BurningHeart";
     // ------------------------------------------------------------------------------------
 
     async void Start()
