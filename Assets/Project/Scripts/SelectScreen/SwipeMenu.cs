@@ -9,17 +9,27 @@ public class SwipeMenu : MonoBehaviour
     float scroll_pos = 0;
     float distance;
     float[] pos;
-    private AudioSource[] _AudioSource; //楽曲情報格納
+    private AudioSource[] _AudioSource; //プレビュー楽曲情報格納
+    private AudioSource[] _fullAudioSource; //フル楽曲情報格納
+    private static float[] Musictime; //楽曲の再生時間を格納
+    public Text DisplayedMusicTime; //画面に表示される楽曲の再生時間
 
     void Start()
     {
         pos = new float[transform.childCount];
+        Musictime = new float[transform.childCount];
         distance = 1f / (pos.Length - 1f);
         for (int i = 0; i < pos.Length; i++)
         {
             pos[i] = distance * i;
         }
-        _AudioSource = GameObject.Find("Musics").GetComponents<AudioSource>(); //楽曲情報取得
+        _AudioSource = GameObject.Find("Music - pre").GetComponents<AudioSource>(); //プレビュー楽曲情報取得
+        _fullAudioSource = GameObject.Find("Music - full").GetComponents<AudioSource>(); //フル楽曲情報取得
+        for (int j = 0; j < pos.Length; j++)
+        {
+            Musictime[j] = _fullAudioSource[j].clip.length;
+            //Debug.Log(Musictime[j]); //取得した楽曲再生時間情報を格納
+        }
     }
 
     void Update()
@@ -85,6 +95,8 @@ public class SwipeMenu : MonoBehaviour
 
     private void SelectedMusic(int num) //num番目の曲をループで再生
     {
+        int secondtemp = 0; //選択中楽曲の再生秒
+        int minutetemp = 0; //選択中楽曲の再生分
         for (int i = 0; i < pos.Length; i++)
         {
             if (i == num) //*numは現在選択中の楽曲通し番号
@@ -92,6 +104,9 @@ public class SwipeMenu : MonoBehaviour
                 if (_AudioSource[i].isPlaying == false) //選択中の楽曲がプレビュー再生されていないとき
                 {
                     _AudioSource[num].Play(); //選択中の楽曲を再生
+                    minutetemp = (int)Musictime[num] / 60;
+                    secondtemp = (int)Musictime[num] - 60 * minutetemp;
+                    DisplayedMusicTime.text = Musictime[num].ToString("PLAYTIME  " + minutetemp + ":" + secondtemp);
                 }
             }
             else
