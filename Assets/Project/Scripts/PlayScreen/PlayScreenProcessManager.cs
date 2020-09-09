@@ -11,9 +11,9 @@ public class PlayScreenProcessManager : MonoBehaviour
 {
     private AudioSource _audioSource;
     public GameObject[] Note;
-    public Text ComboText, ScoreText, JudgeText;
-    private string Perfect16 = "#FF7DF2", Great16 = "#FF9C7D", Good16 = "#34E045", Miss16 = "#8D8D8D"; //ResultScreenの色を拝借
-    private Color Perfect_c, Great_c, Good_c, Miss_c;
+    public Text ComboText, ScoreText, JudgeText, AddText;
+    private string Perfect16 = "#FF7DF2", Great16 = "#FF9C7D", Good16 = "#34E045", Miss16 = "#8D8D8D", Score16 = "#6C95FF"; //ResultScreenの色を拝借
+    private Color Perfect_c, Great_c, Good_c, Miss_c, Score_c;
     private int _notesTotal = 0;
     private int _notesCount = 0;
     private float _startTime = 0;
@@ -32,7 +32,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     public double _basescore = 0; //基礎点:ノーツ1つあたりのスコア
     public static float _notesSpeedIndex = 5.0f; //ノーツ落下速度の設定用(1.0f~10.0fまで動作確認)
     public int JTextUsed = 0; //JudgeTextのtextを変更した回数
-    public Tweener JTextFade, JTextReduce; //消失/縮小アニメーションにTweenerを付与
+    public Tweener JTextFade, JTextReduce, ATextFade, ATextReduce; //消失/縮小(判定表示)，消失/縮小(加算表示)アニメーションにTweenerを付与
 
     // -- Temporary Variable. -------------------------------------------------------------
     private string csvFilePass = "CSV/BurningHeart";
@@ -47,10 +47,12 @@ public class PlayScreenProcessManager : MonoBehaviour
         ComboText.text = _combo.ToString("D");
         ScoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
         JudgeText.text = "";
+        AddText.text = "";
         ColorUtility.TryParseHtmlString(Perfect16, out Perfect_c);
         ColorUtility.TryParseHtmlString(Great16, out Great_c);
         ColorUtility.TryParseHtmlString(Good16, out Good_c);
         ColorUtility.TryParseHtmlString(Miss16, out Miss_c);
+        ColorUtility.TryParseHtmlString(Score16, out Score_c);
         AdjustJudgeRange(); //ノーツ落下速度に合わせて判定オブジェクトの高さを変化
         delay_time = 12800 / _notesSpeedIndex; //遅延開始時間の計算
         _audioSource = GameObject.Find("Music").GetComponent<AudioSource>();
@@ -105,9 +107,17 @@ public class PlayScreenProcessManager : MonoBehaviour
         {
             JTextFade.Kill(); //もし現在進行形で 消失 アニメーション中なら中断
         }
-         if (JTextReduce != null)
+        if (JTextReduce != null)
         {
             JTextReduce.Kill(); //もし現在進行形で 縮小 アニメーション中なら中断
+        }
+        if (ATextFade != null)
+        {
+            ATextFade.Kill(); //もし現在進行形で 消失 アニメーション中なら中断
+        }
+        if (ATextReduce != null)
+        {
+            ATextReduce.Kill(); //もし現在進行形で 縮小 アニメーション中なら中断
         }
         switch (swi)
         {
@@ -162,6 +172,11 @@ public class PlayScreenProcessManager : MonoBehaviour
         { //コンボ数が30未満のときは単に基礎点*倍率を加算
             ScoreTemp = _basescore * magni;
         }
+        AddText.color = Score_c;
+        AddText.text = "+" + ((int)Math.Round(ScoreTemp, 0, MidpointRounding.AwayFromZero)).ToString("D"); //四捨五入して型変換を行い加算スコアを表示
+        AddText.transform.localScale = vl; //テキストサイズを全方向1.5倍化
+        ATextReduce = AddText.transform.DOScale(vo, 0.2f); //元の大きさまでの縮小アニメーション
+
         for (int i = 0; i < 15; i++) //15分割したものを33ミリ秒ごとに15回加算()
         {
             _score += ScoreTemp / 15;
@@ -172,6 +187,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         if (JTextUsed == JTextTemp) //もし次のAddScoreが読み込まれていなければ
         {
             JTextFade = DOTween.ToAlpha(() => JudgeText.color, cchanger => JudgeText.color = cchanger, 0.0f, 0.2f); //文字の消失アニメーション
+            ATextFade = DOTween.ToAlpha(() => AddText.color, cchanger => AddText.color = cchanger, 0.0f, 0.2f); //文字の消失アニメーション
         }
     }
 
