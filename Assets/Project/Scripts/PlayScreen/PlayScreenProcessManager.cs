@@ -31,7 +31,8 @@ public class PlayScreenProcessManager : MonoBehaviour
     public static double r_score = 0; //リザルト画面用
     public double _basescore = 0; //基礎点:ノーツ1つあたりのスコア
     public static float _notesSpeedIndex = 5.0f; //ノーツ落下速度の設定用(1.0f~10.0fまで動作確認)
-    private Tweener tweener;
+    public int JTextUsed = 0; //JudgeTextのtextを変更した回数
+    public Tweener JTextFade, JTextReduce; //消失/縮小アニメーションにTweenerを付与
 
     // -- Temporary Variable. -------------------------------------------------------------
     private string csvFilePass = "CSV/BurningHeart";
@@ -45,6 +46,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         _lineNum = new int[1024];
         ComboText.text = _combo.ToString("D");
         ScoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
+        JudgeText.text = "";
         ColorUtility.TryParseHtmlString(Perfect16, out Perfect_c);
         ColorUtility.TryParseHtmlString(Great16, out Great_c);
         ColorUtility.TryParseHtmlString(Good16, out Good_c);
@@ -96,18 +98,25 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     public async void AddScore(int swi)
     { //加点のための関数,引数magniは判定ごとのスコア倍率
-        double magni = 0, ScoreTemp = 0;
+        double magni = 0, ScoreTemp = 0, JTextTemp = ++JTextUsed;
         Vector3 vl = new Vector3(1.5f, 1.5f, 1.5f);
         Vector3 vo = Vector3.one;
-
+        if (JTextFade != null)
+        {
+            JTextFade.Kill(); //もし現在進行形で 消失 アニメーション中なら中断
+        }
+         if (JTextReduce != null)
+        {
+            JTextReduce.Kill(); //もし現在進行形で 縮小 アニメーション中なら中断
+        }
         switch (swi)
         {
             case 0: //Perfect
                 magni = 1; //加算倍率は1
                 _combo++; //コンボ数を1加算
                 _perfects++; //累計Perfect数を1加算
-                JudgeText.transform.localScale = vl; //テキストを全方向1.5倍化
-                JudgeText.transform.DOScale(vo, 0.2f); //元の大きさまで縮小
+                JudgeText.transform.localScale = vl; //テキストサイズを全方向1.5倍化
+                JTextReduce = JudgeText.transform.DOScale(vo, 0.2f); //元の大きさまでの縮小アニメーション
                 JudgeText.color = Perfect_c;
                 JudgeText.text = "Perfect!";
                 break;
@@ -115,8 +124,8 @@ public class PlayScreenProcessManager : MonoBehaviour
                 magni = 0.75; //加算倍率は0.75
                 _combo++; //コンボ数を1加算
                 _greats++; //累計Great数を1加算
-                JudgeText.transform.localScale = vl; //テキストを全方向1.5倍化
-                JudgeText.transform.DOScale(vo, 0.2f); //元の大きさまで縮小
+                JudgeText.transform.localScale = vl; //テキストサイズを全方向1.5倍化
+                JTextReduce = JudgeText.transform.DOScale(vo, 0.2f); //元の大きさまでの縮小アニメーション
                 JudgeText.color = Great_c;
                 JudgeText.text = "Great!";
                 break;
@@ -124,6 +133,7 @@ public class PlayScreenProcessManager : MonoBehaviour
                 magni = 0.25; //加算倍率は0.25
                 _combo = 0; //コンボ数を初期化
                 _goods++; //累計Good数を1加算
+                JudgeText.transform.localScale = vo; //テキストサイズを標準化
                 JudgeText.color = Good_c;
                 JudgeText.text = "Good!";
                 break;
@@ -131,6 +141,7 @@ public class PlayScreenProcessManager : MonoBehaviour
                 magni = 0; //加算倍率は0
                 _combo = 0; //コンボ数を初期化
                 _misss++; //累計Miss数を1加算
+                JudgeText.transform.localScale = vo; //テキストサイズを標準化
                 JudgeText.color = Miss_c;
                 JudgeText.text = "Miss!";
                 break;
@@ -157,7 +168,11 @@ public class PlayScreenProcessManager : MonoBehaviour
             ScoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7"); //四捨五入して型変換を行い表示を更新
             await Task.Delay(33);
         }
-        await Task.Delay(1000);
+        await Task.Delay(250);
+        if (JTextUsed == JTextTemp) //もし次のAddScoreが読み込まれていなければ
+        {
+            JTextFade = DOTween.ToAlpha(() => JudgeText.color, cchanger => JudgeText.color = cchanger, 0.0f, 0.2f); //文字の消失アニメーション
+        }
     }
 
     void CheckNextNotes()
@@ -209,33 +224,26 @@ public class PlayScreenProcessManager : MonoBehaviour
         // Debug.Log ("Line:" + num + " Perfect!"); //ログ出力
         // Debug.Log (GetMusicTime ()); //ログ出力
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
-        a.tweener.Kill();
         SoundEffect(0); //Perfectサウンド（引数0）を再生
         a.AddScore(0); //スコア加算
-        a.tweener = DOTween.ToAlpha(() => a.JudgeText.color, cchanger => a.JudgeText.color = cchanger, 0.0f, 0.2f); //文字が段々消えるやつ
-
         //Debug.Log("PerfectTimingFunc"); //ログ出力
     }
 
     public void GreatTimingFunc(int num)
     {
         PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
-        a.tweener.Kill();
         SoundEffect(1); //Greatサウンド再生
                         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
         a.AddScore(1); //スコア加算(倍率はGreatなので0.75)
-        a.tweener = DOTween.ToAlpha(() => a.JudgeText.color, cchanger => a.JudgeText.color = cchanger, 0.0f, 0.2f); //文字が段々消えるやつ
                        //Debug.Log("GreatTimingFunc"); //ログ出力
     }
 
     public void GoodTimingFunc(int num)
     {
         PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
-        a.tweener.Kill();
         SoundEffect(2); //Goodサウンド再生
                         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
         a.AddScore(2); //スコア加算(倍率はGoodなので0.25)
-        a.tweener = DOTween.ToAlpha(() => a.JudgeText.color, cchanger => a.JudgeText.color = cchanger, 0.0f, 0.2f); //文字が段々消えるやつ
                        //Debug.Log("GoodTimingFunc"); //ログ出力
     }
 
@@ -243,9 +251,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     {
         PlayScreenProcessManager a = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         //EffectManager.Instance.PlayEffect(num); //num番目のエフェクトを表示
-        a.tweener.Kill();
         a.AddScore(3); //スコア加算(スコアはあげないよ！ｗ)
-        a.tweener = DOTween.ToAlpha(() => a.JudgeText.color, cchanger => a.JudgeText.color = cchanger, 0.0f, 0.2f); //文字が段々消えるやつ
                        //Debug.Log("MissTimingFunc"); //ログ出力
     }
 
