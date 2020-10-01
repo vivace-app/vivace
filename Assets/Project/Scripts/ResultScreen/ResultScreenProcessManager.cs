@@ -11,6 +11,7 @@ public class ResultScreenProcessManager : MonoBehaviour
 {
     // --- TEMP ---------------------------------------------------------------------------
     string musicTitle = "shining_star";
+    string musicLevel = "easy";
     // ------------------------------------------------------------------------------------
 
     public Text[] scoreListName = new Text[9];
@@ -75,6 +76,7 @@ public class ResultScreenProcessManager : MonoBehaviour
     {
         WWWForm form = new WWWForm();
         form.AddField("music", musicTitle);
+        form.AddField("level", musicLevel);
         UnityWebRequest www = UnityWebRequest.Post(topTenScoreApiUri, form);
         yield return www.SendWebRequest();
         if (www.isNetworkError || www.isHttpError)
