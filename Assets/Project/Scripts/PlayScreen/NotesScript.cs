@@ -114,24 +114,4 @@ public class NotesScript : MonoBehaviour
             //_laneEffect[lineNum].PlayLaneEffect ();
         }
     }
-    public void TouchCheckD()
-    {
-        Debug.Log("lane D touched!");
-    }
-    public void TouchCheckF()
-    {
-        Debug.Log("lane F touched!");
-    }
-    public void TouchCheckG()
-    {
-        Debug.Log("lane G touched!");
-    }
-    public void TouchCheckH()
-    {
-        Debug.Log("lane H touched!");
-    }
-    public void TouchCheckJ()
-    {
-        Debug.Log("lane J touched!");
-    }
 }
