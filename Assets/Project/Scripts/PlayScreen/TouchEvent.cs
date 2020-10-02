@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class TouchEvent : MonoBehaviour
 {
+    public static bool[] OnTouch = { false, false, false, false, false };
     // Start is called before the first frame update
     void Start()
     {
@@ -15,24 +16,49 @@ public class TouchEvent : MonoBehaviour
     {
 
     }
-    public void TouchCheckD()
+    public void Touch(int num)
     {
-        Debug.Log("lane D touched");
+        switch (num)
+        {
+            case 0:
+                Debug.Log("lane D touched");
+                break;
+            case 1:
+                Debug.Log("lane F touched");
+                break;
+            case 2:
+                Debug.Log("lane G touched");
+                break;
+            case 3:
+                Debug.Log("lane H touched");
+                break;
+            case 4:
+                Debug.Log("lane J touched");
+                break;
+        }
+        OnTouch[num] = true;
     }
-    public void TouchCheckF()
+
+    public void Up(int num)
     {
-        Debug.Log("lane F touched");
-    }
-    public void TouchCheckG()
-    {
-        Debug.Log("lane G touched");
-    }
-    public void TouchCheckH()
-    {
-        Debug.Log("lane H touched");
-    }
-    public void TouchCheckJ()
-    {
-        Debug.Log("lane J touched");
+        switch (num)
+        {
+            case 0:
+                Debug.Log("lane D up");
+                break;
+            case 1:
+                Debug.Log("lane F up");
+                break;
+            case 2:
+                Debug.Log("lane G up");
+                break;
+            case 3:
+                Debug.Log("lane H up");
+                break;
+            case 4:
+                Debug.Log("lane J up");
+                break;
+        }
+        OnTouch[num] = false;
     }
 }
