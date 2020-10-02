@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TouchEvent : MonoBehaviour
 {
-    public static bool[] OnTouch = { false, false, false, false, false };
+    public static int[] OnTouch = { 0, 0, 0, 0, 0 };
     // Start is called before the first frame update
     void Start()
     {
@@ -36,7 +36,7 @@ public class TouchEvent : MonoBehaviour
                 Debug.Log("lane J touched");
                 break;
         }
-        OnTouch[num] = true;
+        OnTouch[num] = 1;
     }
 
     public void Up(int num)
@@ -59,6 +59,6 @@ public class TouchEvent : MonoBehaviour
                 Debug.Log("lane J up");
                 break;
         }
-        OnTouch[num] = false;
+        OnTouch[num] = 0;
     }
 }

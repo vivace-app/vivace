@@ -10,6 +10,7 @@ public class NotesScript : MonoBehaviour
     private PlayScreenProcessManager _gameManager;
     private KeyCode _lineKey;
     public int lineNum;
+    public int[] CurrentTouch = { 0, 0, 0, 0, 0 };
     // -- Temporary Variable. -------------------------------------------------------------
     private float speed = 0.6f;
     // ------------------------------------------------------------------------------------
@@ -34,6 +35,7 @@ public class NotesScript : MonoBehaviour
             }
             if (isInLineLevel >= 1 && PlayScreenProcessManager._autoPlay == false) CheckInput(_lineKey); //キーを押されるかのチェック
         }
+        CurrentTouch = TouchEvent.OnTouch;
     }
 
     void OnTriggerEnter(Collider other) //オブジェクトと衝突するたび，インクリメント
@@ -85,7 +87,7 @@ public class NotesScript : MonoBehaviour
 
     void CheckInput(KeyCode key)
     {
-        if (Input.GetKeyDown(key) /*|| TouchCheck.CheckTouch (lineNum, _touchInput)*/)
+        if (Input.GetKeyDown(key) || CurrentTouch[lineNum] < TouchEvent.OnTouch[lineNum])
         { //キーの入力が確認できたら
             Debug.Log("Key " + key + " pushed!");
             switch (isInLineLevel) //1：Good，2：Great，3：Perfect，4：Great，5：Good
