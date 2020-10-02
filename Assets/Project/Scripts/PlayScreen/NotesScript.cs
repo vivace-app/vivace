@@ -87,7 +87,7 @@ public class NotesScript : MonoBehaviour
     {
         if (Input.GetKeyDown(key) /*|| TouchCheck.CheckTouch (lineNum, _touchInput)*/)
         { //キーの入力が確認できたら
-            Debug.Log("Key pushed!");
+            Debug.Log("Key " + key + " pushed!");
             switch (isInLineLevel) //1：Good，2：Great，3：Perfect，4：Great，5：Good
             {
                 case 1:
@@ -113,5 +113,25 @@ public class NotesScript : MonoBehaviour
             }
             //_laneEffect[lineNum].PlayLaneEffect ();
         }
+    }
+    public void TouchCheckD()
+    {
+        Debug.Log("lane D touched!");
+    }
+    public void TouchCheckF()
+    {
+        Debug.Log("lane F touched!");
+    }
+    public void TouchCheckG()
+    {
+        Debug.Log("lane G touched!");
+    }
+    public void TouchCheckH()
+    {
+        Debug.Log("lane H touched!");
+    }
+    public void TouchCheckJ()
+    {
+        Debug.Log("lane J touched!");
     }
 }
