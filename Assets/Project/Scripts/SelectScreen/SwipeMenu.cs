@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
@@ -17,13 +18,16 @@ public class SwipeMenu : MonoBehaviour
     public Text DisplayedMusicTime; //画面に表示される楽曲の再生時間
     public Text yourHighScoreText;
     public Text onlineHighScoreText;
+    public ToggleGroup[] toggleGroup;
     private int selectedNumTmp;
+    private string selectedLevelTmp;
 
     // ------------------------------------------------------------------------------------
 
     static readonly string getMyScoreApiUri = EnvDataStore.getMyScoreApiUri;
     static readonly string getOnlineScoreApiUri = EnvDataStore.getOnlineScoreApiUri;
     static readonly bool ignoreNetworkProcess = false; // Allow setting to true only on emulator.
+    static readonly string[] musicTitles = MusicTitleDataStore.musicTitles;
 
     // ------------------------------------------------------------------------------------
 
@@ -50,8 +54,7 @@ public class SwipeMenu : MonoBehaviour
         {
             pos[i] = distance * i;
         }
-        StartCoroutine(MyScoreNetworkProcess());
-        StartCoroutine(OnlineScoreNetworkProcess());
+        GetScoresCotroller(0);
         _AudioSource = GameObject.Find("Music - pre").GetComponents<AudioSource>(); //プレビュー楽曲情報取得
         _fullAudioSource = GameObject.Find("Music - full").GetComponents<AudioSource>(); //フル楽曲情報取得
         for (int j = 0; j < pos.Length; j++)
@@ -149,23 +152,26 @@ public class SwipeMenu : MonoBehaviour
             }
         }
     }
-
     public void GetScoresCotroller(int selectedNum)
     {
-        if (selectedNumTmp != selectedNum)
+        string selectedLabel = toggleGroup[selectedNum].ActiveToggles()
+            .First().GetComponentsInChildren<Text>()
+            .First(t => t.name == "Label").text;
+        if (selectedNumTmp != selectedNum || selectedLabel != selectedLevelTmp)
         {
-            StartCoroutine(MyScoreNetworkProcess());
-            StartCoroutine(OnlineScoreNetworkProcess());
+            StartCoroutine(MyScoreNetworkProcess(musicTitles[selectedNum], selectedLabel));
+            StartCoroutine(OnlineScoreNetworkProcess(musicTitles[selectedNum], selectedLabel));
         }
         selectedNumTmp = selectedNum;
+        selectedLevelTmp = selectedLabel;
     }
 
-    IEnumerator MyScoreNetworkProcess()
+    IEnumerator MyScoreNetworkProcess(string selectedMusic, string selectedLabel)
     {
         WWWForm form = new WWWForm();
         form.AddField("token", PlayerPrefs.GetString("jwt"));
-        form.AddField("music", "shining_star");
-        form.AddField("level", "easy");
+        form.AddField("music", selectedMusic);
+        form.AddField("level", selectedLabel);
         UnityWebRequest www = UnityWebRequest.Post(getMyScoreApiUri, form);
         yield return www.SendWebRequest();
         if (www.isNetworkError)
@@ -183,17 +189,17 @@ public class SwipeMenu : MonoBehaviour
     {
         MyScoreResponse jsnData = JsonUtility.FromJson<MyScoreResponse>(data);
 
-        if (jsnData.success)
+        if (jsnData.success && jsnData.data.Count != 0)
             yourHighScoreText.text = jsnData.data[0].score.ToString();
         else
             yourHighScoreText.text = "--------";
     }
 
-    IEnumerator OnlineScoreNetworkProcess()
+    IEnumerator OnlineScoreNetworkProcess(string selectedMusic, string selectedLabel)
     {
         WWWForm form = new WWWForm();
-        form.AddField("music", "shining_star");
-        form.AddField("level", "easy");
+        form.AddField("music", selectedMusic);
+        form.AddField("level", selectedLabel);
         UnityWebRequest www = UnityWebRequest.Post(getOnlineScoreApiUri, form);
         yield return www.SendWebRequest();
         if (www.isNetworkError)
@@ -211,7 +217,7 @@ public class SwipeMenu : MonoBehaviour
     {
         MyScoreResponse jsnData = JsonUtility.FromJson<MyScoreResponse>(data);
 
-        if (jsnData.success)
+        if (jsnData.success && jsnData.data.Count != 0)
             onlineHighScoreText.text = jsnData.data[0].score.ToString();
         else
             onlineHighScoreText.text = "--------";
