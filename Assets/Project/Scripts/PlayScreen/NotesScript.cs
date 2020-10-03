@@ -8,10 +8,11 @@ public class NotesScript : MonoBehaviour
 
     private int isInLineLevel = 0; //ノーツのタイミング判定レベル変数(1・5：Good，2・4：Great，3：Perfect，0・6：判定なし)
     private PlayScreenProcessManager _gameManager;
-    private KeyCode _lineKey;
-    public int lineNum;
+    private KeyCode _lineKey; //列に対応するキーボードのキー情報
+    public int lineNum; //ノーツの列番号(0~4)
+    public int CurrentTouch = 0; //TouchEvent.OnTouch[]と値が異なるかどうかを判定
     // -- Temporary Variable. -------------------------------------------------------------
-    private float speed = 0.6f;
+    private float speed = 0.6f; //ノーツの落下基準速度
     // ------------------------------------------------------------------------------------
 
     void Start()
@@ -32,7 +33,8 @@ public class NotesScript : MonoBehaviour
                 PlayScreenProcessManager.MissTimingFunc(lineNum); //Missのときの関数
                 Destroy(this.gameObject);
             }
-            if (isInLineLevel >= 1 && PlayScreenProcessManager._autoPlay == false) CheckInput(_lineKey); //キーを押されるかのチェック
+            if (isInLineLevel >= 1 && PlayScreenProcessManager._autoPlay == false) CheckInput(_lineKey); //キー・タッチのチェック
+            else CurrentTouch = TouchEvent.OnTouch[lineNum];
         }
     }
 
@@ -85,9 +87,9 @@ public class NotesScript : MonoBehaviour
 
     void CheckInput(KeyCode key)
     {
-        if (Input.GetKeyDown(key) /*|| TouchCheck.CheckTouch (lineNum, _touchInput)*/)
+        if (Input.GetKeyDown(key) || CurrentTouch < TouchEvent.OnTouch[lineNum])
         { //キーの入力が確認できたら
-            Debug.Log("Key pushed!");
+            //Debug.Log("Key " + key + " pushed!");
             switch (isInLineLevel) //1：Good，2：Great，3：Perfect，4：Great，5：Good
             {
                 case 1:
@@ -111,7 +113,7 @@ public class NotesScript : MonoBehaviour
                     _gameManager.GoodTimingFunc(lineNum); //Goodのときの関数
                     break;
             }
-            //_laneEffect[lineNum].PlayLaneEffect ();
+            CurrentTouch = TouchEvent.OnTouch[lineNum];
         }
     }
 }
