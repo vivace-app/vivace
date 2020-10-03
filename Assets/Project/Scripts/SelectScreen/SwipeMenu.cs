@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
 public class SwipeMenu : MonoBehaviour
 {
@@ -13,6 +15,31 @@ public class SwipeMenu : MonoBehaviour
     private AudioSource[] _fullAudioSource; //フル楽曲情報格納
     private static float[] Musictime; //楽曲の再生時間を格納
     public Text DisplayedMusicTime; //画面に表示される楽曲の再生時間
+    public Text yourHighScoreText;
+    public Text onlineHighScoreText;
+    private int selectedNumTmp;
+
+    // ------------------------------------------------------------------------------------
+
+    static readonly string getMyScoreApiUri = EnvDataStore.getMyScoreApiUri;
+    static readonly string getOnlineScoreApiUri = EnvDataStore.getOnlineScoreApiUri;
+    static readonly bool ignoreNetworkProcess = false; // Allow setting to true only on emulator.
+
+    // ------------------------------------------------------------------------------------
+
+    [Serializable]
+    public class MyScoreResponse
+    {
+        public bool success;
+        public List<ScoreList> data;
+    }
+
+    [Serializable]
+    public class ScoreList
+    {
+        public string name;
+        public int score;
+    }
 
     void Start()
     {
@@ -23,6 +50,8 @@ public class SwipeMenu : MonoBehaviour
         {
             pos[i] = distance * i;
         }
+        StartCoroutine(MyScoreNetworkProcess());
+        StartCoroutine(OnlineScoreNetworkProcess());
         _AudioSource = GameObject.Find("Music - pre").GetComponents<AudioSource>(); //プレビュー楽曲情報取得
         _fullAudioSource = GameObject.Find("Music - full").GetComponents<AudioSource>(); //フル楽曲情報取得
         for (int j = 0; j < pos.Length; j++)
@@ -68,6 +97,8 @@ public class SwipeMenu : MonoBehaviour
                 transform.GetChild(i).Find("PlayMusic").gameObject.SetActive(true);
 
                 SelectedMusic(i); //楽曲再生の実行と停止を行う（1フレーム毎）
+                if (!ignoreNetworkProcess)
+                    GetScoresCotroller(i);
 
                 for (int cnt = 0; cnt < pos.Length; cnt++)
                 {
@@ -117,6 +148,72 @@ public class SwipeMenu : MonoBehaviour
                 }
             }
         }
+    }
 
+    public void GetScoresCotroller(int selectedNum)
+    {
+        if (selectedNumTmp != selectedNum)
+        {
+            StartCoroutine(MyScoreNetworkProcess());
+            StartCoroutine(OnlineScoreNetworkProcess());
+        }
+        selectedNumTmp = selectedNum;
+    }
+
+    IEnumerator MyScoreNetworkProcess()
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("token", PlayerPrefs.GetString("jwt"));
+        form.AddField("music", "shining_star");
+        form.AddField("level", "easy");
+        UnityWebRequest www = UnityWebRequest.Post(getMyScoreApiUri, form);
+        yield return www.SendWebRequest();
+        if (www.isNetworkError)
+        {
+            Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
+            yourHighScoreText.text = "--------";
+        }
+        else
+        {
+            ApplyMyScore(www.downloadHandler.text);
+        }
+    }
+
+    private void ApplyMyScore(string data)
+    {
+        MyScoreResponse jsnData = JsonUtility.FromJson<MyScoreResponse>(data);
+
+        if (jsnData.success)
+            yourHighScoreText.text = jsnData.data[0].score.ToString();
+        else
+            yourHighScoreText.text = "--------";
+    }
+
+    IEnumerator OnlineScoreNetworkProcess()
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("music", "shining_star");
+        form.AddField("level", "easy");
+        UnityWebRequest www = UnityWebRequest.Post(getOnlineScoreApiUri, form);
+        yield return www.SendWebRequest();
+        if (www.isNetworkError)
+        {
+            Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
+            onlineHighScoreText.text = "--------";
+        }
+        else
+        {
+            ApplyOnlineScore(www.downloadHandler.text);
+        }
+    }
+
+    private void ApplyOnlineScore(string data)
+    {
+        MyScoreResponse jsnData = JsonUtility.FromJson<MyScoreResponse>(data);
+
+        if (jsnData.success)
+            onlineHighScoreText.text = jsnData.data[0].score.ToString();
+        else
+            onlineHighScoreText.text = "--------";
     }
 }
