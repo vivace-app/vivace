@@ -5,18 +5,8 @@ using UnityEngine;
 public class TouchEvent : MonoBehaviour
 {
     public static int[] OnTouch = { 0, 0, 0, 0, 0 };
-    // Start is called before the first frame update
-    void Start()
-    {
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-    public void Touch(int num)
+    public void Touch(int num) //クリック・タッチ中
     {
         switch (num)
         {
@@ -37,9 +27,10 @@ public class TouchEvent : MonoBehaviour
                 break;
         }
         OnTouch[num] = 1;
+        Debug.Log(OnTouch);
     }
 
-    public void Up(int num)
+    public void Up(int num) //クリックまたはタッチを離したとき
     {
         switch (num)
         {
