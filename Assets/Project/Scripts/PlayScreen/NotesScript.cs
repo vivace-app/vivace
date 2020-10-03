@@ -10,7 +10,7 @@ public class NotesScript : MonoBehaviour
     private PlayScreenProcessManager _gameManager;
     private KeyCode _lineKey; //列に対応するキーボードのキー情報
     public int lineNum; //ノーツの列番号(0~4)
-    public int[] CurrentTouch = { 0, 0, 0, 0, 0 }; //TouchEvent.OnTouch[]と値が異なるかどうかを判定
+    public int CurrentTouch = 0; //TouchEvent.OnTouch[]と値が異なるかどうかを判定
     // -- Temporary Variable. -------------------------------------------------------------
     private float speed = 0.6f; //ノーツの落下基準速度
     // ------------------------------------------------------------------------------------
@@ -34,6 +34,7 @@ public class NotesScript : MonoBehaviour
                 Destroy(this.gameObject);
             }
             if (isInLineLevel >= 1 && PlayScreenProcessManager._autoPlay == false) CheckInput(_lineKey); //キー・タッチのチェック
+            else CurrentTouch = TouchEvent.OnTouch[lineNum];
         }
     }
 
@@ -86,7 +87,7 @@ public class NotesScript : MonoBehaviour
 
     void CheckInput(KeyCode key)
     {
-        if (Input.GetKeyDown(key) || CurrentTouch[lineNum] < TouchEvent.OnTouch[lineNum])
+        if (Input.GetKeyDown(key) || CurrentTouch < TouchEvent.OnTouch[lineNum])
         { //キーの入力が確認できたら
             Debug.Log("Key " + key + " pushed!");
             switch (isInLineLevel) //1：Good，2：Great，3：Perfect，4：Great，5：Good
@@ -112,7 +113,7 @@ public class NotesScript : MonoBehaviour
                     _gameManager.GoodTimingFunc(lineNum); //Goodのときの関数
                     break;
             }
-            CurrentTouch = TouchEvent.OnTouch;
+            CurrentTouch = TouchEvent.OnTouch[lineNum];
         }
     }
 }
