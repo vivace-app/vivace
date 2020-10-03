@@ -27,7 +27,6 @@ public class TouchEvent : MonoBehaviour
                 break;
         }
         OnTouch[num] = 1;
-        Debug.Log(OnTouch);
     }
 
     public void Up(int num) //クリックまたはタッチを離したとき

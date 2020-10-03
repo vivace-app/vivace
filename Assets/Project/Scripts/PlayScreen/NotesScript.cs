@@ -89,7 +89,7 @@ public class NotesScript : MonoBehaviour
     {
         if (Input.GetKeyDown(key) || CurrentTouch < TouchEvent.OnTouch[lineNum])
         { //キーの入力が確認できたら
-            Debug.Log("Key " + key + " pushed!");
+            //Debug.Log("Key " + key + " pushed!");
             switch (isInLineLevel) //1：Good，2：Great，3：Perfect，4：Great，5：Good
             {
                 case 1:
