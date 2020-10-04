@@ -1,7 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
 public class SwipeMenu : MonoBehaviour
 {
@@ -13,6 +16,34 @@ public class SwipeMenu : MonoBehaviour
     private AudioSource[] _fullAudioSource; //フル楽曲情報格納
     private static float[] Musictime; //楽曲の再生時間を格納
     public Text DisplayedMusicTime; //画面に表示される楽曲の再生時間
+    public Text yourHighScoreText;
+    public Text onlineHighScoreText;
+    public ToggleGroup[] toggleGroup;
+    private int selectedNumTmp;
+    private string selectedLevelTmp;
+
+    // ------------------------------------------------------------------------------------
+
+    static readonly string getMyScoreApiUri = EnvDataStore.getMyScoreApiUri;
+    static readonly string getOnlineScoreApiUri = EnvDataStore.getOnlineScoreApiUri;
+    static readonly bool ignoreNetworkProcess = false; // Allow setting to true only on emulator.
+    static readonly string[] musicTitles = MusicTitleDataStore.musicTitles;
+
+    // ------------------------------------------------------------------------------------
+
+    [Serializable]
+    public class MyScoreResponse
+    {
+        public bool success;
+        public List<ScoreList> data;
+    }
+
+    [Serializable]
+    public class ScoreList
+    {
+        public string name;
+        public int score;
+    }
 
     void Start()
     {
@@ -23,6 +54,7 @@ public class SwipeMenu : MonoBehaviour
         {
             pos[i] = distance * i;
         }
+        GetScoresCotroller(0);
         _AudioSource = GameObject.Find("Music - pre").GetComponents<AudioSource>(); //プレビュー楽曲情報取得
         _fullAudioSource = GameObject.Find("Music - full").GetComponents<AudioSource>(); //フル楽曲情報取得
         for (int j = 0; j < pos.Length; j++)
@@ -68,6 +100,8 @@ public class SwipeMenu : MonoBehaviour
                 transform.GetChild(i).Find("PlayMusic").gameObject.SetActive(true);
 
                 SelectedMusic(i); //楽曲再生の実行と停止を行う（1フレーム毎）
+                if (!ignoreNetworkProcess)
+                    GetScoresCotroller(i);
 
                 for (int cnt = 0; cnt < pos.Length; cnt++)
                 {
@@ -117,6 +151,75 @@ public class SwipeMenu : MonoBehaviour
                 }
             }
         }
+    }
+    public void GetScoresCotroller(int selectedNum)
+    {
+        string selectedLabel = toggleGroup[selectedNum].ActiveToggles()
+            .First().GetComponentsInChildren<Text>()
+            .First(t => t.name == "Label").text;
+        if (selectedNumTmp != selectedNum || selectedLabel != selectedLevelTmp)
+        {
+            StartCoroutine(MyScoreNetworkProcess(musicTitles[selectedNum], selectedLabel));
+            StartCoroutine(OnlineScoreNetworkProcess(musicTitles[selectedNum], selectedLabel));
+        }
+        selectedNumTmp = selectedNum;
+        selectedLevelTmp = selectedLabel;
+    }
 
+    IEnumerator MyScoreNetworkProcess(string selectedMusic, string selectedLabel)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("token", PlayerPrefs.GetString("jwt"));
+        form.AddField("music", selectedMusic);
+        form.AddField("level", selectedLabel);
+        UnityWebRequest www = UnityWebRequest.Post(getMyScoreApiUri, form);
+        yield return www.SendWebRequest();
+        if (www.isNetworkError)
+        {
+            Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
+            yourHighScoreText.text = "--------";
+        }
+        else
+        {
+            ApplyMyScore(www.downloadHandler.text);
+        }
+    }
+
+    private void ApplyMyScore(string data)
+    {
+        MyScoreResponse jsnData = JsonUtility.FromJson<MyScoreResponse>(data);
+
+        if (jsnData.success && jsnData.data.Count != 0)
+            yourHighScoreText.text = jsnData.data[0].score.ToString();
+        else
+            yourHighScoreText.text = "--------";
+    }
+
+    IEnumerator OnlineScoreNetworkProcess(string selectedMusic, string selectedLabel)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("music", selectedMusic);
+        form.AddField("level", selectedLabel);
+        UnityWebRequest www = UnityWebRequest.Post(getOnlineScoreApiUri, form);
+        yield return www.SendWebRequest();
+        if (www.isNetworkError)
+        {
+            Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
+            onlineHighScoreText.text = "--------";
+        }
+        else
+        {
+            ApplyOnlineScore(www.downloadHandler.text);
+        }
+    }
+
+    private void ApplyOnlineScore(string data)
+    {
+        MyScoreResponse jsnData = JsonUtility.FromJson<MyScoreResponse>(data);
+
+        if (jsnData.success && jsnData.data.Count != 0)
+            onlineHighScoreText.text = jsnData.data[0].score.ToString();
+        else
+            onlineHighScoreText.text = "--------";
     }
 }
