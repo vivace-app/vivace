@@ -19,7 +19,7 @@ public class SwipeMenu : MonoBehaviour
     public Text yourHighScoreText;
     public Text onlineHighScoreText;
     public ToggleGroup[] toggleGroup;
-    private int selectedNumTmp;
+    public static int selectedNumTmp;
     private string selectedLevelTmp;
 
     // ------------------------------------------------------------------------------------

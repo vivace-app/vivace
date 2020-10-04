@@ -38,6 +38,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     // ------------------------------------------------------------------------------------
 
     static readonly string registScoreApiUri = EnvDataStore.registScoreApiUri;
+    static readonly string[] musicTitles = MusicTitleDataStore.musicTitles;
 
     // ------------------------------------------------------------------------------------
 
@@ -78,6 +79,9 @@ public class PlayScreenProcessManager : MonoBehaviour
         _audioSource.Play();
         await Task.Delay(10); //playedFlagの変数代入をずらして誤作動を防止
         playedFlag = true; //楽曲が1回以上再生されたことを確認
+
+        await Task.Delay(7000);
+        ChangeScene();
     }
 
     void Update()
@@ -302,7 +306,8 @@ public class PlayScreenProcessManager : MonoBehaviour
         r_greats = _greats;
         r_goods = _goods;
         r_misss = _misss;
-        StartCoroutine(RegistScoreNetworkProcess("shining_star", "easy", 100));
+        Debug.Log("score: " + r_score);
+        StartCoroutine(RegistScoreNetworkProcess(musicTitles[SwipeMenu.selectedNumTmp], SelectScreenProcessManager.selectedLevel, (int)r_score));
         Debug.Log("3秒後にスコア画面に移行します．");
         await Task.Delay(3000);
         SceneManager.LoadScene("ResultScene");
