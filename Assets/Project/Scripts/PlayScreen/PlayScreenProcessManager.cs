@@ -79,9 +79,6 @@ public class PlayScreenProcessManager : MonoBehaviour
         _audioSource.Play();
         await Task.Delay(10); //playedFlagの変数代入をずらして誤作動を防止
         playedFlag = true; //楽曲が1回以上再生されたことを確認
-
-        await Task.Delay(7000);
-        ChangeScene();
     }
 
     void Update()
