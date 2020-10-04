@@ -10,8 +10,8 @@ using UnityEngine.SceneManagement;
 public class ResultScreenProcessManager : MonoBehaviour
 {
     // --- TEMP ---------------------------------------------------------------------------
-    string musicTitle = "shining_star";
-    string musicLevel = "easy";
+    // string musicTitle = "shining_star";
+    // string musicLevel = "easy";
     // ------------------------------------------------------------------------------------
 
     public Text[] scoreListName = new Text[9];
@@ -21,6 +21,7 @@ public class ResultScreenProcessManager : MonoBehaviour
     // ------------------------------------------------------------------------------------
 
     static readonly string topTenScoreApiUri = EnvDataStore.topTenScoreApiUri;
+    static readonly string[] musicTitles = MusicTitleDataStore.musicTitles;
 
     // ------------------------------------------------------------------------------------
 
@@ -75,8 +76,8 @@ public class ResultScreenProcessManager : MonoBehaviour
     IEnumerator GetTopTenNetworkProcess()
     {
         WWWForm form = new WWWForm();
-        form.AddField("music", musicTitle);
-        form.AddField("level", musicLevel);
+        form.AddField("music", musicTitles[SwipeMenu.selectedNumTmp]);
+        form.AddField("level", SelectScreenProcessManager.selectedLevel);
         UnityWebRequest www = UnityWebRequest.Post(topTenScoreApiUri, form);
         yield return www.SendWebRequest();
         if (www.isNetworkError || www.isHttpError)

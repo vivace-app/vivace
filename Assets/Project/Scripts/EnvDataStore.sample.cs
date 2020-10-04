@@ -7,4 +7,5 @@ public static class EnvDataStoreSample
     public static readonly string topTenScoreApiUri = "https://api.sample-domain.com/v3.0/topTenScore";
     public static readonly string getOnlineScoreApiUri = "https://api.sample-domain.com/v3.0/topScore";
     public static readonly string getMyScoreApiUri = "https://api.sample-domain.com/v3.0/auth/myScore";
+    public static readonly string registScoreApiUri = "https://api.sample-domain.com/v3.0/auth/registScore";
 }

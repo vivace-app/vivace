@@ -4,6 +4,7 @@ using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
 
@@ -34,9 +35,23 @@ public class PlayScreenProcessManager : MonoBehaviour
     public int JTextUsed = 0; //JudgeTextのtextを変更した回数
     public Tweener JTextFade, JTextReduce, ATextFade, ATextReduce; //消失/縮小(判定表示)，消失/縮小(加算表示)アニメーションにTweenerを付与
 
+    // ------------------------------------------------------------------------------------
+
+    static readonly string registScoreApiUri = EnvDataStore.registScoreApiUri;
+    static readonly string[] musicTitles = MusicTitleDataStore.musicTitles;
+
+    // ------------------------------------------------------------------------------------
+
     // -- Temporary Variable. -------------------------------------------------------------
     private string csvFilePass = "CSV/BurningHeart";
     // ------------------------------------------------------------------------------------
+
+    [Serializable]
+    public class RegistScoreResponse
+    {
+        public bool success;
+        public string msg;
+    }
 
     async void Start()
     {
@@ -288,8 +303,39 @@ public class PlayScreenProcessManager : MonoBehaviour
         r_greats = _greats;
         r_goods = _goods;
         r_misss = _misss;
+        Debug.Log("score: " + r_score);
+        StartCoroutine(RegistScoreNetworkProcess(musicTitles[SwipeMenu.selectedNumTmp], SelectScreenProcessManager.selectedLevel, (int)r_score));
         Debug.Log("3秒後にスコア画面に移行します．");
         await Task.Delay(3000);
         SceneManager.LoadScene("ResultScene");
+    }
+
+    IEnumerator RegistScoreNetworkProcess(string selectedMusic, string selectedLevel, int score)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("token", PlayerPrefs.GetString("jwt"));
+        form.AddField("music", selectedMusic);
+        form.AddField("level", selectedLevel);
+        form.AddField("score", score);
+        UnityWebRequest www = UnityWebRequest.Post(registScoreApiUri, form);
+        yield return www.SendWebRequest();
+        if (www.isNetworkError)
+        {
+            Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
+        }
+        else
+        {
+            ResponseCheck(www.downloadHandler.text);
+        }
+    }
+
+    private void ResponseCheck(string data)
+    {
+        RegistScoreResponse jsnData = JsonUtility.FromJson<RegistScoreResponse>(data);
+
+        if (jsnData.success)
+            Debug.Log("スコアを登録しました");
+        else
+            Debug.Log("スコアの登録に失敗しました");
     }
 }

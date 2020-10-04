@@ -19,7 +19,7 @@ public class SwipeMenu : MonoBehaviour
     public Text yourHighScoreText;
     public Text onlineHighScoreText;
     public ToggleGroup[] toggleGroup;
-    private int selectedNumTmp;
+    public static int selectedNumTmp;
     private string selectedLevelTmp;
 
     // ------------------------------------------------------------------------------------
@@ -154,24 +154,24 @@ public class SwipeMenu : MonoBehaviour
     }
     public void GetScoresCotroller(int selectedNum)
     {
-        string selectedLabel = toggleGroup[selectedNum].ActiveToggles()
+        string selectedLevel = toggleGroup[selectedNum].ActiveToggles()
             .First().GetComponentsInChildren<Text>()
             .First(t => t.name == "Label").text;
-        if (selectedNumTmp != selectedNum || selectedLabel != selectedLevelTmp)
+        if (selectedNumTmp != selectedNum || selectedLevel != selectedLevelTmp)
         {
-            StartCoroutine(MyScoreNetworkProcess(musicTitles[selectedNum], selectedLabel));
-            StartCoroutine(OnlineScoreNetworkProcess(musicTitles[selectedNum], selectedLabel));
+            StartCoroutine(MyScoreNetworkProcess(musicTitles[selectedNum], selectedLevel));
+            StartCoroutine(OnlineScoreNetworkProcess(musicTitles[selectedNum], selectedLevel));
         }
         selectedNumTmp = selectedNum;
-        selectedLevelTmp = selectedLabel;
+        selectedLevelTmp = selectedLevel;
     }
 
-    IEnumerator MyScoreNetworkProcess(string selectedMusic, string selectedLabel)
+    IEnumerator MyScoreNetworkProcess(string selectedMusic, string selectedLevel)
     {
         WWWForm form = new WWWForm();
         form.AddField("token", PlayerPrefs.GetString("jwt"));
         form.AddField("music", selectedMusic);
-        form.AddField("level", selectedLabel);
+        form.AddField("level", selectedLevel);
         UnityWebRequest www = UnityWebRequest.Post(getMyScoreApiUri, form);
         yield return www.SendWebRequest();
         if (www.isNetworkError)
@@ -195,11 +195,11 @@ public class SwipeMenu : MonoBehaviour
             yourHighScoreText.text = "--------";
     }
 
-    IEnumerator OnlineScoreNetworkProcess(string selectedMusic, string selectedLabel)
+    IEnumerator OnlineScoreNetworkProcess(string selectedMusic, string selectedLevel)
     {
         WWWForm form = new WWWForm();
         form.AddField("music", selectedMusic);
-        form.AddField("level", selectedLabel);
+        form.AddField("level", selectedLevel);
         UnityWebRequest www = UnityWebRequest.Post(getOnlineScoreApiUri, form);
         yield return www.SendWebRequest();
         if (www.isNetworkError)

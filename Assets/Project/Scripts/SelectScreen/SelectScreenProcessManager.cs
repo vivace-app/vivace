@@ -8,6 +8,7 @@ using System.Linq;
 public class SelectScreenProcessManager : MonoBehaviour
 {
     public ToggleGroup toggleGroup;
+    public static string selectedLevel;
 
     private async void ScreenTransition()
     {
@@ -18,11 +19,11 @@ public class SelectScreenProcessManager : MonoBehaviour
 
     public void PlayButtonTappedController()
     {
-        string selectedLabel = toggleGroup.ActiveToggles()
+        selectedLevel = toggleGroup.ActiveToggles()
             .First().GetComponentsInChildren<Text>()
             .First(t => t.name == "Label").text;
 
-        Debug.Log("selected " + selectedLabel);
+        Debug.Log("selected " + selectedLevel);
         ScreenTransition();
     }
 }
