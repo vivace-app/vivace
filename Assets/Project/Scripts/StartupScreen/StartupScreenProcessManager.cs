@@ -389,7 +389,7 @@ public class StartupScreenProcessManager : MonoBehaviour
             case 0:
                 this.registerTitle.text = "ENTER  YOUR  NAME";
                 this.registerText.text = "";
-                this.registerPlaceholder.text = "Your Name...";
+                this.registerPlaceholder.text = "Half-Width Alphanumeric...";
                 this.registerBottom.text = "Do you have Recovery Code ?";
                 this.showConnecting.text = "";
                 registerPanel.SetActive(true);
