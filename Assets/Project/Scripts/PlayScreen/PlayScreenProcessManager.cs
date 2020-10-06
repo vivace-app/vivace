@@ -39,12 +39,10 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     static readonly string registScoreApiUri = EnvDataStore.registScoreApiUri;
     static readonly string[] musicTitles = MusicTitleDataStore.musicTitles;
+    private string csvFilePass = "CSV/" + musicTitles[SwipeMenu.selectedNumTmp] + "_" + SelectScreenProcessManager.selectedLevel;
 
     // ------------------------------------------------------------------------------------
 
-    // -- Temporary Variable. -------------------------------------------------------------
-    private string csvFilePass = "CSV/BurningHeart";
-    // ------------------------------------------------------------------------------------
 
     [Serializable]
     public class RegistScoreResponse

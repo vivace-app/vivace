@@ -152,6 +152,7 @@ public class SwipeMenu : MonoBehaviour
             }
         }
     }
+
     public void GetScoresCotroller(int selectedNum)
     {
         string selectedLevel = toggleGroup[selectedNum].ActiveToggles()
