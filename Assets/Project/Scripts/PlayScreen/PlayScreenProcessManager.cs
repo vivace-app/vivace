@@ -11,6 +11,7 @@ using DG.Tweening;
 public class PlayScreenProcessManager : MonoBehaviour
 {
     private AudioSource _audioSource;
+    private AudioClip _music;
     public GameObject[] Note;
     public Text ComboText, ScoreText, JudgeText, AddText;
     private string Perfect16 = "#FF7DF2", Great16 = "#FF9C7D", Good16 = "#34E045", Miss16 = "#8D8D8D", Score16 = "#6C95FF"; //ResultScreenの色を拝借
@@ -68,8 +69,11 @@ public class PlayScreenProcessManager : MonoBehaviour
         ColorUtility.TryParseHtmlString(Score16, out Score_c);
         AdjustJudgeRange(); //ノーツ落下速度に合わせて判定オブジェクトの高さを変化
         delay_time = 12800 / _notesSpeedIndex; //遅延開始時間の計算
-        _audioSource = GameObject.Find("Music").GetComponent<AudioSource>();
+        _music = Resources.Load<AudioClip>("music/HarunoOtozure");
+        // _audioSource = GameObject.Find("Music").GetComponent<AudioSource>();
+        _audioSource = gameObject.AddComponent<AudioSource>();
         _SoundEffects = GameObject.Find("SoundEffect").GetComponents<AudioSource>();
+        _audioSource.clip = _music;
         await Task.Delay(1000); //処理落ちによるトラブル防止
         LoadCSV();
         _startTime = Time.time;
