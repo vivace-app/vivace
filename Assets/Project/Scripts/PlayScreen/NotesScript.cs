@@ -28,7 +28,7 @@ public class NotesScript : MonoBehaviour
         if (PlayScreenProcessManager._isPlaying == true) //プレイ中のとき
         {
             this.transform.position += (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * Time.deltaTime * speed * PlayScreenProcessManager._notesSpeedIndex;
-            if (this.transform.position.z < -9.3)
+            if (this.transform.position.z < -12)
             {
                 PlayScreenProcessManager.MissTimingFunc(lineNum); //Missのときの関数
                 Destroy(this.gameObject);
