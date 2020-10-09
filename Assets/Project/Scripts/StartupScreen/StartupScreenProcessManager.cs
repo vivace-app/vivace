@@ -11,7 +11,7 @@ using System.Text;
 public class StartupScreenProcessManager : MonoBehaviour
 {
 
-    public AudioSource audioSource;
+    private AudioSource audioSource;
     public AudioClip sound;
     public GameObject panel = null;
     public Text showVersion;

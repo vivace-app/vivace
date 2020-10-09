@@ -127,14 +127,14 @@ public class ResultScreenProcessManager : MonoBehaviour
     }
     private async void CountsDelayer()
     {
-        CountsAnime(15, PlayScreenProcessManager.r_perfects, RsltPerfects);
+        CountsAnime(15, PlayScreenProcessManager.res_perfects, RsltPerfects);
         await Task.Delay(250);
-        CountsAnime(15, PlayScreenProcessManager.r_greats, RsltGreats);
+        CountsAnime(15, PlayScreenProcessManager.res_greats, RsltGreats);
         await Task.Delay(250);
-        CountsAnime(15, PlayScreenProcessManager.r_goods, RsltGoods);
+        CountsAnime(15, PlayScreenProcessManager.res_goods, RsltGoods);
         await Task.Delay(250);
-        CountsAnime(15, PlayScreenProcessManager.r_misss, RsltMisss);
+        CountsAnime(15, PlayScreenProcessManager.res_misss, RsltMisss);
         await Task.Delay(250);
-        CountsAnime(45, PlayScreenProcessManager.r_score, RsltTotal);
+        CountsAnime(45, PlayScreenProcessManager.res_score, RsltTotal);
     }
 }
