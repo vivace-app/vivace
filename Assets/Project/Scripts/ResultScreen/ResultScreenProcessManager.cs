@@ -9,14 +9,9 @@ using UnityEngine.SceneManagement;
 
 public class ResultScreenProcessManager : MonoBehaviour
 {
-    // --- TEMP ---------------------------------------------------------------------------
-    // string musicTitle = "shining_star";
-    // string musicLevel = "easy";
-    // ------------------------------------------------------------------------------------
-
-    public Text[] scoreListName = new Text[9];
-    public Text[] scoreListScore = new Text[9];
-    public Text RsltPerfects, RsltGreats, RsltGoods, RsltMisss, RsltTotal;
+    public Text[] ScoreListName = new Text[9];
+    public Text[] ScoreListScore = new Text[9];
+    public Text Res_Perfects, Res_Greats, Res_Goods, Res_Misss, Res_Total;
 
     // ------------------------------------------------------------------------------------
 
@@ -41,14 +36,6 @@ public class ResultScreenProcessManager : MonoBehaviour
 
     private void Start()
     {
-        // --- TEMP ---------------------------------------------------------------------------
-        //PlayScreenProcessManager.r_perfects = 100;
-        //PlayScreenProcessManager.r_greats = 63;
-        //PlayScreenProcessManager.r_goods = 37;
-        //PlayScreenProcessManager.r_misss = 17;
-        //PlayScreenProcessManager.r_score = 867553;
-        // ------------------------------------------------------------------------------------
-
         StartCoroutine(GetTopTenNetworkProcess());
         CountsDelayer();
     }
@@ -99,42 +86,48 @@ public class ResultScreenProcessManager : MonoBehaviour
             int cnt = 0;
             foreach (scoreList x in jsnData.data)
             {
-                scoreListName[cnt].text = x.name;
-                scoreListScore[cnt++].text = x.score.ToString();
+                ScoreListName[cnt].text = x.name;
+                ScoreListScore[cnt++].text = x.score.ToString();
             }
             for (int i = cnt; i < 9; i++)
             {
-                scoreListName[i].text = "-";
-                scoreListScore[i].text = "-";
+                ScoreListName[i].text = "-";
+                ScoreListScore[i].text = "-";
             }
         }
-        else if (!jsnData.success)
+        else
         {
+            for (int i = 0; i < 9; i++)
+            {
+                ScoreListName[i].text = "-";
+                ScoreListScore[i].text = "-";
+            }
             Debug.LogError("データの取得に失敗しました．");
         }
     }
-    private async void CountsAnime(int sep, double value, Text scoreboard)
-    {
-        double valueshow = 0;
-        scoreboard.text = ((int)Math.Round(valueshow, 0, MidpointRounding.AwayFromZero)).ToString("D"); //表示を初期化
 
-        for (int i = 0; i < sep; i++) //sep分割したものを33ミリ秒ごとにsep回加算()
+    private async void CountsAnimation(int sep, double value, Text scoreboard)
+    {
+        double valueShow = 0;
+
+        for (int i = 0; i <= sep; i++) //sep分割したものを33ミリ秒ごとにsep回加算()
         {
-            valueshow += value / sep;
-            scoreboard.text = ((int)Math.Round(valueshow, 0, MidpointRounding.AwayFromZero)).ToString("D"); //四捨五入して型変換を行い表示を更新
+            scoreboard.text = ((int)Math.Round(valueShow, 0, MidpointRounding.AwayFromZero)).ToString("D");
+            valueShow += value / sep;
             await Task.Delay(33);
         }
     }
+
     private async void CountsDelayer()
     {
-        CountsAnime(15, PlayScreenProcessManager.res_perfects, RsltPerfects);
+        CountsAnimation(15, PlayScreenProcessManager.res_perfects, Res_Perfects);
         await Task.Delay(250);
-        CountsAnime(15, PlayScreenProcessManager.res_greats, RsltGreats);
+        CountsAnimation(15, PlayScreenProcessManager.res_greats, Res_Greats);
         await Task.Delay(250);
-        CountsAnime(15, PlayScreenProcessManager.res_goods, RsltGoods);
+        CountsAnimation(15, PlayScreenProcessManager.res_goods, Res_Goods);
         await Task.Delay(250);
-        CountsAnime(15, PlayScreenProcessManager.res_misss, RsltMisss);
+        CountsAnimation(15, PlayScreenProcessManager.res_misss, Res_Misss);
         await Task.Delay(250);
-        CountsAnime(45, PlayScreenProcessManager.res_score, RsltTotal);
+        CountsAnimation(45, PlayScreenProcessManager.res_score, Res_Total);
     }
 }

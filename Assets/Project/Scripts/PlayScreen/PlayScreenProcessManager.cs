@@ -69,7 +69,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         ColorUtility.TryParseHtmlString(Miss16, out Miss_c);
         ColorUtility.TryParseHtmlString(Score16, out Score_c);
         AdjustJudgeRange(); //ノーツ落下速度に合わせて判定オブジェクトの高さを変化
-        _music = Resources.Load<AudioClip>("music/HarunoOtozure");
+        _music = Resources.Load<AudioClip>("music/BurningHeart");
         _audioSource = gameObject.AddComponent<AudioSource>();
         _audioSource.clip = _music;
         _SoundEffects = GameObject.Find("SoundEffect").GetComponents<AudioSource>();
