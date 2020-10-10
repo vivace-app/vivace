@@ -40,6 +40,16 @@ public static class MusicTitleDataStore
         { false , false , false , false },  // crystatus
     };
 
+    public static readonly string[] musicNames = {
+        //Music Names
+        "temp",
+    };
+
+    public static readonly string[] musicArtists = {
+        //Music Artists
+        "temp",
+    };
+
     public static readonly string[] musicGenres = {
         //Music Genres
         "temp",
