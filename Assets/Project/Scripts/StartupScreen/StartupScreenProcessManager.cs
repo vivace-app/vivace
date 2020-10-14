@@ -118,14 +118,9 @@ public class StartupScreenProcessManager : MonoBehaviour
             UnityWebRequest www = UnityWebRequest.Get(licenceApiUri);
             yield return www.SendWebRequest();
             if (www.isNetworkError || www.isHttpError)
-            {
-                Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
                 ShowDialog(1, 0);
-            }
             else
-            {
                 LicenseCheck(www.downloadHandler.text);
-            }
         }
     }
 
@@ -156,13 +151,11 @@ public class StartupScreenProcessManager : MonoBehaviour
                     dtServer = DateTime.Parse(x.expirationDate);
                     if (dtServer - dtLocal < new TimeSpan(0, 0, 0))
                     {
-                        Debug.LogError("このバージョンのサポートは終了しています．");
                         ShowDialog(3, 0);
                         break;
                     }
                     else
                     {
-                        Debug.LogError("最新版が更新されています．このバージョンの有効期限はあと" + (dtServer - dtLocal).Days + "日です．");
                         _playableFlag = true;
                         ShowDialog(0, (dtServer - dtLocal).Days);
                         break;
@@ -173,16 +166,12 @@ public class StartupScreenProcessManager : MonoBehaviour
         else
         {
             this.showConnecting.text = "";
-            Debug.LogError("ネットワークに接続できません．");
             ShowDialog(1, 0);
         }
     }
 
     private async void ScreenTransition()
     {
-        Debug.Log("NAME: " + PlayerPrefs.GetString("name"));
-        Debug.Log("NAME: " + PlayerPrefs.GetString("jwt"));
-        Debug.Log("難しさを選ぶドン！");
         await Task.Delay(1000);
         SceneManager.LoadScene("SelectScene");
     }
@@ -190,13 +179,9 @@ public class StartupScreenProcessManager : MonoBehaviour
     public void ButtonTappedController()
     {
         if (_playableFlag)
-        {
             UserCheck();
-        }
         else
-        {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
     }
 
     public void UserCheck()
@@ -260,7 +245,6 @@ public class StartupScreenProcessManager : MonoBehaviour
     {
         if (_continueButtonFlag)
         {
-            Debug.Log("Continued!");
             _continueButtonFlag = false; //Continueボタンの連打を禁止
             if (_isRecoveryMode)
                 StartCoroutine(RecoveryNetworkProcess());
@@ -294,7 +278,6 @@ public class StartupScreenProcessManager : MonoBehaviour
             yield return www.SendWebRequest();
             if (www.isNetworkError)
             {
-                Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
                 ShowDialog(1, 0);
                 _continueButtonFlag = true; //Continueボタンを再度有効化
             }
@@ -341,7 +324,6 @@ public class StartupScreenProcessManager : MonoBehaviour
             yield return www.SendWebRequest();
             if (www.isNetworkError)
             {
-                Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
                 ShowDialog(1, 0);
                 _continueButtonFlag = true; //Continueボタンを再度有効化
             }

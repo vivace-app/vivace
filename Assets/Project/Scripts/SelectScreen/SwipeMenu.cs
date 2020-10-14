@@ -26,7 +26,6 @@ public class SwipeMenu : MonoBehaviour
 
     static readonly string getMyScoreApiUri = EnvDataStore.getMyScoreApiUri;
     static readonly string getOnlineScoreApiUri = EnvDataStore.getOnlineScoreApiUri;
-    static readonly bool ignoreNetworkProcess = false; // Allow setting to true only on emulator.
     static readonly string[] musicTitles = MusicTitleDataStore.musicTitles;
 
     // ------------------------------------------------------------------------------------
@@ -51,17 +50,12 @@ public class SwipeMenu : MonoBehaviour
         Musictime = new float[transform.childCount];
         distance = 1f / (pos.Length - 1f);
         for (int i = 0; i < pos.Length; i++)
-        {
             pos[i] = distance * i;
-        }
         GetScoresCotroller(0);
         _AudioSource = GameObject.Find("Music - pre").GetComponents<AudioSource>(); //プレビュー楽曲情報取得
         _fullAudioSource = GameObject.Find("Music - full").GetComponents<AudioSource>(); //フル楽曲情報取得
         for (int j = 0; j < pos.Length; j++)
-        {
             Musictime[j] = _fullAudioSource[j].clip.length;
-            //Debug.Log(Musictime[j]); //取得した楽曲再生時間情報を格納
-        }
     }
 
     void Update()
@@ -75,9 +69,7 @@ public class SwipeMenu : MonoBehaviour
             for (int i = 0; i < pos.Length; i++)
             {
                 if (scroll_pos < pos[i] + (distance / 2) && scroll_pos > pos[i] - (distance / 2))
-                {
                     scrollbar.GetComponent<Scrollbar>().value = Mathf.Lerp(scrollbar.GetComponent<Scrollbar>().value, pos[i], 0.1f);
-                }
             }
         }
         for (int i = 0; i < pos.Length; i++)
@@ -100,8 +92,7 @@ public class SwipeMenu : MonoBehaviour
                 transform.GetChild(i).Find("PlayMusic").gameObject.SetActive(true);
 
                 SelectedMusic(i); //楽曲再生の実行と停止を行う（1フレーム毎）
-                if (!ignoreNetworkProcess)
-                    GetScoresCotroller(i);
+                GetScoresCotroller(i);
 
                 for (int cnt = 0; cnt < pos.Length; cnt++)
                 {
@@ -146,9 +137,7 @@ public class SwipeMenu : MonoBehaviour
             else
             {
                 if (_AudioSource[i].isPlaying == true) //非選択の楽曲がプレビュー再生されているとき
-                {
                     _AudioSource[i].Stop(); //非選択の楽曲の再生を停止
-                }
             }
         }
     }
@@ -176,14 +165,9 @@ public class SwipeMenu : MonoBehaviour
         UnityWebRequest www = UnityWebRequest.Post(getMyScoreApiUri, form);
         yield return www.SendWebRequest();
         if (www.isNetworkError)
-        {
-            Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
             yourHighScoreText.text = "--------";
-        }
         else
-        {
             ApplyMyScore(www.downloadHandler.text);
-        }
     }
 
     private void ApplyMyScore(string data)
@@ -204,14 +188,9 @@ public class SwipeMenu : MonoBehaviour
         UnityWebRequest www = UnityWebRequest.Post(getOnlineScoreApiUri, form);
         yield return www.SendWebRequest();
         if (www.isNetworkError)
-        {
-            Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
             onlineHighScoreText.text = "--------";
-        }
         else
-        {
             ApplyOnlineScore(www.downloadHandler.text);
-        }
     }
 
     private void ApplyOnlineScore(string data)

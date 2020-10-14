@@ -19,19 +19,14 @@ public class UserContainer : MonoBehaviour
         float box_x = gameObject.GetComponent<RectTransform>().localPosition.x;
         float box_y = gameObject.GetComponent<RectTransform>().localPosition.y;
         float box_z = gameObject.GetComponent<RectTransform>().localPosition.z;
-        //Debug.Log("default_box_width: "+ box_width);
-        //Debug.Log("default_box_height: "+ box_height);
 
-        Name = PlayerPrefs.GetString("name"); //ユーザ名を取得
-        if (Name != null) len = Name.Length; //ユーザ名があれば文字数を格納
-        else len = 0; //ユーザ名が0文字の場合
-        //Debug.Log("String Length: "+ len);
+        Name = PlayerPrefs.GetString("name");
+        if (Name != null) len = Name.Length;
 
         RectTransform rt = gameObject.GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(box_width + box_width_diff * (-standard_length + len), box_height); //箱のサイズを変更
-        rt.localPosition = new Vector3(box_x - box_width_diff * (-standard_length + len) / 2.0f, box_y, box_z); //箱の位置を変更
-        //Debug.Log("after_box_width: "+ box_width);
+        rt.sizeDelta = new Vector2(box_width + box_width_diff * (-standard_length + len), box_height);
+        rt.localPosition = new Vector3(box_x - box_width_diff * (-standard_length + len) / 2.0f, box_y, box_z);
 
-        Displayed.text = String.Concat("Welcome " + Name); //表示される文字列は"Welcome "も付加される
+        Displayed.text = String.Concat("Welcome " + Name);
     }
 }

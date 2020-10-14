@@ -56,7 +56,7 @@ public class AudioSpectrum : MonoBehaviour
     public float[] PeakLevels {
         get { return peakLevels; }
     }
-    
+
     public float[] MeanLevels {
         get { return meanLevels; }
     }
