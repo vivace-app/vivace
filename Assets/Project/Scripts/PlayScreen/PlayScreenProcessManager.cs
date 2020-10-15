@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +13,8 @@ public class PlayScreenProcessManager : MonoBehaviour
 {
     public GameObject[] Note;
     public Text ComboText, ScoreText, JudgeText, AddText;
+    // public Transform Lane;　// 縦長対応用 (タブレット等)ï
+    public RectTransform Background;
     public Tweener JTextFade, JTextReduce, ATextFade, ATextReduce; //消失/縮小(判定表示)，消失/縮小(加算表示)アニメーションにTweenerを付与
     private PlayScreenProcessManager _gameManager;
 
@@ -69,6 +72,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         ColorUtility.TryParseHtmlString(Good16, out Good_c);
         ColorUtility.TryParseHtmlString(Miss16, out Miss_c);
         ColorUtility.TryParseHtmlString(Score16, out Score_c);
+        ScreenResponsive();
         AdjustJudgeRange(); //ノーツ落下速度に合わせて判定オブジェクトの高さを変化
         _music = Resources.Load<AudioClip>("music/" + musicTitles[SwipeMenu.selectedNumTmp]);
         _audioSource = gameObject.AddComponent<AudioSource>();
@@ -77,7 +81,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         _gameManager = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
         _notesSpeedIndex = SelectScreenProcessManager._notesSpeedIndex; //SelectScreenから引っ張ってくる
         _starttimingIndex = SelectScreenProcessManager._starttimingIndex; //SelectScreenから引っ張ってくる
-        delay_time = (12800  + 10 * _starttimingIndex) / _notesSpeedIndex; //遅延開始時間の計算
+        delay_time = (12800 + 10 * _starttimingIndex) / _notesSpeedIndex; //遅延開始時間の計算
         await Task.Delay(1000); //処理落ちによるトラブル防止
         LoadCSV();
         _startTime = Time.time;
@@ -95,6 +99,23 @@ public class PlayScreenProcessManager : MonoBehaviour
             playedFlag = false; //何度も処理が呼び出されないようにする
             ChangeScene();
         }
+    }
+
+    private void ScreenResponsive()
+    {
+        float scale = 1f;
+        if (Screen.width < Screen.height)
+            scale = (Screen.height * 16) / (Screen.width * 9);
+        Background.sizeDelta = new Vector2(Screen.width * scale, Screen.height * scale);
+
+        // 縦長対応用 (タブレット等) ↓
+
+        // Vector3 pos = Lane.position;
+        // int screen_width = Screen.height * 16 / 9;
+        // float inclined = 13.05f / 294;
+        // pos.z -= (screen_width - Screen.width) * inclined;
+        // if (Screen.width / Screen.height < (16/9))
+        // Lane.position = pos;
     }
 
     void LoadCSV()

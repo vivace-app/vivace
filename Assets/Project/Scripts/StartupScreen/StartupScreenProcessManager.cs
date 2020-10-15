@@ -22,6 +22,7 @@ public class StartupScreenProcessManager : MonoBehaviour
     public Sprite messageButtonSpriteError;
     public Text messageButtonLabel;
     public GameObject registerPanel = null;
+    public RectTransform Background;
     public Text registerTitle;
     public Text registerText;
     public Text registerPlaceholder;
@@ -78,6 +79,7 @@ public class StartupScreenProcessManager : MonoBehaviour
     async void Start()
     {
         //PlayerPrefs.DeleteAll(); //ユーザ情報を初期化したい場合にコメントアウトを解除
+        ScreenResponsive();
         audioSource = GetComponent<AudioSource>();
         this.showVersion.text = "Ver." + thisVersion;
         await Task.Delay(1000);
@@ -104,6 +106,14 @@ public class StartupScreenProcessManager : MonoBehaviour
                 StartCoroutine(NetworkProcess());
             }
         }
+    }
+
+    private void ScreenResponsive()
+    {
+        float scale = 1f;
+        if (Screen.width < Screen.height)
+            scale = (Screen.height * 16) / (Screen.width * 9);
+        Background.sizeDelta = new Vector2(Screen.width * scale, Screen.height * scale);
     }
 
     IEnumerator NetworkProcess()
