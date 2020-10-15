@@ -37,7 +37,9 @@ public class PlayScreenProcessManager : MonoBehaviour
     public static int res_perfects = 0, res_greats = 0, res_goods = 0, res_misss = 0; //リザルト画面用
     private double _score = 0; //得点
     public static double res_score = 0; //リザルト画面用
-    private double _basescore = 0; //基礎点:ノーツ1つあたりのスコア
+    private double _basescore = 0, _logSqSum = 0; //基礎点:ノーツ1つあたりのスコア，スコア傾斜のlog部分の和
+    private static int _sepPoint = 50; //分割点:50コンボ以降は加点数の増加なし
+    private double[] _logSq = new double[_sepPoint];
     public static float _notesSpeedIndex = 5.0f; //ノーツ落下速度の設定用(1.0f~10.0fまで動作確認)
     public static int _starttimingIndex = 0; //スタートのタイミングを調整(10ms毎，正にするほど遅くなる)
     private int JTextUsed = 0; //JudgeTextのtextを変更した回数
@@ -130,13 +132,23 @@ public class PlayScreenProcessManager : MonoBehaviour
             _lineNum[_notesTotal++] = int.Parse(values[1]);
         }
 
-        if (_notesTotal >= 30)
-        { //コンボ数が30以上のとき
-            _basescore = 1000000 / ((double)_notesTotal - 15); //基礎点は1000000点を最大コンボ数-15で割った値
+        if (_notesTotal >= _sepPoint)
+        { //コンボ数が_sepPoint以上のとき
+            for (int i = 0; i < _sepPoint; i++)
+            {
+                _logSq[i] = Math.Log10(1 + (9 * ((double)i + 1) / (double)_sepPoint));
+                _logSqSum += _logSq[i];
+            }
+            _basescore = 1000000 / _logSqSum + (double)_notesTotal - (double)_sepPoint; //基礎点は1000000点をlog部分の和+最大コンボ数-_sepPointで割った値
         }
         else
-        { //コンボ数が30未満のとき
-            _basescore = 1000000 / (double)_notesTotal; // 基礎点は1000000点を最大コンボ数で割った値
+        { //コンボ数が_sepPoint未満のとき
+            for (int i = 0; i < _notesTotal; i++)
+            {
+                _logSq[i] = Math.Log10(1 + (9 * ((double)i + 1) / (double)_notesTotal));
+                _logSqSum += _logSq[i];
+            }
+            _basescore = 1000000 / _logSqSum; // 基礎点は1000000点をlog部分の和で割った値
         }
     }
 
@@ -199,21 +211,11 @@ public class PlayScreenProcessManager : MonoBehaviour
                 break;
         }
         ComboText.text = _combo.ToString("D");
-        if (_notesTotal >= 30)
-        { //コンボ数が30以上のときにはスコアは以下の通り傾斜加算
-            if (_combo <= 10) //コンボ数が10以下のとき
-                scoreTemp = _basescore * 0.25 * magni; //スコアに基礎点*倍率の25％を加算
-            else if (_combo <= 20) //コンボ数が20以下のとき
-                scoreTemp = _basescore * 0.5 * magni; //スコアに基礎点*倍率の50％を加算
-            else if (_combo <= 30) //コンボ数が30以下のとき
-                scoreTemp = _basescore * 0.75 * magni; //スコアに基礎点*倍率の75％を加算
-            else //コンボ数が31以上のとき
-                scoreTemp = _basescore * magni; //スコアに基礎点*倍率を加算
-        }
-        else
-        { //コンボ数が30未満のときは単に基礎点*倍率を加算
-            scoreTemp = _basescore * magni;
-        }
+        if (_combo <= _sepPoint) //コンボ数が10以下のとき
+            scoreTemp = _basescore * _logSq[_combo - 1] * magni; //スコアに基礎点*log傾斜*倍率加算
+        else //コンボ数が_sepPoint超過のとき
+            scoreTemp = _basescore * magni; //スコアに基礎点*倍率を加算
+
         AddText.color = Score_c;
         AddText.text = "+" + ((int)Math.Round(scoreTemp, 0, MidpointRounding.AwayFromZero)).ToString("D"); //四捨五入して型変換を行い加算スコアを表示
         AddText.transform.localScale = vl; //テキストサイズを全方向1.5倍化
