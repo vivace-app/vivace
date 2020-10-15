@@ -9,6 +9,8 @@ public class SelectScreenProcessManager : MonoBehaviour
 {
     public ToggleGroup toggleGroup;
     public static string selectedLevel;
+    public static float _notesSpeedIndex = 5.0f;
+    public static int _starttimingIndex = 0;
 
     private void ScreenTransition()
     {
