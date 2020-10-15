@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 
 public class ResultScreenProcessManager : MonoBehaviour
 {
+    public RectTransform Background;
     public Text[] ScoreListName = new Text[9];
     public Text[] ScoreListScore = new Text[9];
     public Text Res_Perfects, Res_Greats, Res_Goods, Res_Misss, Res_Total;
@@ -36,8 +37,17 @@ public class ResultScreenProcessManager : MonoBehaviour
 
     private void Start()
     {
+        ScreenResponsive();
         StartCoroutine(GetTopTenNetworkProcess());
         CountsDelayer();
+    }
+
+    private void ScreenResponsive()
+    {
+        float scale = 1f;
+        if (Screen.width < Screen.height)
+            scale = (Screen.height * 16) / (Screen.width * 9);
+        Background.sizeDelta = new Vector2(Screen.width * scale, Screen.height * scale);
     }
 
     private void PlayScreenTransition()

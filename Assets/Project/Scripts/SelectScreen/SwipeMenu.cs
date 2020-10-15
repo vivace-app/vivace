@@ -16,6 +16,7 @@ public class SwipeMenu : MonoBehaviour
     private AudioSource[] _fullAudioSource; //フル楽曲情報格納
     private static float[] Musictime; //楽曲の再生時間を格納
     public Text DisplayedMusicTime; //画面に表示される楽曲の再生時間
+    public RectTransform Background;
     public Text yourHighScoreText;
     public Text onlineHighScoreText;
     public ToggleGroup[] toggleGroup;
@@ -51,6 +52,7 @@ public class SwipeMenu : MonoBehaviour
         distance = 1f / (pos.Length - 1f);
         for (int i = 0; i < pos.Length; i++)
             pos[i] = distance * i;
+        ScreenResponsive();
         GetScoresCotroller(0);
         _AudioSource = GameObject.Find("Music - pre").GetComponents<AudioSource>(); //プレビュー楽曲情報取得
         _fullAudioSource = GameObject.Find("Music - full").GetComponents<AudioSource>(); //フル楽曲情報取得
@@ -116,6 +118,14 @@ public class SwipeMenu : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void ScreenResponsive()
+    {
+        float scale = 1f;
+        if (Screen.width < Screen.height)
+            scale = (Screen.height * 16) / (Screen.width * 9);
+        Background.sizeDelta = new Vector2(Screen.width * scale, Screen.height * scale);
     }
 
     private void SelectedMusic(int num) //num番目の曲をループで再生
