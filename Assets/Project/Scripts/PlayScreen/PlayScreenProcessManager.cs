@@ -36,6 +36,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     public static double res_score = 0; //リザルト画面用
     private double _basescore = 0; //基礎点:ノーツ1つあたりのスコア
     public static float _notesSpeedIndex = 5.0f; //ノーツ落下速度の設定用(1.0f~10.0fまで動作確認)
+    public static int _starttimingIndex = 0; //スタートのタイミングを調整(10ms毎，正にするほど遅くなる)
     private int JTextUsed = 0; //JudgeTextのtextを変更した回数
     private float delay_time = 0; //遅延開始時間の計算用
 
@@ -74,7 +75,9 @@ public class PlayScreenProcessManager : MonoBehaviour
         _audioSource.clip = _music;
         _SoundEffects = GameObject.Find("SoundEffect").GetComponents<AudioSource>();
         _gameManager = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
-        delay_time = 12800 / _notesSpeedIndex; //遅延開始時間の計算
+        _notesSpeedIndex = SelectScreenProcessManager._notesSpeedIndex; //SelectScreenから引っ張ってくる
+        _starttimingIndex = SelectScreenProcessManager._starttimingIndex; //SelectScreenから引っ張ってくる
+        delay_time = (12800  + 10 * _starttimingIndex) / _notesSpeedIndex; //遅延開始時間の計算
         await Task.Delay(1000); //処理落ちによるトラブル防止
         LoadCSV();
         _startTime = Time.time;
