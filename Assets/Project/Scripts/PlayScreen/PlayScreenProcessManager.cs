@@ -196,18 +196,19 @@ public class PlayScreenProcessManager : MonoBehaviour
                 scoreTemp = _basescore * _logSq[_combo - 1] * magni; //スコアに基礎点*log傾斜*倍率加算
             else //コンボ数が_sepPoint超過のとき
                 scoreTemp = _basescore * magni; //スコアに基礎点*倍率を加算
-        }
 
-        AddText.color = Score_c;
-        AddText.text = "+" + ((int)Math.Round(scoreTemp, 0, MidpointRounding.AwayFromZero)).ToString("D"); //四捨五入して型変換を行い加算スコアを表示
-        AddText.transform.localScale = vl; //テキストサイズを全方向1.5倍化
-        ATextReduce = AddText.transform.DOScale(vo, 0.2f); //元の大きさまでの縮小アニメーション
 
-        for (int i = 0; i < 15; i++) //15分割したものを33ミリ秒ごとに15回加算()
-        {
-            _score += scoreTemp / 15;
-            ScoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7"); //四捨五入して型変換を行い表示を更新
-            await Task.Delay(33);
+            AddText.color = Score_c;
+            AddText.text = "+" + ((int)Math.Round(scoreTemp, 0, MidpointRounding.AwayFromZero)).ToString("D"); //四捨五入して型変換を行い加算スコアを表示
+            AddText.transform.localScale = vl; //テキストサイズを全方向1.5倍化
+            ATextReduce = AddText.transform.DOScale(vo, 0.2f); //元の大きさまでの縮小アニメーション
+
+            for (int i = 0; i < 15; i++) //15分割したものを33ミリ秒ごとに15回加算()
+            {
+                _score += scoreTemp / 15;
+                ScoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7"); //四捨五入して型変換を行い表示を更新
+                await Task.Delay(33);
+            }
         }
         await Task.Delay(250);
         if (JTextUsed == JTextTemp) //もし次のAddScoreが読み込まれていなければ
