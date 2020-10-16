@@ -190,7 +190,7 @@ public class PlayScreenProcessManager : MonoBehaviour
                 break;
         }
         ComboText.text = _combo.ToString("D");
-        if (_combo <= _sepPoint) //コンボ数が10以下のとき
+        if (_combo <= _sepPoint) //コンボ数が_sepPoint以下のとき
             scoreTemp = _basescore * _logSq[_combo - 1] * magni; //スコアに基礎点*log傾斜*倍率加算
         else //コンボ数が_sepPoint超過のとき
             scoreTemp = _basescore * magni; //スコアに基礎点*倍率を加算
