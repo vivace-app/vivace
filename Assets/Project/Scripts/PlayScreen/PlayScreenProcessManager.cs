@@ -301,13 +301,16 @@ public class PlayScreenProcessManager : MonoBehaviour
             ScoreText.text = ((int)Math.Round(score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
             await Task.Delay(33);
         }
+        if (JTextUsed == JTextTemp)
+            return; //If next Addscore() has been going on, it returns (void).
 
-        await Task.Delay(250);
-        if (JTextUsed == JTextTemp) // If there is no next add score...
+        await Task.Delay(250); // After 250ms
+        if (JTextUsed == JTextTemp) // If there is no next Addscore()...
         {
             JTextFade = DOTween.ToAlpha(() => JudgeText.color, cchanger => JudgeText.color = cchanger, 0.0f, 0.2f);
             ATextFade = DOTween.ToAlpha(() => AddText.color, cchanger => AddText.color = cchanger, 0.0f, 0.2f);
         }
+        return;
     }
 
     public async void ChangeScene()
