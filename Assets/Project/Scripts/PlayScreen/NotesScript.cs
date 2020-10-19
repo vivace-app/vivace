@@ -35,7 +35,7 @@ public class NotesScript : MonoBehaviour
             this.transform.position += deltaPosition * Time.deltaTime;
             if (this.transform.position.z < -9.4)
             {
-                _playScreenProcessManager.MissTimingFunc(lineNum);
+                _playScreenProcessManager.MissTimingFunc();
                 Destroy(this.gameObject);
             }
             if (isInLineLevel >= 1 && isInLineLevel <= 5 && !PlayScreenProcessManager._autoPlay) CheckInput(_lineKey);
@@ -57,7 +57,7 @@ public class NotesScript : MonoBehaviour
     async void AutoPlayFunc()
     {
         await Task.Delay(20);
-        _playScreenProcessManager.PerfectTimingFunc(lineNum);
+        _playScreenProcessManager.PerfectTimingFunc();
         Destroy(this.gameObject);
     }
 
@@ -69,23 +69,23 @@ public class NotesScript : MonoBehaviour
             switch (isInLineLevel)
             { //1：Good，2：Great，3：Perfect，4：Great，5：Good
                 case 1:
-                    _playScreenProcessManager.GoodTimingFunc(lineNum);
+                    _playScreenProcessManager.GoodTimingFunc();
                     Destroy(this.gameObject);
                     break;
                 case 2:
-                    _playScreenProcessManager.GreatTimingFunc(lineNum);
+                    _playScreenProcessManager.GreatTimingFunc();
                     Destroy(this.gameObject);
                     break;
                 case 3:
-                    _playScreenProcessManager.PerfectTimingFunc(lineNum);
+                    _playScreenProcessManager.PerfectTimingFunc();
                     Destroy(this.gameObject);
                     break;
                 case 4:
-                    _playScreenProcessManager.GreatTimingFunc(lineNum);
+                    _playScreenProcessManager.GreatTimingFunc();
                     Destroy(this.gameObject);
                     break;
                 case 5:
-                    _playScreenProcessManager.GoodTimingFunc(lineNum);
+                    _playScreenProcessManager.GoodTimingFunc();
                     Destroy(this.gameObject);
                     break;
             }
