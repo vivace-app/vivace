@@ -12,7 +12,7 @@ public class ResultScreenProcessManager : MonoBehaviour
     public RectTransform Background;
     public Text[] ScoreListName = new Text[9];
     public Text[] ScoreListScore = new Text[9];
-    public Text Res_Perfects, Res_Greats, Res_Goods, Res_Misss, Res_Total;
+    public Text Res_Perfect, Res_Great, Res_Good, Res_Miss, Res_Total;
 
     // ------------------------------------------------------------------------------------
 
@@ -130,14 +130,14 @@ public class ResultScreenProcessManager : MonoBehaviour
 
     private async void CountsDelayer()
     {
-        CountsAnimation(15, PlayScreenProcessManager.res_perfects, Res_Perfects);
+        CountsAnimation(15, PlayScreenProcessManager._perfect, Res_Perfect);
         await Task.Delay(250);
-        CountsAnimation(15, PlayScreenProcessManager.res_greats, Res_Greats);
+        CountsAnimation(15, PlayScreenProcessManager._great, Res_Great);
         await Task.Delay(250);
-        CountsAnimation(15, PlayScreenProcessManager.res_goods, Res_Goods);
+        CountsAnimation(15, PlayScreenProcessManager._good, Res_Good);
         await Task.Delay(250);
-        CountsAnimation(15, PlayScreenProcessManager.res_misss, Res_Misss);
+        CountsAnimation(15, PlayScreenProcessManager._miss, Res_Miss);
         await Task.Delay(250);
-        CountsAnimation(45, PlayScreenProcessManager.res_score, Res_Total);
+        CountsAnimation(45, PlayScreenProcessManager._score, Res_Total);
     }
 }

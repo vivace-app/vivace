@@ -5,56 +5,59 @@ using System.Threading.Tasks;
 
 public class NotesScript : MonoBehaviour
 {
-    private PlayScreenProcessManager _gameManager;
+    // --- Attach from Unity --------------------------------------------------------------
     public int lineNum;
+    // ------------------------------------------------------------------------------------
+
+    // --- Instance -----------------------------------------------------------------------
+    public PlayScreenProcessManager _playScreenProcessManager;
+    // ------------------------------------------------------------------------------------
+
     private int isInLineLevel = 0;
     private int currentTouch = 0;
-    private KeyCode _lineKey;
+    private KeyCode _lineKey; // Key code of this notes.
+    private Vector3 deltaPosition; // Vector falling every frame.
+
+    // ====================================================================================
 
     void Start()
     {
-        this.transform.localScale -= new Vector3(0.285f, 0, 0.055f);
-        _gameManager = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>(); //インスタンスに GameController.cs 情報を格納
-        _lineKey = GameUtil.GetKeyCodeByLineNum(lineNum);
+        _playScreenProcessManager = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>(); // Instance <- PlayScreenProcessManager.cs
+        _lineKey = GameUtil.GetKeyCodeByLineNum(lineNum); // Get Key Code.
+        this.transform.localScale -= new Vector3(0.285f, 0, 0.055f); // Move to initial position.
+        deltaPosition = PlayScreenProcessManager._deltaPosition; // Set fall vector per frame.
     }
 
     void Update()
     {
         if (PlayScreenProcessManager._isPlaying)
         {
-            this.transform.position += (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * Time.deltaTime * 0.6f * PlayScreenProcessManager._notesSpeedIndex;
-            if (this.transform.position.z < -12)
+            this.transform.position += deltaPosition * Time.deltaTime;
+            if (this.transform.position.z < -9.4)
             {
-                _gameManager.MissTimingFunc(lineNum);
+                _playScreenProcessManager.MissTimingFunc(lineNum);
                 Destroy(this.gameObject);
             }
-            if (isInLineLevel >= 1 && !PlayScreenProcessManager._autoPlay) CheckInput(_lineKey);
-            else currentTouch = TouchEvent.OnTouch[lineNum]; //長押し対策
+            if (isInLineLevel >= 1 && isInLineLevel <= 5 && !PlayScreenProcessManager._autoPlay) CheckInput(_lineKey);
+            else currentTouch = 0; // Prevent Long press.
         }
     }
 
-    void OnTriggerEnter(Collider other) //オブジェクトと衝突するたび，インクリメント
+    void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "GoodJudge") isInLineLevel++;
-        if (other.gameObject.tag == "GreatJudge") isInLineLevel++;
-        if (other.gameObject.tag == "PerfectJudge")
-        {
-            isInLineLevel++;
-            if (PlayScreenProcessManager._autoPlay) AutoPlayFunc();
-        }
+        if (other.gameObject.tag == "GoodJudge" || other.gameObject.tag == "GreatJudge" || other.gameObject.tag == "PerfectJudge") isInLineLevel++;
+        if (other.gameObject.tag == "PerfectJudge" && PlayScreenProcessManager._autoPlay) AutoPlayFunc();
     }
 
-    void OnTriggerExit(Collider other) //オブジェクトから脱出するたびにインクリメント
+    void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.tag == "GoodJudge") isInLineLevel++;
-        if (other.gameObject.tag == "GreatJudge") isInLineLevel++;
-        if (other.gameObject.tag == "PerfectJudge") isInLineLevel++;
+        if (other.gameObject.tag == "GoodJudge" || other.gameObject.tag == "GreatJudge" || other.gameObject.tag == "PerfectJudge") isInLineLevel++;
     }
 
     async void AutoPlayFunc()
     {
         await Task.Delay(20);
-        _gameManager.PerfectTimingFunc(lineNum);
+        _playScreenProcessManager.PerfectTimingFunc(lineNum);
         Destroy(this.gameObject);
     }
 
@@ -66,23 +69,23 @@ public class NotesScript : MonoBehaviour
             switch (isInLineLevel)
             { //1：Good，2：Great，3：Perfect，4：Great，5：Good
                 case 1:
-                    _gameManager.GoodTimingFunc(lineNum);
+                    _playScreenProcessManager.GoodTimingFunc(lineNum);
                     Destroy(this.gameObject);
                     break;
                 case 2:
+                    _playScreenProcessManager.GreatTimingFunc(lineNum);
                     Destroy(this.gameObject);
-                    _gameManager.GreatTimingFunc(lineNum);
                     break;
                 case 3:
-                    _gameManager.PerfectTimingFunc(lineNum);
+                    _playScreenProcessManager.PerfectTimingFunc(lineNum);
                     Destroy(this.gameObject);
                     break;
                 case 4:
-                    _gameManager.GreatTimingFunc(lineNum);
+                    _playScreenProcessManager.GreatTimingFunc(lineNum);
                     Destroy(this.gameObject);
                     break;
                 case 5:
-                    _gameManager.GoodTimingFunc(lineNum);
+                    _playScreenProcessManager.GoodTimingFunc(lineNum);
                     Destroy(this.gameObject);
                     break;
             }
