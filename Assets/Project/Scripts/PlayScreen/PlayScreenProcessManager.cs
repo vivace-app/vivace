@@ -311,13 +311,16 @@ public class PlayScreenProcessManager : MonoBehaviour
             ScoreText.text = ((int)Math.Round(score, 0, MidpointRounding.AwayFromZero)).ToString("D7"); //四捨五入して型変換を行い表示を更新
             await Task.Delay(33);
         }
+        if (JTextUsed == JTextTemp)
+            return; //次のAddscoreが呼び出されていたら即終了
 
-        await Task.Delay(250);
-        if (JTextUsed == JTextTemp) //もし次のAddScoreが読み込まれていなければ
+        await Task.Delay(250); //250ms経過後に
+        if (JTextUsed == JTextTemp) //もし次のAddScoreが呼び出されていなければ
         {
             JTextFade = DOTween.ToAlpha(() => JudgeText.color, cchanger => JudgeText.color = cchanger, 0.0f, 0.2f); //文字の消失アニメーション
             ATextFade = DOTween.ToAlpha(() => AddText.color, cchanger => AddText.color = cchanger, 0.0f, 0.2f); //文字の消失アニメーション
         }
+        return;
     }
 
     public async void ChangeScene()
