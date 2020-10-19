@@ -172,7 +172,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     private void SpawnNotes(int lineNum)
     {
-        Instantiate(Note[lineNum], new Vector3(-0.676f + (0.338f * lineNum), 8.4f, 4.5f), Quaternion.Euler(-30f, 0, 0)); //TODO: 生成位置修正
+        Instantiate(Note[lineNum], new Vector3(-0.676f + (0.338f * lineNum), 5.4f, -0.7f), Quaternion.Euler(-30f, 0, 0));
     }
 
     public async void Pause()
@@ -295,17 +295,17 @@ public class PlayScreenProcessManager : MonoBehaviour
         AddText.transform.localScale = vl;
         ATextReduce = AddText.transform.DOScale(vo, 0.2f);
 
-        for (int i = 0; i < 15; i++) //TODO: 10でも良い気がする
+        for (int i = 0; i < 15; i++)
         {
             score += scoreTemp / 15;
             ScoreText.text = ((int)Math.Round(score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
             await Task.Delay(33);
         }
         if (JTextUsed == JTextTemp)
-            return; //If next Addscore() has been going on, it returns (void).
+            return;
 
-        await Task.Delay(250); // After 250ms
-        if (JTextUsed == JTextTemp) // If there is no next Addscore()...
+        await Task.Delay(250);
+        if (JTextUsed == JTextTemp) // If there is no next Addscore...
         {
             JTextFade = DOTween.ToAlpha(() => JudgeText.color, cchanger => JudgeText.color = cchanger, 0.0f, 0.2f);
             ATextFade = DOTween.ToAlpha(() => AddText.color, cchanger => AddText.color = cchanger, 0.0f, 0.2f);
