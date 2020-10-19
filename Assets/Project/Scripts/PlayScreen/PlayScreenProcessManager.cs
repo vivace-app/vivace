@@ -165,96 +165,92 @@ public class PlayScreenProcessManager : MonoBehaviour
         baseScore = 1000000 / (logSqSum + (double)notesTotal - (double)denominator);
     }
 
-    void CheckNextNotes()
+    private void CheckNextNotes()
     {
         while (timing[notesCount] < (Time.time - startTime) && timing[notesCount] != 0) SpawnNotes(lineNum[notesCount++]);
     }
 
-    void SpawnNotes(int num)
+    private void SpawnNotes(int lineNum)
     {
-        Instantiate(Note[num], new Vector3(-0.676f + (0.338f * num), 8.4f, 4.5f), Quaternion.Euler(-30f, 0, 0));
-    }
-
-    public void SoundEffect(int num)
-    {
-        judgeAudioSource[num].PlayOneShot(judgeAudioSource[num].clip);
+        Instantiate(Note[lineNum], new Vector3(-0.676f + (0.338f * lineNum), 8.4f, 4.5f), Quaternion.Euler(-30f, 0, 0)); //TODO: 生成位置修正
     }
 
     public async void Pause()
     {
         if (_isPlaying)
         {
-            _isPlaying = false; //ポーズ中であることを変数に代入
-            stopTime = Time.time; //ポーズした時刻を代入
-            playAudioSource.pitch = 0.0f; //楽曲再生速度を0にする(Pauseを使うと楽曲終了判定が誤作動するため)
+            _isPlaying = false;
+            stopTime = Time.time;
+            playAudioSource.pitch = 0.0f;
         }
-        else if (!_isPlaying)
+        else
         {
-            for (int i = 3; i > 0; i--) //再開のカウントダウン
+            for (int i = 3; i > 0; i--)
             {
                 await Task.Delay(1000);
                 SoundEffect(2);
             }
             await Task.Delay(1000);
             _isPlaying = true;
-            startTime = startTime + (Time.time - stopTime); //開始時間をポーズ時間分加算
-            await Task.Delay(10); //ノーツと楽曲がずれるのを補正
-            playAudioSource.pitch = 1.0f; //楽曲再生速度を1にする(等速再生)
+            startTime = startTime + (Time.time - stopTime);
+            await Task.Delay(10);
+            playAudioSource.pitch = 1.0f;
         }
     }
 
-    public void PerfectTimingFunc(int num)
+    public void PerfectTimingFunc()
     {
         SoundEffect(0);
         AddScore(0);
     }
 
-    public void GreatTimingFunc(int num)
+    public void GreatTimingFunc()
     {
         SoundEffect(1);
         AddScore(1);
     }
 
-    public void GoodTimingFunc(int num)
+    public void GoodTimingFunc()
     {
         SoundEffect(2);
         AddScore(2);
     }
 
-    public void MissTimingFunc(int num)
+    public void MissTimingFunc()
     {
         AddScore(3);
     }
 
+    public void SoundEffect(int num)
+    {
+        //0：Perfect，1：Great，2：Good，3：Miss
+        judgeAudioSource[num].PlayOneShot(judgeAudioSource[num].clip);
+    }
+
     public async void AddScore(int num)
-    { //加点のための関数,引数magniは判定ごとのスコア倍率
+    {
         double magni = 0, scoreTemp = 0, JTextTemp = ++JTextUsed;
         Vector3 vl = new Vector3(1.5f, 1.5f, 1.5f);
         Vector3 vo = Vector3.one;
+
+        // Animation
         if (JTextFade != null)
-        {
-            JTextFade.Kill(); //もし現在進行形で 消失 アニメーション中なら中断
-        }
+            JTextFade.Kill();
         if (JTextReduce != null)
-        {
-            JTextReduce.Kill(); //もし現在進行形で 縮小 アニメーション中なら中断
-        }
+            JTextReduce.Kill();
         if (ATextFade != null)
-        {
-            ATextFade.Kill(); //もし現在進行形で 消失 アニメーション中なら中断
-        }
+            ATextFade.Kill();
         if (ATextReduce != null)
-        {
-            ATextReduce.Kill(); //もし現在進行形で 縮小 アニメーション中なら中断
-        }
+            ATextReduce.Kill();
+
         switch (num)
         { //0：Perfect，1：Great，2：Good，3：Miss
             case 0:
                 magni = 1;
                 combo++;
                 perfect++;
-                JudgeText.transform.localScale = vl; //テキストサイズを全方向1.5倍化
-                JTextReduce = JudgeText.transform.DOScale(vo, 0.2f); //元の大きさまでの縮小アニメーション
+                JudgeText.transform.localScale = vl;
+                JTextReduce = JudgeText.transform.DOScale(vo, 0.2f);
                 JudgeText.color = Perfect_c;
                 JudgeText.text = "Perfect!";
                 break;
@@ -262,8 +258,8 @@ public class PlayScreenProcessManager : MonoBehaviour
                 magni = 0.75;
                 combo++;
                 great++;
-                JudgeText.transform.localScale = vl; //テキストサイズを全方向1.5倍化
-                JTextReduce = JudgeText.transform.DOScale(vo, 0.2f); //元の大きさまでの縮小アニメーション
+                JudgeText.transform.localScale = vl;
+                JTextReduce = JudgeText.transform.DOScale(vo, 0.2f);
                 JudgeText.color = Great_c;
                 JudgeText.text = "Great!";
                 break;
@@ -271,7 +267,7 @@ public class PlayScreenProcessManager : MonoBehaviour
                 magni = 0.25;
                 combo = 0;
                 good++;
-                JudgeText.transform.localScale = vo; //テキストサイズを標準化
+                JudgeText.transform.localScale = vo;
                 JudgeText.color = Good_c;
                 JudgeText.text = "Good!";
                 break;
@@ -279,46 +275,40 @@ public class PlayScreenProcessManager : MonoBehaviour
                 magni = 0;
                 combo = 0;
                 miss++;
-                JudgeText.transform.localScale = vo; //テキストサイズを標準化
+                JudgeText.transform.localScale = vo;
                 JudgeText.color = Miss_c;
                 JudgeText.text = "Miss!";
                 break;
         }
+
         ComboText.text = combo.ToString("D");
-        if (combo > 0)
-        {
-            if (combo <= sepPoint) //コンボ数がsepPoint以下のとき
-                scoreTemp = baseScore * logSq[combo - 1] * magni; //スコアに基礎点*log傾斜*倍率加算
-            else //コンボ数がsepPoint超過のとき
-                scoreTemp = baseScore * magni; //スコアに基礎点*倍率を加算
-        }
+
+        if (combo <= sepPoint && combo > 0)
+            scoreTemp = baseScore * logSq[combo - 1] * magni;
+        else if (combo <= sepPoint)
+            scoreTemp = baseScore * logSq[0] * magni;
         else
-        {
-            if (combo <= sepPoint) //コンボ数がsepPoint以下のとき
-                scoreTemp = baseScore * logSq[0] * magni; //スコアに基礎点*log傾斜(1コンボ時を利用)*倍率加算
-            else //コンボ数がsepPoint超過のとき
-                scoreTemp = baseScore * magni; //スコアに基礎点*倍率を加算
-        }
+            scoreTemp = baseScore * magni;
 
         AddText.color = Score_c;
-        AddText.text = "+" + ((int)Math.Round(scoreTemp, 0, MidpointRounding.AwayFromZero)).ToString("D"); //四捨五入して型変換を行い加算スコアを表示
-        AddText.transform.localScale = vl; //テキストサイズを全方向1.5倍化
-        ATextReduce = AddText.transform.DOScale(vo, 0.2f); //元の大きさまでの縮小アニメーション
+        AddText.text = "+" + ((int)Math.Round(scoreTemp, 0, MidpointRounding.AwayFromZero)).ToString("D");
+        AddText.transform.localScale = vl;
+        ATextReduce = AddText.transform.DOScale(vo, 0.2f);
 
-        for (int i = 0; i < 15; i++) //15分割したものを33ミリ秒ごとに15回加算()
+        for (int i = 0; i < 15; i++) //TODO: 10でも良い気がする
         {
             score += scoreTemp / 15;
-            ScoreText.text = ((int)Math.Round(score, 0, MidpointRounding.AwayFromZero)).ToString("D7"); //四捨五入して型変換を行い表示を更新
+            ScoreText.text = ((int)Math.Round(score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
             await Task.Delay(33);
         }
         if (JTextUsed == JTextTemp)
-            return; //次のAddscoreが呼び出されていたら即終了
+            return; //If next Addscore() has been going on, it returns (void).
 
-        await Task.Delay(250); //250ms経過後に
-        if (JTextUsed == JTextTemp) //もし次のAddScoreが呼び出されていなければ
+        await Task.Delay(250); // After 250ms
+        if (JTextUsed == JTextTemp) // If there is no next Addscore()...
         {
-            JTextFade = DOTween.ToAlpha(() => JudgeText.color, cchanger => JudgeText.color = cchanger, 0.0f, 0.2f); //文字の消失アニメーション
-            ATextFade = DOTween.ToAlpha(() => AddText.color, cchanger => AddText.color = cchanger, 0.0f, 0.2f); //文字の消失アニメーション
+            JTextFade = DOTween.ToAlpha(() => JudgeText.color, cchanger => JudgeText.color = cchanger, 0.0f, 0.2f);
+            ATextFade = DOTween.ToAlpha(() => AddText.color, cchanger => AddText.color = cchanger, 0.0f, 0.2f);
         }
         return;
     }
@@ -341,7 +331,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         form.AddField("token", PlayerPrefs.GetString("jwt"));
         form.AddField("music", selectedMusic);
         form.AddField("level", selectedLevel);
-        form.AddField("score", score); //TODO: _score(int) の方が良？
+        form.AddField("score", _score);
         UnityWebRequest www = UnityWebRequest.Post(registScoreApiUri, form);
         yield return www.SendWebRequest();
         if (www.isNetworkError)
