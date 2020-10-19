@@ -14,40 +14,8 @@ public class PlayScreenProcessManager : MonoBehaviour
     public GameObject[] Note; // Attach 5 notes objects.
     public RectTransform Background; // Background image for responsive.
     public Text ComboText, ScoreText, JudgeText, AddText;
-<<<<<<< HEAD
-    public Tweener JTextFade, JTextReduce, ATextFade, ATextReduce; //消失/縮小(判定表示)，消失/縮小(加算表示)アニメーションにTweenerを付与
-    private PlayScreenProcessManager _gameManager;
-
-    private AudioSource _audioSource;
-    private AudioClip _music;
-    private string Perfect16 = "#FF7DF2", Great16 = "#FF9C7D", Good16 = "#34E045", Miss16 = "#8D8D8D", Score16 = "#6C95FF"; //ResultScreenの色を拝借
-    private Color Perfect_c, Great_c, Good_c, Miss_c, Score_c;
-    private int _notesTotal = 0;
-    private int _notesCount = 0;
-    private float _startTime = 0;
-    private float _stoptime = 0; //ポーズ時間を計測
-    private float[] _timing;
-    private int[] _lineNum;
-    private static AudioSource[] _SoundEffects; //効果音用変数
-    public static bool _isPlaying = true; //プレイ中がポーズ中かを判定
-    private static bool playedFlag = false; //楽曲の再生が一度でも開始されたかどうかを判定
-    public static bool _autoPlay = false; //自動プレイ用
-    private int _combo = 0; //コンボ数
-    private int _perfects = 0, _greats = 0, _goods = 0, _misss = 0;
-    public static int res_perfects = 0, res_greats = 0, res_goods = 0, res_misss = 0; //リザルト画面用
-    private double _score = 0; //得点
-    public static double res_score = 0; //リザルト画面用
-    private double _basescore = 0, _logSqSum = 0; //基礎点:ノーツ1つあたりのスコア，スコア傾斜のlog部分の和
-    private static int _sepPoint = 50; //分割点:50コンボ以降は加点数の増加なし
-    private double[] _logSq = new double[_sepPoint];
-    public static float _notesSpeedIndex = 5.0f; //ノーツ落下速度の設定用(1.0f~10.0fまで動作確認)
-    public static int _starttimingIndex = 0; //スタートのタイミングを調整(10ms毎，正にするほど遅くなる)
-    private int JTextUsed = 0; //JudgeTextのtextを変更した回数
-    private float delay_time = 0; //遅延開始時間の計算用
-=======
     public Tweener JTextFade, JTextReduce, ATextFade, ATextReduce; // For Tweener animation.
     // ------------------------------------------------------------------------------------
->>>>>>> [clean] deltaTime問題修正&ノーツがタッチできない問題修正&アタッチループ問題修正
 
     // --- External variables -------------------------------------------------------------
     public static bool _autoPlay = false;
@@ -76,9 +44,10 @@ public class PlayScreenProcessManager : MonoBehaviour
     private float[] timing = new float[1024];
 
     private bool alreadyPlayedFlag = false;
-    private double score = 0, baseScore = 0;
+    private double score = 0, baseScore = 0, logSqSum = 0;
+    private double[] logSq; // Point increase border
     private float startTime = 0, stopTime = 0;
-    private int combo = 0, perfect = 0, great = 0, good = 0, miss = 0, notesTotal = 0, notesCount = 0;
+    private int combo = 0, perfect = 0, great = 0, good = 0, miss = 0, notesTotal = 0, notesCount = 0, sepPoint = 50;
     private int JTextUsed = 0; // Number of times JudgeText has been changed.
 
     // ====================================================================================
@@ -94,29 +63,6 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     async void Start()
     {
-<<<<<<< HEAD
-        _timing = new float[1024];
-        _lineNum = new int[1024];
-        ComboText.text = _combo.ToString("D");
-        ScoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
-        JudgeText.text = "";
-        AddText.text = "";
-        ColorUtility.TryParseHtmlString(Perfect16, out Perfect_c);
-        ColorUtility.TryParseHtmlString(Great16, out Great_c);
-        ColorUtility.TryParseHtmlString(Good16, out Good_c);
-        ColorUtility.TryParseHtmlString(Miss16, out Miss_c);
-        ColorUtility.TryParseHtmlString(Score16, out Score_c);
-        AdjustJudgeRange(); //ノーツ落下速度に合わせて判定オブジェクトの高さを変化
-        _music = Resources.Load<AudioClip>("music/" + musicTitles[SwipeMenu.selectedNumTmp]);
-        _audioSource = gameObject.AddComponent<AudioSource>();
-        _audioSource.clip = _music;
-        _SoundEffects = GameObject.Find("SoundEffect").GetComponents<AudioSource>();
-        _gameManager = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>();
-        _notesSpeedIndex = SelectScreenProcessManager._notesSpeedIndex; //SelectScreenから引っ張ってくる
-        _starttimingIndex = SelectScreenProcessManager._starttimingIndex; //SelectScreenから引っ張ってくる
-        delay_time = (12800 + 10 * _starttimingIndex) / _notesSpeedIndex; //遅延開始時間の計算
-        await Task.Delay(1000); //処理落ちによるトラブル防止
-=======
         ScreenResponsive();
         TextInitialization();
         ColorInitialization();
@@ -126,7 +72,6 @@ public class PlayScreenProcessManager : MonoBehaviour
         _notesSpeedIndex = SelectScreenProcessManager._notesSpeedIndex;
         _startTimingIndex = SelectScreenProcessManager._startTimingIndex;
         await Task.Delay(1000);
->>>>>>> [clean] deltaTime問題修正&ノーツがタッチできない問題修正&アタッチループ問題修正
         LoadCSV();
         BaseScoreDecision();
         startTime = Time.time;
@@ -146,9 +91,6 @@ public class PlayScreenProcessManager : MonoBehaviour
         }
     }
 
-<<<<<<< HEAD
-    void LoadCSV()
-=======
     private void ScreenResponsive()
     {
         float scale = 1f;
@@ -183,7 +125,6 @@ public class PlayScreenProcessManager : MonoBehaviour
     }
 
     private void AdjustJudgeRange()
->>>>>>> [clean] deltaTime問題修正&ノーツがタッチできない問題修正&アタッチループ問題修正
     {
         Transform PerfectRange = GameObject.Find("PerfectJudgeLine").GetComponent<Transform>();
         PerfectRange.transform.localScale = new Vector3(1.8f, 0.1f, _notesSpeedIndex * 0.12f);
@@ -206,31 +147,27 @@ public class PlayScreenProcessManager : MonoBehaviour
         }
     }
 
-<<<<<<< HEAD
-        if (_notesTotal >= _sepPoint)
-        { //コンボ数が_sepPoint以上のとき
-            for (int i = 0; i < _sepPoint; i++)
-            {
-                _logSq[i] = Math.Log10(1 + (9 * ((double)i + 1) / (double)_sepPoint));
-                _logSqSum += _logSq[i];
-            }
-            _basescore = 1000000 / (_logSqSum + (double)_notesTotal - (double)_sepPoint); //基礎点は1000000点をlog部分の和+最大コンボ数-_sepPointで割った値
-        }
-        else
-        { //コンボ数が_sepPoint未満のとき
-            for (int i = 0; i < _notesTotal; i++)
-            {
-                _logSq[i] = Math.Log10(1 + (9 * ((double)i + 1) / (double)_notesTotal));
-                _logSqSum += _logSq[i];
-            }
-            _basescore = 1000000 / _logSqSum; // 基礎点は1000000点をlog部分の和で割った値
-=======
     private void BaseScoreDecision()
     {
-        if (notesTotal >= 30)
-            baseScore = 1000000 / ((double)notesTotal - 15);
+        logSq = new double[sepPoint];
+        if (notesTotal >= sepPoint)
+        {
+            for (int i = 0; i < sepPoint; i++)
+            {
+                logSq[i] = Math.Log10(1 + (9 * ((double)i + 1) / (double)sepPoint));
+                logSqSum += logSq[i];
+            }
+            baseScore = 1000000 / (logSqSum + (double)notesTotal - (double)sepPoint);
+        }
         else
-            baseScore = 1000000 / (double)notesTotal;
+        {
+            for (int i = 0; i < notesTotal; i++)
+            {
+                logSq[i] = Math.Log10(1 + (9 * ((double)i + 1) / (double)notesTotal));
+                logSqSum += logSq[i];
+            }
+            baseScore = 1000000 / logSqSum;
+        }
     }
 
     void CheckNextNotes()
@@ -268,7 +205,6 @@ public class PlayScreenProcessManager : MonoBehaviour
             startTime = startTime + (Time.time - stopTime); //開始時間をポーズ時間分加算
             await Task.Delay(10); //ノーツと楽曲がずれるのを補正
             playAudioSource.pitch = 1.0f; //楽曲再生速度を1にする(等速再生)
->>>>>>> [clean] deltaTime問題修正&ノーツがタッチできない問題修正&アタッチループ問題修正
         }
     }
 
@@ -353,40 +289,21 @@ public class PlayScreenProcessManager : MonoBehaviour
                 JudgeText.text = "Miss!";
                 break;
         }
-<<<<<<< HEAD
-        ComboText.text = _combo.ToString("D");
-        if (_combo > 0)
-        {
-            if (_combo <= _sepPoint) //コンボ数が_sepPoint以下のとき
-                scoreTemp = _basescore * _logSq[_combo - 1] * magni; //スコアに基礎点*log傾斜*倍率加算
-            else //コンボ数が_sepPoint超過のとき
-                scoreTemp = _basescore * magni; //スコアに基礎点*倍率を加算
-        }
-        else
-        {
-            if (_combo <= _sepPoint) //コンボ数が_sepPoint以下のとき
-                scoreTemp = _basescore * _logSq[0] * magni; //スコアに基礎点*log傾斜(1コンボ時を利用)*倍率加算
-            else //コンボ数が_sepPoint超過のとき
-                scoreTemp = _basescore * magni; //スコアに基礎点*倍率を加算
-=======
         ComboText.text = combo.ToString("D");
-        if (notesTotal >= 30)
-        { //コンボ数が30以上のときにはスコアは以下の通り傾斜加算
-            if (combo <= 10) //コンボ数が10以下のとき
-                scoreTemp = baseScore * 0.25 * magni; //スコアに基礎点*倍率の25％を加算
-            else if (combo <= 20) //コンボ数が20以下のとき
-                scoreTemp = baseScore * 0.5 * magni; //スコアに基礎点*倍率の50％を加算
-            else if (combo <= 30) //コンボ数が30以下のとき
-                scoreTemp = baseScore * 0.75 * magni; //スコアに基礎点*倍率の75％を加算
-            else //コンボ数が31以上のとき
+        if (combo > 0)
+        {
+            if (combo <= sepPoint) //コンボ数がsepPoint以下のとき
+                scoreTemp = baseScore * logSq[combo - 1] * magni; //スコアに基礎点*log傾斜*倍率加算
+            else //コンボ数がsepPoint超過のとき
                 scoreTemp = baseScore * magni; //スコアに基礎点*倍率を加算
         }
         else
-        { //コンボ数が30未満のときは単に基礎点*倍率を加算
-            scoreTemp = baseScore * magni;
->>>>>>> [clean] deltaTime問題修正&ノーツがタッチできない問題修正&アタッチループ問題修正
+        {
+            if (combo <= sepPoint) //コンボ数がsepPoint以下のとき
+                scoreTemp = baseScore * logSq[0] * magni; //スコアに基礎点*log傾斜(1コンボ時を利用)*倍率加算
+            else //コンボ数がsepPoint超過のとき
+                scoreTemp = baseScore * magni; //スコアに基礎点*倍率を加算
         }
-
 
         AddText.color = Score_c;
         AddText.text = "+" + ((int)Math.Round(scoreTemp, 0, MidpointRounding.AwayFromZero)).ToString("D"); //四捨五入して型変換を行い加算スコアを表示
@@ -399,6 +316,7 @@ public class PlayScreenProcessManager : MonoBehaviour
             ScoreText.text = ((int)Math.Round(score, 0, MidpointRounding.AwayFromZero)).ToString("D7"); //四捨五入して型変換を行い表示を更新
             await Task.Delay(33);
         }
+
         await Task.Delay(250);
         if (JTextUsed == JTextTemp) //もし次のAddScoreが読み込まれていなければ
         {
