@@ -53,3 +53,4 @@ Thumbs.db
 .vscode
 *.log
 sysinfo.txt
+Assets/Project/Resources/Jacket/*.png
