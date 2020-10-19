@@ -149,25 +149,20 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     private void BaseScoreDecision()
     {
+        int denominator;
         logSq = new double[sepPoint];
+
         if (notesTotal >= sepPoint)
-        {
-            for (int i = 0; i < sepPoint; i++)
-            {
-                logSq[i] = Math.Log10(1 + (9 * ((double)i + 1) / (double)sepPoint));
-                logSqSum += logSq[i];
-            }
-            baseScore = 1000000 / (logSqSum + (double)notesTotal - (double)sepPoint);
-        }
+            denominator = sepPoint;
         else
+            denominator = notesTotal;
+
+        for (int i = 0; i < denominator; i++)
         {
-            for (int i = 0; i < notesTotal; i++)
-            {
-                logSq[i] = Math.Log10(1 + (9 * ((double)i + 1) / (double)notesTotal));
-                logSqSum += logSq[i];
-            }
-            baseScore = 1000000 / logSqSum;
+            logSq[i] = Math.Log10(1 + (9 * ((double)i + 1) / (double)denominator));
+            logSqSum += logSq[i];
         }
+        baseScore = 1000000 / (logSqSum + (double)notesTotal - (double)denominator);
     }
 
     void CheckNextNotes()
