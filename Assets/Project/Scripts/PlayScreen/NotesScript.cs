@@ -33,7 +33,7 @@ public class NotesScript : MonoBehaviour
         if (PlayScreenProcessManager._isPlaying)
         {
             this.transform.position += deltaPosition * Time.deltaTime;
-            if (this.transform.position.z < -9.4)
+            if (this.transform.position.z < -10.4)
             {
                 _playScreenProcessManager.MissTimingFunc();
                 Destroy(this.gameObject);
