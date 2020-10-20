@@ -75,7 +75,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         LoadCSV();
         BaseScoreDecision();
         startTime = Time.time;
-        await Task.Delay((int)((12800 + 10 * _startTimingIndex) / _notesSpeedIndex));
+        await Task.Delay((int)((7800 + 10 * _startTimingIndex) / _notesSpeedIndex));
         playAudioSource.Play();
         await Task.Delay(10);
         alreadyPlayedFlag = true;
@@ -172,7 +172,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     private void SpawnNotes(int lineNum)
     {
-        Instantiate(Note[lineNum], new Vector3(-0.676f + (0.338f * lineNum), 5.4f, -0.7f), Quaternion.Euler(-30f, 0, 0));
+        Instantiate(Note[lineNum], new Vector3(-0.73f + (0.365f * lineNum), 5.4f, -0.57f), Quaternion.Euler(-30f, 0, 0));
     }
 
     public async void Pause()
