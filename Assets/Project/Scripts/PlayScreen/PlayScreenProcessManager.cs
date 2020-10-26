@@ -21,9 +21,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     // --- External variables -------------------------------------------------------------
     public static bool _autoPlay = false;
     public static bool _isPlaying;
-    public static float _notesSpeedIndex = 5.0f; // 1.0f ~ 10.0f
     public static int _score = 0, _perfect = 0, _great = 0, _good = 0, _miss = 0;
-    public static int _startTimingIndex = 0; // Every 10ms / "+" -> slow / "-" ->fast
     public static Vector3 _deltaPosition; // Vector falling every frame.
     // ------------------------------------------------------------------------------------
 
@@ -50,7 +48,9 @@ public class PlayScreenProcessManager : MonoBehaviour
     private double score = 0, baseScore = 0, logSqSum = 0;
     private double[] logSq; // Point increase border
     private float startTime = 0, stopTime = 0;
+    public float notesSpeedIndex = 5.0f; // 1.0f ~ 10.0f
     private int combo = 0, perfect = 0, great = 0, good = 0, miss = 0, notesTotal = 0, notesCount = 0, sepPoint = 50;
+    public int startTimingIndex; // Every 10ms / "+" -> slow / "-" ->fast
     private int JTextUsed = 0; // Number of times JudgeText has been changed.
 
     // ====================================================================================
@@ -73,9 +73,8 @@ public class PlayScreenProcessManager : MonoBehaviour
         AudioInitialization();
         AdjustJudgeRange();
 
-        _deltaPosition = (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * 0.6f * _notesSpeedIndex;
-        _notesSpeedIndex = SelectScreenProcessManager._notesSpeedIndex;
-        _startTimingIndex = SelectScreenProcessManager._startTimingIndex;
+        _deltaPosition = (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * 0.6f * notesSpeedIndex;
+        startTimingIndex = (PlayerPrefs.GetInt("TimingAdjustment", 5) - 5) * 10;
 
         // Score Calculation
         await Task.Delay(1000);
@@ -84,7 +83,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
         // Play
         startTime = Time.time;
-        await Task.Delay((int)((7800 + 10 * _startTimingIndex) / _notesSpeedIndex));
+        await Task.Delay((int)((7800 + 10 * startTimingIndex) / notesSpeedIndex));
         playAudioSource.Play();
         await Task.Delay(10);
 
@@ -141,11 +140,11 @@ public class PlayScreenProcessManager : MonoBehaviour
     private void AdjustJudgeRange()
     {
         Transform PerfectRange = GameObject.Find("PerfectJudgeLine").GetComponent<Transform>();
-        PerfectRange.transform.localScale = new Vector3(1.8f, 0.1f, _notesSpeedIndex * 0.12f);
+        PerfectRange.transform.localScale = new Vector3(1.8f, 0.1f, notesSpeedIndex * 0.12f);
         Transform GreatRange = GameObject.Find("GreatJudgeLine").GetComponent<Transform>();
-        GreatRange.transform.localScale = new Vector3(1.8f, 0.1f, _notesSpeedIndex * 0.18f);
+        GreatRange.transform.localScale = new Vector3(1.8f, 0.1f, notesSpeedIndex * 0.18f);
         Transform GoodRange = GameObject.Find("GoodJudgeLine").GetComponent<Transform>();
-        GoodRange.transform.localScale = new Vector3(1.8f, 0.1f, _notesSpeedIndex * 0.2f);
+        GoodRange.transform.localScale = new Vector3(1.8f, 0.1f, notesSpeedIndex * 0.2f);
     }
 
     private void LoadCSV()
