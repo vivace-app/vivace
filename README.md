@@ -53,6 +53,6 @@ Please read [CONTRIBUTING.md](https://github.com/smpny7/vivace/blob/master/CONTR
 
 # License / ライセンス
 
-This project is licensed under the MIT License - see  [LICENSE.md](https://github.com/smpny7/vivace/blob/master/LICENCE) file for details.
+This project is licensed under the MIT License - see  [LICENSE.md](https://github.com/smpny7/vivace/blob/master/LICENCE) file for details. However, files of songs and cover art images are not licensed under it - see [README.md]. 
 
 *©︎ 2020 VIVACE Project*
