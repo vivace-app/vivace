@@ -12,6 +12,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 {
     // --- Attach from Unity --------------------------------------------------------------
     public GameObject[] Note; // Attach 5 notes objects.
+    public GameObject PausePanel = null;
     public RectTransform Background; // Background image for responsive.
     public Text ComboText, ScoreText, JudgeText, AddText;
     public Tweener JTextFade, JTextReduce, ATextFade, ATextReduce; // For Tweener animation.
@@ -87,7 +88,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         if (alreadyPlayedFlag && !playAudioSource.isPlaying)
         {
             alreadyPlayedFlag = false;
-            ChangeScene();
+            ResultSceneTransition();
         }
     }
 
@@ -182,9 +183,11 @@ public class PlayScreenProcessManager : MonoBehaviour
             _isPlaying = false;
             stopTime = Time.time;
             playAudioSource.pitch = 0.0f;
+            PausePanel.SetActive(true);
         }
         else
         {
+            PausePanel.SetActive(false);
             for (int i = 3; i > 0; i--)
             {
                 await Task.Delay(1000);
@@ -196,6 +199,11 @@ public class PlayScreenProcessManager : MonoBehaviour
             await Task.Delay(10);
             playAudioSource.pitch = 1.0f;
         }
+    }
+
+    public void SelectSceneTransition()
+    {
+        SceneManager.LoadScene("SelectScene");
     }
 
     public void PerfectTimingFunc()
@@ -313,7 +321,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         return;
     }
 
-    public async void ChangeScene()
+    public async void ResultSceneTransition()
     {
         _score = (int)Math.Round(score, 0, MidpointRounding.AwayFromZero);
         _perfect = perfect;
