@@ -128,7 +128,7 @@ public class ResultScreenProcessManager : MonoBehaviour
             await Task.Delay(33);
         }
     }
-    private async void Ranker(double value)
+    private void Ranker(double value)
     {
         if (value >= 900000)
         {
