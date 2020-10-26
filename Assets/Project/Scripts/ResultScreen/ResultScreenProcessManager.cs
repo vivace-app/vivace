@@ -127,7 +127,9 @@ public class ResultScreenProcessManager : MonoBehaviour
             valueShow += value / sep;
             await Task.Delay(33);
         }
-
+    }
+    private async void Ranker(double value)
+    {
         if (value >= 900000)
         {
             Rank.text = "S";
@@ -167,5 +169,7 @@ public class ResultScreenProcessManager : MonoBehaviour
         CountsAnimation(15, PlayScreenProcessManager._miss, Res_Miss);
         await Task.Delay(250);
         CountsAnimation(45, PlayScreenProcessManager._score, Res_Total);
+        await Task.Delay(250);
+        Ranker(PlayScreenProcessManager._score);
     }
 }
