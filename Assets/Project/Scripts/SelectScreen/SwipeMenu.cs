@@ -17,6 +17,8 @@ public class SwipeMenu : MonoBehaviour
     private static float[] Musictime; //楽曲の再生時間を格納
     public Text DisplayedMusicTime; //画面に表示される楽曲の再生時間
     public RectTransform Background;
+    public RectTransform ScrollView;
+    public HorizontalLayoutGroup ScrollViewPadding;
     public Text yourHighScoreText;
     public Text onlineHighScoreText;
     public ToggleGroup[] toggleGroup;
@@ -126,6 +128,8 @@ public class SwipeMenu : MonoBehaviour
         if (Screen.width < Screen.height)
             scale = (Screen.height * 16) / (Screen.width * 9);
         Background.sizeDelta = new Vector2(Screen.width * scale, Screen.height * scale);
+        ScrollView.sizeDelta = new Vector2(Screen.width, 750);
+        ScrollViewPadding.padding = new RectOffset(Screen.width / 2 - 325, Screen.width / 2 - 325, 100, 0);
     }
 
     private void SelectedMusic(int num) //num番目の曲をループで再生
