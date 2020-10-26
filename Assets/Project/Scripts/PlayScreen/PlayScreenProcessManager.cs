@@ -45,6 +45,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     private float[] timing = new float[1024];
 
     private bool alreadyPlayedFlag = false;
+    private bool notesTouchSoundFlag;
     private double score = 0, baseScore = 0, logSqSum = 0;
     private double[] logSq; // Point increase border
     private float startTime = 0, stopTime = 0;
@@ -64,22 +65,31 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     async void Start()
     {
+        // GUI Settings
         ScreenResponsive();
         TextInitialization();
         ColorInitialization();
         AudioInitialization();
         AdjustJudgeRange();
+
         _deltaPosition = (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * 0.6f * _notesSpeedIndex;
         _notesSpeedIndex = SelectScreenProcessManager._notesSpeedIndex;
         _startTimingIndex = SelectScreenProcessManager._startTimingIndex;
+
+        // Score Calculation
         await Task.Delay(1000);
         LoadCSV();
         BaseScoreDecision();
+
+        // Play
         startTime = Time.time;
         await Task.Delay((int)((7800 + 10 * _startTimingIndex) / _notesSpeedIndex));
         playAudioSource.Play();
         await Task.Delay(10);
+
+        // Setting Flags
         alreadyPlayedFlag = true;
+        notesTouchSoundFlag = (PlayerPrefs.GetInt("NotesTouchSound", 1) == 1 ? true : false);
     }
 
     void Update()
@@ -208,19 +218,22 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     public void PerfectTimingFunc()
     {
-        SoundEffect(0);
+        if (notesTouchSoundFlag)
+            SoundEffect(0);
         AddScore(0);
     }
 
     public void GreatTimingFunc()
     {
-        SoundEffect(1);
+        if (notesTouchSoundFlag)
+            SoundEffect(1);
         AddScore(1);
     }
 
     public void GoodTimingFunc()
     {
-        SoundEffect(2);
+        if (notesTouchSoundFlag)
+            SoundEffect(2);
         AddScore(2);
     }
 
