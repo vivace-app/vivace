@@ -12,7 +12,8 @@ public class ResultScreenProcessManager : MonoBehaviour
     public RectTransform Background;
     public Text[] ScoreListName = new Text[9];
     public Text[] ScoreListScore = new Text[9];
-    public Text Res_Perfect, Res_Great, Res_Good, Res_Miss, Res_Total;
+    public Text Res_Perfect, Res_Great, Res_Good, Res_Miss, Res_Total, Rank;
+    private Color Rank_c;
 
     // ------------------------------------------------------------------------------------
 
@@ -127,6 +128,35 @@ public class ResultScreenProcessManager : MonoBehaviour
             await Task.Delay(33);
         }
     }
+    private async void Ranker(double value)
+    {
+        if (value >= 900000)
+        {
+            Rank.text = "S";
+            ColorUtility.TryParseHtmlString("#FFE24F", out Rank_c);
+        }
+        else if (value >= 800000)
+        {
+            Rank.text = "A";
+            ColorUtility.TryParseHtmlString("#FF7DF2", out Rank_c);
+        }
+        else if (value >= 700000)
+        {
+            Rank.text = "B";
+            ColorUtility.TryParseHtmlString("#FF9C7D", out Rank_c);
+        }
+        else if (value >= 600000)
+        {
+            Rank.text = "C";
+            ColorUtility.TryParseHtmlString("#34E045", out Rank_c);
+        }
+        else
+        {
+            Rank.text = "D";
+            ColorUtility.TryParseHtmlString("#8D8D8D", out Rank_c);
+        }
+        Rank.color = Rank_c;
+    }
 
     private async void CountsDelayer()
     {
@@ -139,5 +169,7 @@ public class ResultScreenProcessManager : MonoBehaviour
         CountsAnimation(15, PlayScreenProcessManager._miss, Res_Miss);
         await Task.Delay(250);
         CountsAnimation(45, PlayScreenProcessManager._score, Res_Total);
+        await Task.Delay(250);
+        Ranker(PlayScreenProcessManager._score);
     }
 }
