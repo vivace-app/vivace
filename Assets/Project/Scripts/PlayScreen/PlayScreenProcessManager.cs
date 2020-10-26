@@ -20,7 +20,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     // --- External variables -------------------------------------------------------------
     public static bool _autoPlay = false;
-    public static bool _isPlaying = true;
+    public static bool _isPlaying;
     public static float _notesSpeedIndex = 5.0f; // 1.0f ~ 10.0f
     public static int _score = 0, _perfect = 0, _great = 0, _good = 0, _miss = 0;
     public static int _startTimingIndex = 0; // Every 10ms / "+" -> slow / "-" ->fast
@@ -90,6 +90,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
         // Setting Flags
         alreadyPlayedFlag = true;
+        _isPlaying = true;
         lowGraphicsModeFlag = (PlayerPrefs.GetInt("lowGraphicsMode", 1) == 1 ? true : false);
         notesTouchSoundFlag = (PlayerPrefs.GetInt("NotesTouchSound", 1) == 1 ? true : false);
     }
