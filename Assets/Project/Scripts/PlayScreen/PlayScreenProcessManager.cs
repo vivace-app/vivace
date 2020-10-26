@@ -45,6 +45,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     private float[] timing = new float[1024];
 
     private bool alreadyPlayedFlag = false;
+    private bool lowGraphicsModeFlag;
     private bool notesTouchSoundFlag;
     private double score = 0, baseScore = 0, logSqSum = 0;
     private double[] logSq; // Point increase border
@@ -89,6 +90,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
         // Setting Flags
         alreadyPlayedFlag = true;
+        lowGraphicsModeFlag = (PlayerPrefs.GetInt("lowGraphicsMode", 1) == 1 ? true : false);
         notesTouchSoundFlag = (PlayerPrefs.GetInt("NotesTouchSound", 1) == 1 ? true : false);
     }
 
@@ -316,12 +318,21 @@ public class PlayScreenProcessManager : MonoBehaviour
         AddText.transform.localScale = vl;
         ATextReduce = AddText.transform.DOScale(vo, 0.2f);
 
-        for (int i = 0; i < 15; i++)
+        if (!lowGraphicsModeFlag)
         {
-            score += scoreTemp / 15;
-            ScoreText.text = ((int)Math.Round(score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
-            await Task.Delay(33);
+            for (int i = 0; i < 15; i++)
+            {
+                score += scoreTemp / 15;
+                ScoreText.text = ((int)Math.Round(score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
+                await Task.Delay(33);
+            }
         }
+        else
+        {
+            score += scoreTemp;
+            ScoreText.text = ((int)Math.Round(score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
+        }
+
         if (JTextUsed == JTextTemp)
             return;
 
