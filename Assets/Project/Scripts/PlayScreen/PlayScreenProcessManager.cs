@@ -48,7 +48,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     private double score = 0, baseScore = 0, logSqSum = 0;
     private double[] logSq; // Point increase border
     private float startTime = 0, stopTime = 0;
-    public float notesSpeedIndex = 5.0f; // 1.0f ~ 10.0f
+    private float notesSpeedIndex = 5.0f; // 3.0f ~ 8.0f
     private int combo = 0, perfect = 0, great = 0, good = 0, miss = 0, notesTotal = 0, notesCount = 0, sepPoint = 50;
     public int startTimingIndex; // Every 10ms / "+" -> slow / "-" ->fast
     private int JTextUsed = 0; // Number of times JudgeText has been changed.
@@ -73,23 +73,22 @@ public class PlayScreenProcessManager : MonoBehaviour
         AudioInitialization();
         AdjustJudgeRange();
 
-        _deltaPosition = (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * 0.6f * notesSpeedIndex;
         startTimingIndex = (PlayerPrefs.GetInt("TimingAdjustment", 5) - 5) * 10;
+        notesSpeedIndex = (float)(5.0f - (PlayerPrefs.GetInt("NotesFallSpeed", 5) - 5) * 0.5f);
+        _deltaPosition = (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * 0.6f * notesSpeedIndex;
 
         // Score Calculation
-        await Task.Delay(1000);
         LoadCSV();
         BaseScoreDecision();
+
+        _isPlaying = true;
 
         // Play
         startTime = Time.time;
         await Task.Delay((int)((7800 + 10 * startTimingIndex) / notesSpeedIndex));
         playAudioSource.Play();
-        await Task.Delay(10);
 
-        // Setting Flags
         alreadyPlayedFlag = true;
-        _isPlaying = true;
         lowGraphicsModeFlag = (PlayerPrefs.GetInt("lowGraphicsMode", 1) == 1 ? true : false);
         notesTouchSoundFlag = (PlayerPrefs.GetInt("NotesTouchSound", 1) == 1 ? true : false);
     }

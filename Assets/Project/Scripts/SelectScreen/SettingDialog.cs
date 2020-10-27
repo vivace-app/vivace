@@ -15,7 +15,7 @@ public class SettingDialog : MonoBehaviour
     public void SettingTappedController()
     {
         SettingPanel.SetActive(true);
-        NotesFallSpeedSlider.value = PlayerPrefs.GetInt("NotesFallSpeed", 1);
+        NotesFallSpeedSlider.value = PlayerPrefs.GetInt("NotesFallSpeed", 5);
         TimingAdjustmentSlider.value = PlayerPrefs.GetInt("TimingAdjustment", 5);
         NotesTouchSoundToggle.isOn = (PlayerPrefs.GetInt("NotesTouchSound", 1) == 1 ? true : false);
         LowGraphicsModeToggle.isOn = (PlayerPrefs.GetInt("LowGraphicsMode", 0) == 1 ? true : false);
