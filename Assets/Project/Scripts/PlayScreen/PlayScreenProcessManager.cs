@@ -74,7 +74,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         AdjustJudgeRange();
 
         startTimingIndex = (PlayerPrefs.GetInt("TimingAdjustment", 5) - 5) * 10;
-        notesSpeedIndex = (float)(5.0f - (PlayerPrefs.GetInt("NotesFallSpeed", 5) - 5) * 0.5f);
+        notesSpeedIndex = (float)(5.0f + (PlayerPrefs.GetInt("NotesFallSpeed", 5) - 5) * 0.5f);
         _deltaPosition = (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * 0.6f * notesSpeedIndex;
 
         // Score Calculation
@@ -141,11 +141,11 @@ public class PlayScreenProcessManager : MonoBehaviour
     private void AdjustJudgeRange()
     {
         Transform PerfectRange = GameObject.Find("PerfectJudgeLine").GetComponent<Transform>();
-        PerfectRange.transform.localScale = new Vector3(1.8f, 0.1f, notesSpeedIndex * 0.12f);
+        PerfectRange.transform.localScale = new Vector3(1.8f, 0.1f, notesSpeedIndex * 1.2f * 0.12f);
         Transform GreatRange = GameObject.Find("GreatJudgeLine").GetComponent<Transform>();
-        GreatRange.transform.localScale = new Vector3(1.8f, 0.1f, notesSpeedIndex * 0.18f);
+        GreatRange.transform.localScale = new Vector3(1.8f, 0.1f, notesSpeedIndex * 1.2f * 0.18f);
         Transform GoodRange = GameObject.Find("GoodJudgeLine").GetComponent<Transform>();
-        GoodRange.transform.localScale = new Vector3(1.8f, 0.1f, notesSpeedIndex * 0.2f);
+        GoodRange.transform.localScale = new Vector3(1.8f, 0.1f, notesSpeedIndex * 1.2f * 0.2f);
     }
 
     private void LoadCSV()
