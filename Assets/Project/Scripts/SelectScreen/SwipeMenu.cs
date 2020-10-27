@@ -125,6 +125,8 @@ public class SwipeMenu : MonoBehaviour
     private void ScreenResponsive()
     {
         float scale = 1f;
+        if (Screen.width < 1920)
+            scale = 1.5f;
         if (Screen.width < Screen.height)
             scale = (Screen.height * 16) / (Screen.width * 9);
         Background.sizeDelta = new Vector2(Screen.width * scale, Screen.height * scale);
