@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using System.Text;
 
 public class StartupScreenProcessManager : MonoBehaviour
 {
@@ -78,7 +78,7 @@ public class StartupScreenProcessManager : MonoBehaviour
 
     async void Start()
     {
-        //PlayerPrefs.DeleteAll(); //ユーザ情報を初期化したい場合にコメントアウトを解除
+        // PlayerPrefs.DeleteAll(); //ユーザ情報を初期化したい場合にコメントアウトを解除
         ScreenResponsive();
         audioSource = GetComponent<AudioSource>();
         this.showVersion.text = "Ver." + thisVersion;
@@ -185,7 +185,7 @@ public class StartupScreenProcessManager : MonoBehaviour
     private async void ScreenTransition()
     {
         await Task.Delay(1000);
-        SceneManager.LoadScene("SelectScene");
+        SceneManager.LoadScene("DownloadScene");
     }
 
     public void ButtonTappedController()
