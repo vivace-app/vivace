@@ -39,8 +39,8 @@ public class PlayScreenProcessManager : MonoBehaviour
     private Color Perfect_c, Great_c, Good_c, Miss_c, Score_c;
 
     // CSV data
-    private int[] lineNum = new int[1024];
-    private float[] timing = new float[1024];
+    private int[] lineNum = new int[2048];
+    private float[] timing = new float[2048];
 
     private bool alreadyPlayedFlag = false;
     private bool lowGraphicsModeFlag;
@@ -87,6 +87,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         startTime = Time.time;
         await Task.Delay((int)((7800 + 10 * startTimingIndex) / notesSpeedIndex));
         playAudioSource.Play();
+        // await Task.Delay(10000);
 
         alreadyPlayedFlag = true;
         lowGraphicsModeFlag = (PlayerPrefs.GetInt("lowGraphicsMode", 1) == 1 ? true : false);
@@ -133,6 +134,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     private void AudioInitialization()
     {
         judgeAudioSource = GameObject.Find("SoundEffect").GetComponents<AudioSource>();
+        Debug.Log("music/" + musicTitles[SwipeMenu.selectedNumTmp]);
         playMusic = Resources.Load<AudioClip>("music/" + musicTitles[SwipeMenu.selectedNumTmp]);
         playAudioSource = gameObject.AddComponent<AudioSource>();
         playAudioSource.clip = playMusic;
@@ -150,6 +152,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     private void LoadCSV()
     {
+        Debug.Log("CSV/" + musicTitles[SwipeMenu.selectedNumTmp] + "_" + SelectScreenProcessManager.selectedLevel);
         TextAsset csv = Resources.Load("CSV/" + musicTitles[SwipeMenu.selectedNumTmp] + "_" + SelectScreenProcessManager.selectedLevel) as TextAsset;
         StringReader reader = new StringReader(csv.text);
         while (reader.Peek() > -1)

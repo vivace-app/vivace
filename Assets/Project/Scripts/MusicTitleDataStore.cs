@@ -2,22 +2,16 @@ public static class MusicTitleDataStore
 {
     public static readonly string[] musicTitles = {
         // Music Titles
-        "shining_star",     // 0
+        "haruno_otozure",   // 1
+        "gale",             // 智重 - 疾風
+        "quiet_morning",    // 智重 - Quiet Morning
+        "kyubi",            // 4
         "floating_blue",    // pho - Floating Blue (Prototype)
-        "haruno_otozure",   // 2
-        "burning_heart",    // 3
         "reversed_lonely_line",//pho feat.重音テト - 反転孤独線
         "pale_blue",        // pho feat. 重音テト - 淡色
-        "see_you_again",    // pho feat. 重音テト - またね
-        "clock_tower",      // 智重 - 時計塔
-        "gale",             // 智重 - 疾風
-        "looking_the_last", // 智重 - 終点目指して
-        "spring_visit",     // 智重 - 春の訪れ
-        "sunny_day",        // 智重 - Sunny Day
-        "quiet_morning",    // 智重 - Quiet Morning
-        "future_vision",    // 智重 - 未来構想図
-        "progress",         // 智重 - Progress
         "crystatus",        // 根菜 - CryStatuS
+        "maiden_voyage",    // 9
+        "filmy_ice",    // 9
     };
 
     public static readonly bool[,] musicLevels = {
