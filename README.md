@@ -46,7 +46,7 @@ Please read [CONTRIBUTING.md](https://github.com/smpny7/vivace/blob/master/CONTR
 
 # Producer / 製作者
 
-smpny7,<br />
+smpny7<br />
 chishige1217200<br />
 Natsu-dev<br />
 
