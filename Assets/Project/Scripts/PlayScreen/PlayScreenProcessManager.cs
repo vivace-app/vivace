@@ -43,6 +43,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     private float[] timing = new float[2048];
 
     private bool alreadyPlayedFlag = false;
+    private bool pausebuttonFlag = false;
     private bool lowGraphicsModeFlag;
     private bool notesTouchSoundFlag;
     private double score = 0, baseScore = 0, logSqSum = 0;
@@ -194,16 +195,18 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     public async void Pause()
     {
-        if (_isPlaying)
+        if (_isPlaying && !pausebuttonFlag)
         {
             _isPlaying = false;
             stopTime = Time.time;
             playAudioSource.pitch = 0.0f;
+            pausebuttonFlag = true;
             PausePanel.SetActive(true);
         }
-        else
+        else if (!_isPlaying && pausebuttonFlag)
         {
             PausePanel.SetActive(false);
+            pausebuttonFlag = false;
             for (int i = 3; i > 0; i--)
             {
                 await Task.Delay(1000);
@@ -214,6 +217,7 @@ public class PlayScreenProcessManager : MonoBehaviour
             startTime = startTime + (Time.time - stopTime);
             await Task.Delay(10);
             playAudioSource.pitch = 1.0f;
+            Debug.Log("You can use pausebutton");
         }
     }
 
