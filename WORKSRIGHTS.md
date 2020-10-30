@@ -5,6 +5,4 @@ VIVACE Project is just allowed to use them.
 If you need more details or contact copyright owners, please refer to the links below:
 
 魔王魂: https://maoudamashii.jokersounds.com/
-pho: https://twitter.com/pho_create
-智重: https://~
-others: please send a message to Contributors of VIVACE Project.
+others: please send a message to contributors of VIVACE Project.
