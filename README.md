@@ -46,13 +46,13 @@ Please read [CONTRIBUTING.md](https://github.com/smpny7/vivace/blob/master/CONTR
 
 # Producer / 製作者
 
-**Coding & Design Director** : smpny7<br />
-**Sounds Director** : chishige1217200<br />
-**Illustration Director** : Natsu-dev<br />
+smpny7<br />
+chishige1217200<br />
+Natsu-dev<br />
 
 
 # License / ライセンス
 
-This project is licensed under the MIT License - see  [LICENSE.md](https://github.com/smpny7/vivace/blob/master/LICENCE) file for details.
+This project is licensed under the MIT License - see  [LICENSE.md](https://github.com/smpny7/vivace/blob/master/LICENCE) file for details. However, files of songs and cover art images are not licensed under it - see [WORKSRIGHTS.md](https://github.com/smpny7/vivace/blob/master/WORKSRIGHTS.md).
 
 *©︎ 2020 VIVACE Project*
