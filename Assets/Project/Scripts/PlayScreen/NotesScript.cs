@@ -18,6 +18,7 @@ public class NotesScript : MonoBehaviour
     private KeyCode _lineKey; // Key code of this notes.
     private Vector3 deltaPosition; // Vector falling every frame.
     private Rigidbody rigidBody; // Rigidbody for Physics
+    private bool stopNotesFlag = false; // Check the timing to move notes
 
     // ====================================================================================
 
@@ -28,7 +29,7 @@ public class NotesScript : MonoBehaviour
         _lineKey = GameUtil.GetKeyCodeByLineNum(lineNum); // Get Key Code.
         this.transform.localScale -= new Vector3(0.285f, 0, 0.055f); // Move to initial position.
         deltaPosition = PlayScreenProcessManager._deltaPosition; // Set fall vector per frame.
-        rigidBody.AddForce(0f, -0.625f * _playScreenProcessManager.notesSpeedIndex, -0.625f * _playScreenProcessManager.notesSpeedIndex * (float)Math.Sqrt(3), ForceMode.VelocityChange); //瞬間的に弾に力を加える(質量無視)
+        rigidBody.AddForce(0f, -0.625f * _playScreenProcessManager.notesSpeedIndex, -0.625f * _playScreenProcessManager.notesSpeedIndex * (float)Math.Sqrt(3), ForceMode.VelocityChange);
     }
 
     void Update()
@@ -36,6 +37,11 @@ public class NotesScript : MonoBehaviour
         if (PlayScreenProcessManager._isPlaying)
         {
             //this.transform.position += deltaPosition * Time.deltaTime;
+            if (stopNotesFlag)
+            {
+                rigidBody.AddForce(0f, -0.625f * _playScreenProcessManager.notesSpeedIndex, -0.625f * _playScreenProcessManager.notesSpeedIndex * (float)Math.Sqrt(3), ForceMode.VelocityChange);
+                stopNotesFlag = false;
+            }
             if (this.transform.position.z < -10.4)
             {
                 _playScreenProcessManager.MissTimingFunc();
@@ -43,6 +49,11 @@ public class NotesScript : MonoBehaviour
             }
             if (isInLineLevel >= 1 && isInLineLevel <= 5 && !PlayScreenProcessManager._autoPlay) CheckInput(_lineKey);
             else currentTouch = 0; // Prevent Long press.
+        }
+        if (!PlayScreenProcessManager._isPlaying && !stopNotesFlag)
+        {
+            rigidBody.velocity = Vector3.zero;
+            stopNotesFlag = true;
         }
     }
 
