@@ -57,9 +57,9 @@ public class SwipeMenu : MonoBehaviour
         ScreenResponsive();
         GetScoresCotroller(0);
         _AudioSource = GameObject.Find("Music - pre").GetComponents<AudioSource>(); //プレビュー楽曲情報取得
-        _fullAudioSource = GameObject.Find("Music - full").GetComponents<AudioSource>(); //フル楽曲情報取得
-        for (int j = 0; j < pos.Length; j++)
-            Musictime[j] = _fullAudioSource[j].clip.length;
+        //_fullAudioSource = GameObject.Find("Music - full").GetComponents<AudioSource>(); //フル楽曲情報取得
+        //for (int j = 0; j < pos.Length; j++)
+        //Musictime[j] = _fullAudioSource[j].clip.length;
     }
 
     void Update()
