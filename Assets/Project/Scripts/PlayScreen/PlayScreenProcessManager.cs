@@ -43,12 +43,13 @@ public class PlayScreenProcessManager : MonoBehaviour
     private float[] timing = new float[2048];
 
     private bool alreadyPlayedFlag = false;
+    private bool pausebuttonFlag = false;
     private bool lowGraphicsModeFlag;
     private bool notesTouchSoundFlag;
     private double score = 0, baseScore = 0, logSqSum = 0;
     private double[] logSq; // Point increase border
     private float startTime = 0, stopTime = 0;
-    private float notesSpeedIndex = 5.0f; // 3.0f ~ 8.0f
+    public float notesSpeedIndex = 5.0f; // 3.0f ~ 8.0f
     private int combo = 0, perfect = 0, great = 0, good = 0, miss = 0, notesTotal = 0, notesCount = 0, sepPoint = 50;
     public int startTimingIndex; // Every 10ms / "+" -> slow / "-" ->fast
     private int JTextUsed = 0; // Number of times JudgeText has been changed.
@@ -194,16 +195,18 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     public async void Pause()
     {
-        if (_isPlaying)
+        if (_isPlaying && !pausebuttonFlag)
         {
             _isPlaying = false;
             stopTime = Time.time;
             playAudioSource.pitch = 0.0f;
+            pausebuttonFlag = true;
             PausePanel.SetActive(true);
         }
-        else
+        else if (!_isPlaying && pausebuttonFlag)
         {
             PausePanel.SetActive(false);
+            pausebuttonFlag = false;
             for (int i = 3; i > 0; i--)
             {
                 await Task.Delay(1000);
