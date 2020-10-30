@@ -17,22 +17,25 @@ public class NotesScript : MonoBehaviour
     private int currentTouch = 0;
     private KeyCode _lineKey; // Key code of this notes.
     private Vector3 deltaPosition; // Vector falling every frame.
+    private Rigidbody rigidBody; // Rigidbody for Physics
 
     // ====================================================================================
 
     void Start()
     {
         _playScreenProcessManager = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>(); // Instance <- PlayScreenProcessManager.cs
+        rigidBody = GetComponent<Rigidbody>();
         _lineKey = GameUtil.GetKeyCodeByLineNum(lineNum); // Get Key Code.
         this.transform.localScale -= new Vector3(0.285f, 0, 0.055f); // Move to initial position.
         deltaPosition = PlayScreenProcessManager._deltaPosition; // Set fall vector per frame.
+        rigidBody.AddForce(0f, -0.625f * _playScreenProcessManager.notesSpeedIndex, -0.625f * _playScreenProcessManager.notesSpeedIndex * (float)Math.Sqrt(3), ForceMode.VelocityChange); //瞬間的に弾に力を加える(質量無視)
     }
 
     void Update()
     {
         if (PlayScreenProcessManager._isPlaying)
         {
-            this.transform.position += deltaPosition * Time.deltaTime;
+            //this.transform.position += deltaPosition * Time.deltaTime;
             if (this.transform.position.z < -10.4)
             {
                 _playScreenProcessManager.MissTimingFunc();

@@ -48,7 +48,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     private double score = 0, baseScore = 0, logSqSum = 0;
     private double[] logSq; // Point increase border
     private float startTime = 0, stopTime = 0;
-    private float notesSpeedIndex = 5.0f; // 3.0f ~ 8.0f
+    public float notesSpeedIndex = 5.0f; // 3.0f ~ 8.0f
     private int combo = 0, perfect = 0, great = 0, good = 0, miss = 0, notesTotal = 0, notesCount = 0, sepPoint = 50;
     public int startTimingIndex; // Every 10ms / "+" -> slow / "-" ->fast
     private int JTextUsed = 0; // Number of times JudgeText has been changed.
