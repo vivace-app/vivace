@@ -217,7 +217,6 @@ public class PlayScreenProcessManager : MonoBehaviour
             startTime = startTime + (Time.time - stopTime);
             await Task.Delay(10);
             playAudioSource.pitch = 1.0f;
-            Debug.Log("You can use pausebutton");
         }
     }
 
