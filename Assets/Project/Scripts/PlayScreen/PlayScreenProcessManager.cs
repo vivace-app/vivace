@@ -165,6 +165,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         }
     }
 
+    // 区分求積法によるスコア計算の準備
     private void BaseScoreDecision()
     {
         int denominator;
@@ -257,13 +258,13 @@ public class PlayScreenProcessManager : MonoBehaviour
         judgeAudioSource[num].PlayOneShot(judgeAudioSource[num].clip);
     }
 
-    public async void AddScore(int num)
+    public async void AddScore(int num) // 引数は判定，0：Perfect，1：Great，2：Good，3：Miss
     {
         double magni = 0, scoreTemp = 0, JTextTemp = ++JTextUsed;
         Vector3 vl = new Vector3(1.5f, 1.5f, 1.5f);
         Vector3 vo = Vector3.one;
 
-        // Animation
+        // アニメーションの初期化
         if (JTextFade != null)
             JTextFade.Kill();
         if (JTextReduce != null)
@@ -274,7 +275,7 @@ public class PlayScreenProcessManager : MonoBehaviour
             ATextReduce.Kill();
 
         switch (num)
-        { //0：Perfect，1：Great，2：Good，3：Miss
+        { // 判定による分岐，
             case 0:
                 magni = 1;
                 combo++;
@@ -311,8 +312,10 @@ public class PlayScreenProcessManager : MonoBehaviour
                 break;
         }
 
+        // コンボ数を更新
         ComboText.text = combo.ToString("D");
 
+        // 区分求積法による加算スコアの計算
         if (combo <= sepPoint && combo > 0)
             scoreTemp = baseScore * logSq[combo - 1] * magni;
         else if (combo <= sepPoint)
@@ -320,11 +323,15 @@ public class PlayScreenProcessManager : MonoBehaviour
         else
             scoreTemp = baseScore * magni;
 
+        // 加算スコア表示の文字色を変更
         AddText.color = Score_c;
+        // 加算スコア表示の値を更新
         AddText.text = "+" + ((int)Math.Round(scoreTemp, 0, MidpointRounding.AwayFromZero)).ToString("D");
+        // アニメーション
         AddText.transform.localScale = vl;
         ATextReduce = AddText.transform.DOScale(vo, 0.2f);
 
+        // 軽量化設定によってはスコアのパラパラ表示を省略
         if (!lowGraphicsModeFlag)
         {
             for (int i = 0; i < 15; i++)
@@ -340,11 +347,13 @@ public class PlayScreenProcessManager : MonoBehaviour
             ScoreText.text = ((int)Math.Round(score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
         }
 
+        //  ↓なんで!=じゃないんだっけ
         if (JTextUsed == JTextTemp)
             return;
 
+        // 250ms経過しても次のAddscoreが発生していなければフェードアウト処理
         await Task.Delay(250);
-        if (JTextUsed == JTextTemp) // If there is no next Addscore...
+        if (JTextUsed == JTextTemp)
         {
             JTextFade = DOTween.ToAlpha(() => JudgeText.color, cchanger => JudgeText.color = cchanger, 0.0f, 0.2f);
             ATextFade = DOTween.ToAlpha(() => AddText.color, cchanger => AddText.color = cchanger, 0.0f, 0.2f);
