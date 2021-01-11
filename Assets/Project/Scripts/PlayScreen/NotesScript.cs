@@ -13,7 +13,7 @@ public class NotesScript : MonoBehaviour
     public PlayScreenProcessManager _playScreenProcessManager;
     // ------------------------------------------------------------------------------------
 
-    private int isInLineLevel = 0;
+    private int isInLineLevel = 0; // Which zone the notes exist. 機能全面変更予定
     private int currentTouch = 0;
     private KeyCode _lineKey; // Key code of this notes.
     private Vector3 deltaPosition; // Vector falling every frame.
@@ -34,7 +34,7 @@ public class NotesScript : MonoBehaviour
 
     void Update()
     {
-        if (PlayScreenProcessManager._isPlaying)
+        if (PlayScreenProcessManager._isPlaying) // Playing
         {
             //this.transform.position += deltaPosition * Time.deltaTime;
             if (stopNotesFlag)
@@ -50,7 +50,7 @@ public class NotesScript : MonoBehaviour
             if (isInLineLevel >= 1 && isInLineLevel <= 5 && !PlayScreenProcessManager._autoPlay) CheckInput(_lineKey);
             else currentTouch = 0; // Prevent Long press.
         }
-        if (!PlayScreenProcessManager._isPlaying && !stopNotesFlag)
+        if (!PlayScreenProcessManager._isPlaying && !stopNotesFlag) // Paused
         {
             rigidBody.velocity = Vector3.zero;
             stopNotesFlag = true;
