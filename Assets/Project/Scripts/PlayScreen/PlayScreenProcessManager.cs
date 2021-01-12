@@ -184,7 +184,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         baseScore = 1000000 / (logSqSum + (double)notesTotal - (double)denominator);
     }
 
-    private void CheckNextNotes()
+    private void CheckNextNotes() // != 0だと反転孤独線の譜面が正常に読み込めません． >=0はどうですか？
     {
         while (timing[notesCount] < (Time.time - startTime) && timing[notesCount] != 0) SpawnNotes(lineNum[notesCount++]);
     }
@@ -194,7 +194,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         Instantiate(Note[lineNum], new Vector3(-0.73f + (0.365f * lineNum), 5.4f, -0.57f), Quaternion.Euler(-30f, 0, 0));
     }
 
-    public async void Pause()
+    public async void Pause() // ポーズ機能
     {
         if (_isPlaying && !pausebuttonFlag)
         {
