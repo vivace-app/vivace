@@ -186,7 +186,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     private void CheckNextNotes() // != 0だと反転孤独線の譜面が正常に読み込めません． >=0はどうですか？
     {
-        while (timing[notesCount] < (Time.time - startTime) && timing[notesCount] >= 0) SpawnNotes(lineNum[notesCount++]);
+        while (timing[notesCount] < (Time.time - startTime) && timing[notesCount] != 0) SpawnNotes(lineNum[notesCount++]);
     }
 
     private void SpawnNotes(int lineNum)
