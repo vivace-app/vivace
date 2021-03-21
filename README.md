@@ -9,6 +9,9 @@ Creating rhythm game [VIVACE](https://smpny7.github.io/vivace-web/) with Unity.<
 Official Web Site: <https://smpny7.github.io/vivace-web/><br />
 -> To Receive Announcement: <https://oucrc.net>
 
+# Play Screen
+YouTube: https://youtu.be/wwzEH9N9eUk
+
 
 # Getting Started / スタートガイド
 
