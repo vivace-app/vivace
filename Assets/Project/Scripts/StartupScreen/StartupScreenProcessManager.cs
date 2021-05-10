@@ -185,7 +185,7 @@ public class StartupScreenProcessManager : MonoBehaviour
     private async void ScreenTransition()
     {
         await Task.Delay(1000);
-        SceneManager.LoadScene("DownloadScene");
+        SceneManager.LoadScene("SelectScene");
     }
 
     public void ButtonTappedController()

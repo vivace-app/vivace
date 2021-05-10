@@ -28,13 +28,13 @@ public class NotesScript : MonoBehaviour
         rigidBody = GetComponent<Rigidbody>();
         _lineKey = GameUtil.GetKeyCodeByLineNum(lineNum); // Get Key Code.
         this.transform.localScale -= new Vector3(0.285f, 0, 0.055f); // Move to initial position.
-        deltaPosition = PlayScreenProcessManager._deltaPosition; // Set fall vector per frame.
+        deltaPosition = PlayScreenProcessManager.FallPerFrame; // Set fall vector per frame.
         rigidBody.AddForce(0f, -0.625f * _playScreenProcessManager.notesSpeedIndex, -0.625f * _playScreenProcessManager.notesSpeedIndex * (float)Math.Sqrt(3), ForceMode.VelocityChange);
     }
 
     void Update()
     {
-        if (PlayScreenProcessManager._isPlaying) // Playing
+        if (PlayScreenProcessManager.IsPlaying) // Playing
         {
             //this.transform.position += deltaPosition * Time.deltaTime;
             if (stopNotesFlag)
@@ -47,10 +47,10 @@ public class NotesScript : MonoBehaviour
                 _playScreenProcessManager.MissTimingFunc();
                 Destroy(this.gameObject);
             }
-            if (isInLineLevel >= 1 && isInLineLevel <= 5 && !PlayScreenProcessManager._autoPlay) CheckInput(_lineKey);
+            if (isInLineLevel >= 1 && isInLineLevel <= 5 && !PlayScreenProcessManager.IsAutoPlay) CheckInput(_lineKey);
             else currentTouch = 0; // Prevent Long press.
         }
-        if (!PlayScreenProcessManager._isPlaying && !stopNotesFlag) // Paused
+        if (!PlayScreenProcessManager.IsPlaying && !stopNotesFlag) // Paused
         {
             rigidBody.velocity = Vector3.zero;
             stopNotesFlag = true;
@@ -60,7 +60,7 @@ public class NotesScript : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "GoodJudge" || other.gameObject.tag == "GreatJudge" || other.gameObject.tag == "PerfectJudge") isInLineLevel++;
-        if (other.gameObject.tag == "PerfectJudge" && PlayScreenProcessManager._autoPlay) AutoPlayFunc();
+        if (other.gameObject.tag == "PerfectJudge" && PlayScreenProcessManager.IsAutoPlay) AutoPlayFunc();
     }
 
     void OnTriggerExit(Collider other)

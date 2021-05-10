@@ -1,386 +1,431 @@
 ﻿using System;
-using System.IO;
 using System.Collections;
+using System.IO;
 using System.Threading.Tasks;
+using DG.Tweening;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
-using DG.Tweening;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class PlayScreenProcessManager : MonoBehaviour
 {
     // --- Attach from Unity --------------------------------------------------------------
-    public GameObject[] Note; // Attach 5 notes objects.
-    public GameObject PausePanel = null;
-    public RectTransform Background; // Background image for responsive.
-    public Text ComboText, ScoreText, JudgeText, AddText;
-    public Tweener JTextFade, JTextReduce, ATextFade, ATextReduce; // For Tweener animation.
+    [FormerlySerializedAs("Note")] public GameObject[] notes; // 落下する5レーン分のノーツオブジェクト.
+    [FormerlySerializedAs("PausePanel")] public GameObject pausePanel;
+    [FormerlySerializedAs("Background")] public RectTransform background;
+    [FormerlySerializedAs("ComboText")] public Text comboText;
+    [FormerlySerializedAs("ScoreText")] public Text scoreText;
+    [FormerlySerializedAs("JudgeText")] public Text judgeText;
+    [FormerlySerializedAs("AddText")] public Text addText;
     // ------------------------------------------------------------------------------------
 
     // --- External variables -------------------------------------------------------------
-    public static bool _autoPlay = false;
-    public static bool _isPlaying;
-    public static int _score = 0, _perfect = 0, _great = 0, _good = 0, _miss = 0;
-    public static Vector3 _deltaPosition; // Vector falling every frame.
+    public const bool IsAutoPlay = false; // 参照: NotesScript.
+    public static bool IsPlaying; // 参照: NotesScript.
+    public static int Score, Perfect, Great, Good, Miss; // 参照: ResultScreenProcessManager.
+    public float notesSpeedIndex = 5.0f; // 3.0f ~ 8.0f の値. 参照: NotesScript.
+
+    public static Vector3 FallPerFrame; // 参照: NotesScript.
     // ------------------------------------------------------------------------------------
 
     // --- Environment variables ----------------------------------------------------------
-    static readonly string registScoreApiUri = EnvDataStore.registScoreApiUri;
-    static readonly string[] musicTitles = MusicTitleDataStore.musicTitles;
+    private static readonly string RegistScoreApiUri = EnvDataStore.registScoreApiUri;
+
+    private static readonly string[] MusicTitles = MusicTitleDataStore.musicTitles;
     // ------------------------------------------------------------------------------------
 
     // Audio
-    private AudioSource playAudioSource;
-    private AudioClip playMusic;
-    private AudioSource[] judgeAudioSource;
+    private AudioSource _playAudioSource;
+    private AudioClip _playMusic;
+    private AudioSource[] _judgeAudioSources;
 
     // Color
-    private Color Perfect_c, Great_c, Good_c, Miss_c, Score_c;
+    private Color _perfectC, _greatC, _goodC, _missC, _scoreC;
 
-    // CSV data
-    private int[] lineNum = new int[2048];
-    private float[] timing = new float[2048];
+    // CSV
+    private readonly int[] _noteLaneNum = new int[2048];
+    private readonly float[] _noteTouchTime = new float[2048];
 
-    private bool alreadyPlayedFlag = false;
-    private bool pausebuttonFlag = false;
-    private bool lowGraphicsModeFlag;
-    private bool notesTouchSoundFlag;
-    private double score = 0, baseScore = 0, logSqSum = 0;
-    private double[] logSq; // Point increase border
-    private float startTime = 0, stopTime = 0;
-    public float notesSpeedIndex = 5.0f; // 3.0f ~ 8.0f
-    private int combo = 0, perfect = 0, great = 0, good = 0, miss = 0, notesTotal = 0, notesCount = 0, sepPoint = 50;
-    public int startTimingIndex; // Every 10ms / "+" -> slow / "-" ->fast
-    private int JTextUsed = 0; // Number of times JudgeText has been changed.
+    private bool _isEndOfPlay, _isPaused, _isLowGraphicsMode, _enableNotesTouchSound;
+    private double _score, _baseScore, _logSqSum;
+    private double[] _logSq; // 区分求積法での各分点（0～最大49）におけるlogの値
+    private float _startTime, _stopTime; // _stopTimeは一時停止の時刻を記録
+    private int _combo, _perfect, _great, _good, _miss, _totalNotes, _currentNote;
+    private int _startTimingIndex; // 判定調整 (正: 遅くタップする)
+    private int _jTextCounter; // JudgeText の変更回数
 
+    // Magic number
+    private const int SepPoint = 50;
+
+    // Tweener animation
+    private Tweener _jTextFade, _jTextReduce, _aTextFade, _aTextReduce;
     // ====================================================================================
 
     [Serializable]
     public class RegistScoreResponse
     {
         public bool success;
-        public string msg;
     }
 
     // ====================================================================================
 
-    async void Start()
+    private async void Start()
     {
-        // GUI Settings
-        ScreenResponsive();
+        // 初期化関連
+        BackgroundCover();
         TextInitialization();
         ColorInitialization();
         AudioInitialization();
         AdjustJudgeRange();
 
-        startTimingIndex = (PlayerPrefs.GetInt("TimingAdjustment", 5) - 5) * 10;
-        notesSpeedIndex = (float)(5.0f + (PlayerPrefs.GetInt("NotesFallSpeed", 5) - 5) * 0.5f);
-        _deltaPosition = (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * 0.6f * notesSpeedIndex;
+        _startTimingIndex = (PlayerPrefs.GetInt("TimingAdjustment", 5) - 5) * 10; // 判定調整
+        notesSpeedIndex = 5.0f + (PlayerPrefs.GetInt("NotesFallSpeed", 5) - 5) * 0.5f;
+        FallPerFrame = (Vector3.down + Vector3.back * (float) Math.Sqrt(3)) * 0.6f * notesSpeedIndex; // ノーツ落下速度
 
-        // Score Calculation
-        LoadCSV();
-        BaseScoreDecision();
+        LoadCsv();
+        BaseScoreCalculation();
 
-        _isPlaying = true;
+        IsPlaying = true;
+        
+        _startTime = Time.time;
+        await Task.Delay((int) ((7800 + 10 * _startTimingIndex) / notesSpeedIndex));
+        _playAudioSource.Play();
 
-        // Play
-        startTime = Time.time;
-        await Task.Delay((int)((7800 + 10 * startTimingIndex) / notesSpeedIndex));
-        playAudioSource.Play();
-        // await Task.Delay(10000);
-
-        alreadyPlayedFlag = true;
-        lowGraphicsModeFlag = (PlayerPrefs.GetInt("lowGraphicsMode", 1) == 1 ? true : false);
-        notesTouchSoundFlag = (PlayerPrefs.GetInt("NotesTouchSound", 1) == 1 ? true : false);
+        _isEndOfPlay = true;
+        _isLowGraphicsMode = PlayerPrefs.GetInt("lowGraphicsMode", 1) == 1;
+        _enableNotesTouchSound = PlayerPrefs.GetInt("NotesTouchSound", 1) == 1;
     }
 
-    void Update()
+    private void Update()
     {
-        if (_isPlaying) CheckNextNotes();
-        if (alreadyPlayedFlag && !playAudioSource.isPlaying)
-        {
-            alreadyPlayedFlag = false;
-            ResultSceneTransition();
-        }
+        if (IsPlaying) CheckNextNotes();
+        if (!_isEndOfPlay || _playAudioSource.isPlaying) return;
+        _isEndOfPlay = false;
+        ResultSceneTransition();
     }
 
-    private void ScreenResponsive()
+    /// <summary>
+    /// 背景画像を画面いっぱいに広げます．
+    /// </summary>
+    private void BackgroundCover()
     {
-        float scale = 1f;
+        var scale = 1f;
         if (Screen.width < 1920)
             scale = 1.5f;
         if (Screen.width < Screen.height)
-            scale = (Screen.height * 16) / (Screen.width * 9);
-        Background.sizeDelta = new Vector2(Screen.width * scale, Screen.height * scale);
+            scale = (float) (Screen.height * 16) / (Screen.width * 9);
+        background.sizeDelta = new Vector2(Screen.width * scale, Screen.height * scale);
     }
 
+    /// <summary>
+    /// スコアやコンボの表示を初期化します．
+    /// </summary>
     private void TextInitialization()
     {
-        AddText.text = "";
-        JudgeText.text = "";
-        ComboText.text = combo.ToString("D");
-        ScoreText.text = ((int)Math.Round(score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
+        addText.text = "";
+        judgeText.text = "";
+        comboText.text = _combo.ToString("D");
+        scoreText.text = ((int) Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
     }
 
+    /// <summary>
+    /// Perfect や Great などの色を設定します．
+    /// </summary>
     private void ColorInitialization()
     {
-        ColorUtility.TryParseHtmlString("#FF7DF2", out Perfect_c);
-        ColorUtility.TryParseHtmlString("#FF9C7D", out Great_c);
-        ColorUtility.TryParseHtmlString("#34E045", out Good_c);
-        ColorUtility.TryParseHtmlString("#8D8D8D", out Miss_c);
-        ColorUtility.TryParseHtmlString("#6C95FF", out Score_c);
+        ColorUtility.TryParseHtmlString("#FF7DF2", out _perfectC);
+        ColorUtility.TryParseHtmlString("#FF9C7D", out _greatC);
+        ColorUtility.TryParseHtmlString("#34E045", out _goodC);
+        ColorUtility.TryParseHtmlString("#8D8D8D", out _missC);
+        ColorUtility.TryParseHtmlString("#6C95FF", out _scoreC);
     }
 
+    /// <summary>
+    /// タッチ音や楽曲を設定します．
+    /// </summary>
     private void AudioInitialization()
     {
-        judgeAudioSource = GameObject.Find("SoundEffect").GetComponents<AudioSource>();
-        Debug.Log("music/" + musicTitles[SwipeMenu.selectedNumTmp]);
-        playMusic = Resources.Load<AudioClip>("music/" + musicTitles[SwipeMenu.selectedNumTmp]);
-        playAudioSource = gameObject.AddComponent<AudioSource>();
-        playAudioSource.clip = playMusic;
+        _judgeAudioSources = GameObject.Find("SoundEffect").GetComponents<AudioSource>();
+        _playAudioSource = gameObject.AddComponent<AudioSource>();
+        _playMusic = Resources.Load<AudioClip>("music/" + MusicTitles[SwipeMenu.selectedNumTmp]);
+        _playAudioSource.clip = _playMusic;
     }
 
+    /// <summary>
+    /// それぞれの判定幅を調整します．
+    /// </summary>
     private void AdjustJudgeRange()
     {
-        Transform PerfectRange = GameObject.Find("PerfectJudgeLine").GetComponent<Transform>();
-        PerfectRange.transform.localScale = new Vector3(1.8f, 0.1f, notesSpeedIndex * 1.2f * 0.12f);
-        Transform GreatRange = GameObject.Find("GreatJudgeLine").GetComponent<Transform>();
-        GreatRange.transform.localScale = new Vector3(1.8f, 0.1f, notesSpeedIndex * 1.2f * 0.18f);
-        Transform GoodRange = GameObject.Find("GoodJudgeLine").GetComponent<Transform>();
-        GoodRange.transform.localScale = new Vector3(1.8f, 0.1f, notesSpeedIndex * 1.2f * 0.2f);
+        var perfectRange = GameObject.Find("PerfectJudgeLine").GetComponent<Transform>();
+        perfectRange.transform.localScale = new Vector3(1.8f, 0.1f, notesSpeedIndex * 1.2f * 0.12f);
+        var greatRange = GameObject.Find("GreatJudgeLine").GetComponent<Transform>();
+        greatRange.transform.localScale = new Vector3(1.8f, 0.1f, notesSpeedIndex * 1.2f * 0.18f);
+        var goodRange = GameObject.Find("GoodJudgeLine").GetComponent<Transform>();
+        goodRange.transform.localScale = new Vector3(1.8f, 0.1f, notesSpeedIndex * 1.2f * 0.2f);
     }
 
-    private void LoadCSV()
+    /// <summary>
+    /// CSVの譜面データを配列に格納します．
+    /// </summary>
+    private void LoadCsv()
     {
-        Debug.Log("CSV/" + musicTitles[SwipeMenu.selectedNumTmp] + "_" + SelectScreenProcessManager.selectedLevel);
-        TextAsset csv = Resources.Load("CSV/" + musicTitles[SwipeMenu.selectedNumTmp] + "_" + SelectScreenProcessManager.selectedLevel) as TextAsset;
-        StringReader reader = new StringReader(csv.text);
+        if (!(Resources.Load("CSV/" + MusicTitles[SwipeMenu.selectedNumTmp] + "_" +
+                             SelectScreenProcessManager.selectedLevel) is TextAsset { } csv)) return;
+        var reader = new StringReader(csv.text);
         while (reader.Peek() > -1)
         {
-            string line = reader.ReadLine();
-            string[] values = line.Split(',');
-            timing[notesTotal] = float.Parse(values[0]);
-            lineNum[notesTotal++] = int.Parse(values[1]);
+            var line = reader.ReadLine();
+            if (line == null) continue;
+            var values = line.Split(',');
+            _noteTouchTime[_totalNotes] = float.Parse(values[0]);
+            _noteLaneNum[_totalNotes++] = int.Parse(values[1]);
         }
     }
 
-    // 区分求積法によるスコア計算の準備
-    private void BaseScoreDecision()
+    /// <summary>
+    /// 区分求積法によるスコア計算の値を用意しておきます．
+    /// </summary>
+    private void BaseScoreCalculation()
     {
-        int denominator;
-        logSq = new double[sepPoint];
+        _logSq = new double[SepPoint];
 
-        if (notesTotal >= sepPoint)
-            denominator = sepPoint;
-        else
-            denominator = notesTotal;
+        var denominator = _totalNotes >= SepPoint ? SepPoint : _totalNotes;
 
-        for (int i = 0; i < denominator; i++)
+        for (var i = 0; i < denominator; i++)
         {
-            logSq[i] = Math.Log10(1 + (9 * ((double)i + 1) / (double)denominator));
-            logSqSum += logSq[i];
+            _logSq[i] = Math.Log10(1 + (9 * ((double) i + 1) / denominator));
+            _logSqSum += _logSq[i];
         }
-        baseScore = 1000000 / (logSqSum + (double)notesTotal - (double)denominator);
+
+        _baseScore = 1000000 / (_logSqSum + _totalNotes - denominator);
     }
 
+    /// <summary>
+    /// 次のノーツがあるか確認し，ある場合は生成します．
+    /// </summary>
     private void CheckNextNotes() // != 0だと反転孤独線の譜面が正常に読み込めません． >=0はどうですか？
     {
-        while (timing[notesCount] < (Time.time - startTime) && timing[notesCount] != 0) SpawnNotes(lineNum[notesCount++]);
+        while (_noteTouchTime[_currentNote] < (Time.time - _startTime) && _noteTouchTime[_currentNote] != 0)
+            SpawnNotes(_noteLaneNum[_currentNote++]);
     }
 
+    /// <summary>
+    /// ノーツを生成します．
+    /// </summary>
     private void SpawnNotes(int lineNum)
     {
-        Instantiate(Note[lineNum], new Vector3(-0.73f + (0.365f * lineNum), 5.4f, -0.57f), Quaternion.Euler(-30f, 0, 0));
+        Instantiate(notes[lineNum], new Vector3(-0.73f + (0.365f * lineNum), 5.4f, -0.57f),
+            Quaternion.Euler(-30f, 0, 0));
     }
 
-    public async void Pause() // ポーズ機能
+    /// <summary>
+    /// プレイを一時停止させます．
+    /// </summary>
+    public async void Pause()
     {
-        if (_isPlaying && !pausebuttonFlag)
+        switch (IsPlaying)
         {
-            _isPlaying = false;
-            stopTime = Time.time;
-            playAudioSource.pitch = 0.0f;
-            pausebuttonFlag = true;
-            PausePanel.SetActive(true);
-        }
-        else if (!_isPlaying && pausebuttonFlag)
-        {
-            PausePanel.SetActive(false);
-            pausebuttonFlag = false;
-            for (int i = 3; i > 0; i--)
+            case true when !_isPaused:
+                IsPlaying = false;
+                _stopTime = Time.time;
+                _playAudioSource.pitch = 0.0f;
+                _isPaused = true;
+                pausePanel.SetActive(true);
+                break;
+            case false when _isPaused:
             {
+                pausePanel.SetActive(false);
+                _isPaused = false;
+                for (var i = 3; i > 0; i--)
+                {
+                    await Task.Delay(1000);
+                    SoundEffect(2);
+                }
+
                 await Task.Delay(1000);
-                SoundEffect(2);
+                IsPlaying = true;
+                _startTime += Time.time - _stopTime;
+                await Task.Delay(10);
+                _playAudioSource.pitch = 1.0f;
+                break;
             }
-            await Task.Delay(1000);
-            _isPlaying = true;
-            startTime = startTime + (Time.time - stopTime);
-            await Task.Delay(10);
-            playAudioSource.pitch = 1.0f;
         }
     }
 
-    public void SelectSceneTransition()
-    {
-        SceneManager.LoadScene("SelectScene");
-    }
+    /// <summary>
+    /// 曲選択画面に戻ります．
+    /// </summary>
+    public void SelectSceneTransition() => SceneManager.LoadScene("SelectScene");
 
+    /// <summary>
+    /// Perfect 時の動作です．
+    /// </summary>
     public void PerfectTimingFunc()
     {
-        if (notesTouchSoundFlag)
+        if (_enableNotesTouchSound)
             SoundEffect(0);
         AddScore(0);
     }
 
+    /// <summary>
+    /// Great 時の動作です．
+    /// </summary>
     public void GreatTimingFunc()
     {
-        if (notesTouchSoundFlag)
+        if (_enableNotesTouchSound)
             SoundEffect(1);
         AddScore(1);
     }
 
+    /// <summary>
+    /// Good 時の動作です．
+    /// </summary>
     public void GoodTimingFunc()
     {
-        if (notesTouchSoundFlag)
+        if (_enableNotesTouchSound)
             SoundEffect(2);
         AddScore(2);
     }
 
-    public void MissTimingFunc()
-    {
-        AddScore(3);
-    }
+    /// <summary>
+    /// Miss 時の動作です．
+    /// </summary>
+    public void MissTimingFunc() => AddScore(3);
 
-    public void SoundEffect(int num)
-    {
+    /// <summary>
+    /// タッチサウンドを再生します．
+    /// </summary>
+    public void SoundEffect(int num) =>
         //0：Perfect，1：Great，2：Good，3：Miss
-        judgeAudioSource[num].PlayOneShot(judgeAudioSource[num].clip);
-    }
+        _judgeAudioSources[num].PlayOneShot(_judgeAudioSources[num].clip);
 
-    public async void AddScore(int num) // 引数は判定，0：Perfect，1：Great，2：Good，3：Miss
+    /// <summary>
+    /// スコアを加算します．
+    /// </summary>
+    public async void AddScore(int num) // 0：Perfect，1：Great，2：Good，3：Miss
     {
-        double magni = 0, scoreTemp = 0, JTextTemp = ++JTextUsed;
-        Vector3 vl = new Vector3(1.5f, 1.5f, 1.5f);
-        Vector3 vo = Vector3.one;
+        double magni = 0, scoreTemp = 0, jTextTemp = ++_jTextCounter;
+        var vl = new Vector3(1.5f, 1.5f, 1.5f);
+        var vo = Vector3.one;
 
         // アニメーションの初期化
-        if (JTextFade != null)
-            JTextFade.Kill();
-        if (JTextReduce != null)
-            JTextReduce.Kill();
-        if (ATextFade != null)
-            ATextFade.Kill();
-        if (ATextReduce != null)
-            ATextReduce.Kill();
+        _jTextFade?.Kill();
+        _jTextReduce?.Kill();
+        _aTextFade?.Kill();
+        _aTextReduce?.Kill();
 
         switch (num)
-        { // 判定による分岐，
+        {
             case 0:
                 magni = 1;
-                combo++;
-                perfect++;
-                JudgeText.transform.localScale = vl;
-                JTextReduce = JudgeText.transform.DOScale(vo, 0.2f);
-                JudgeText.color = Perfect_c;
-                JudgeText.text = "Perfect!";
+                _combo++;
+                _perfect++;
+                judgeText.transform.localScale = vl;
+                _jTextReduce = judgeText.transform.DOScale(vo, 0.2f);
+                judgeText.color = _perfectC;
+                judgeText.text = "Perfect!";
                 break;
             case 1:
                 magni = 0.75;
-                combo++;
-                great++;
-                JudgeText.transform.localScale = vl;
-                JTextReduce = JudgeText.transform.DOScale(vo, 0.2f);
-                JudgeText.color = Great_c;
-                JudgeText.text = "Great!";
+                _combo++;
+                _great++;
+                judgeText.transform.localScale = vl;
+                _jTextReduce = judgeText.transform.DOScale(vo, 0.2f);
+                judgeText.color = _greatC;
+                judgeText.text = "Great!";
                 break;
             case 2:
                 magni = 0.25;
-                combo = 0;
-                good++;
-                JudgeText.transform.localScale = vo;
-                JudgeText.color = Good_c;
-                JudgeText.text = "Good!";
+                _combo = 0;
+                _good++;
+                judgeText.transform.localScale = vo;
+                judgeText.color = _goodC;
+                judgeText.text = "Good!";
                 break;
             case 3:
                 magni = 0;
-                combo = 0;
-                miss++;
-                JudgeText.transform.localScale = vo;
-                JudgeText.color = Miss_c;
-                JudgeText.text = "Miss!";
+                _combo = 0;
+                _miss++;
+                judgeText.transform.localScale = vo;
+                judgeText.color = _missC;
+                judgeText.text = "Miss!";
                 break;
         }
 
         // コンボ数を更新
-        ComboText.text = combo.ToString("D");
+        comboText.text = _combo.ToString("D");
 
         // 区分求積法による加算スコアの計算
-        if (combo <= sepPoint && combo > 0)
-            scoreTemp = baseScore * logSq[combo - 1] * magni;
-        else if (combo <= sepPoint)
-            scoreTemp = baseScore * logSq[0] * magni;
-        else
-            scoreTemp = baseScore * magni;
+        scoreTemp = (_combo <= SepPoint) switch
+        {
+            true when _combo > 0 => _baseScore * _logSq[_combo - 1] * magni,
+            true => _baseScore * _logSq[0] * magni,
+            _ => _baseScore * magni
+        };
 
         // 加算スコア表示の文字色を変更
-        AddText.color = Score_c;
+        addText.color = _scoreC;
         // 加算スコア表示の値を更新
-        AddText.text = "+" + ((int)Math.Round(scoreTemp, 0, MidpointRounding.AwayFromZero)).ToString("D");
+        addText.text = "+" + ((int) Math.Round(scoreTemp, 0, MidpointRounding.AwayFromZero)).ToString("D");
         // アニメーション
-        AddText.transform.localScale = vl;
-        ATextReduce = AddText.transform.DOScale(vo, 0.2f);
+        addText.transform.localScale = vl;
+        _aTextReduce = addText.transform.DOScale(vo, 0.2f);
 
         // 軽量化設定によってはスコアのパラパラ表示を省略
-        if (!lowGraphicsModeFlag)
+        if (!_isLowGraphicsMode)
         {
-            for (int i = 0; i < 15; i++)
+            for (var i = 0; i < 15; i++)
             {
-                score += scoreTemp / 15;
-                ScoreText.text = ((int)Math.Round(score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
+                _score += scoreTemp / 15;
+                scoreText.text = ((int) Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
                 await Task.Delay(33);
             }
         }
         else
         {
-            score += scoreTemp;
-            ScoreText.text = ((int)Math.Round(score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
+            _score += scoreTemp;
+            scoreText.text = ((int) Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
         }
 
         //  ↓なんで!=じゃないんだっけ
-        if (JTextUsed == JTextTemp)
-            return;
+        if (_jTextCounter == jTextTemp) return;
 
-        // 250ms経過しても次のAddscoreが発生していなければフェードアウト処理
+        // 250ms経過しても次のAddScoreが発生していなければフェードアウト処理
         await Task.Delay(250);
-        if (JTextUsed == JTextTemp)
-        {
-            JTextFade = DOTween.ToAlpha(() => JudgeText.color, cchanger => JudgeText.color = cchanger, 0.0f, 0.2f);
-            ATextFade = DOTween.ToAlpha(() => AddText.color, cchanger => AddText.color = cchanger, 0.0f, 0.2f);
-        }
-        return;
+        if (_jTextCounter != jTextTemp) return;
+        _jTextFade = DOTween.ToAlpha(() => judgeText.color, cchanger => judgeText.color = cchanger, 0.0f, 0.2f);
+        _aTextFade = DOTween.ToAlpha(() => addText.color, cchanger => addText.color = cchanger, 0.0f, 0.2f);
     }
 
+    /// <summary>
+    /// スコア結果を表示します．
+    /// </summary>
     public async void ResultSceneTransition()
     {
-        _score = (int)Math.Round(score, 0, MidpointRounding.AwayFromZero);
-        _perfect = perfect;
-        _great = great;
-        _good = good;
-        _miss = miss;
-        StartCoroutine(RegistScoreNetworkProcess(musicTitles[SwipeMenu.selectedNumTmp], SelectScreenProcessManager.selectedLevel, _score));
+        Score = (int) Math.Round(_score, 0, MidpointRounding.AwayFromZero);
+        Perfect = _perfect;
+        Great = _great;
+        Good = _good;
+        Miss = _miss;
+        StartCoroutine(RegistScoreNetworkProcess(MusicTitles[SwipeMenu.selectedNumTmp],
+            SelectScreenProcessManager.selectedLevel, Score));
         await Task.Delay(1000);
         SceneManager.LoadScene("ResultScene");
     }
 
+    /// <summary>
+    /// データベースにユーザとスコアを送信します．
+    /// </summary>
     IEnumerator RegistScoreNetworkProcess(string selectedMusic, string selectedLevel, int score)
     {
-        WWWForm form = new WWWForm();
+        var form = new WWWForm();
         form.AddField("token", PlayerPrefs.GetString("jwt"));
         form.AddField("music", selectedMusic);
         form.AddField("level", selectedLevel);
-        form.AddField("score", _score);
-        UnityWebRequest www = UnityWebRequest.Post(registScoreApiUri, form);
+        form.AddField("score", Score);
+        var www = UnityWebRequest.Post(RegistScoreApiUri, form);
         yield return www.SendWebRequest();
         if (www.isNetworkError)
         {
@@ -392,13 +437,13 @@ public class PlayScreenProcessManager : MonoBehaviour
         }
     }
 
-    private void ResponseCheck(string data)
+    /// <summary>
+    /// APIサーバからのレスポンスを確認します．
+    /// </summary>
+    private static void ResponseCheck(string data)
     {
-        RegistScoreResponse jsnData = JsonUtility.FromJson<RegistScoreResponse>(data);
+        var jsnData = JsonUtility.FromJson<RegistScoreResponse>(data);
 
-        if (jsnData.success)
-            Debug.Log("スコアを登録しました");
-        else
-            Debug.Log("スコアの登録に失敗しました");
+        Debug.Log(jsnData.success ? "スコアを登録しました" : "スコアの登録に失敗しました");
     }
 }

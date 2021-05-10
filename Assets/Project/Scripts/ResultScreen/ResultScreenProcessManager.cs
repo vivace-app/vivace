@@ -162,16 +162,16 @@ public class ResultScreenProcessManager : MonoBehaviour
 
     private async void CountsDelayer()
     {
-        CountsAnimation(15, PlayScreenProcessManager._perfect, Res_Perfect);
+        CountsAnimation(15, PlayScreenProcessManager.Perfect, Res_Perfect);
         await Task.Delay(250);
-        CountsAnimation(15, PlayScreenProcessManager._great, Res_Great);
+        CountsAnimation(15, PlayScreenProcessManager.Great, Res_Great);
         await Task.Delay(250);
-        CountsAnimation(15, PlayScreenProcessManager._good, Res_Good);
+        CountsAnimation(15, PlayScreenProcessManager.Good, Res_Good);
         await Task.Delay(250);
-        CountsAnimation(15, PlayScreenProcessManager._miss, Res_Miss);
+        CountsAnimation(15, PlayScreenProcessManager.Miss, Res_Miss);
         await Task.Delay(250);
-        CountsAnimation(45, PlayScreenProcessManager._score, Res_Total);
+        CountsAnimation(45, PlayScreenProcessManager.Score, Res_Total);
         await Task.Delay(250);
-        Ranker(PlayScreenProcessManager._score);
+        Ranker(PlayScreenProcessManager.Score);
     }
 }
