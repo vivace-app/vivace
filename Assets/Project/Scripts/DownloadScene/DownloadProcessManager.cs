@@ -17,6 +17,7 @@ public class DownloadProcessManager : MonoBehaviour
 
     // --- External variables -------------------------------------------------------------
     public static AssetBundle[] AssetBundle; // 参照: SwipeMenu.
+
     public static List<MusicList> MusicData; // 参照: SwipeMenu.
     // ------------------------------------------------------------------------------------
 
@@ -26,7 +27,7 @@ public class DownloadProcessManager : MonoBehaviour
     private static readonly string DownloadCheckApiUri = EnvDataStore.downloadCheckApiUri;
     // ------------------------------------------------------------------------------------
 
-    private int _musicCounts = 999999;
+    private int _musicCounts;
     private int _downloadedMusicCounts;
 
     // ====================================================================================
@@ -61,7 +62,7 @@ public class DownloadProcessManager : MonoBehaviour
 
     private void Update()
     {
-        if (_downloadedMusicCounts == _musicCounts) SelectScreenTransition();
+        if (_musicCounts != 0 && _downloadedMusicCounts == _musicCounts) SelectScreenTransition();
     }
 
     /// <summary>
@@ -134,6 +135,13 @@ public class DownloadProcessManager : MonoBehaviour
         MusicData = jsnData.music;
         _musicCounts = MusicData.Count;
         AssetBundle = new AssetBundle[_musicCounts];
+        
+        var cachePath = System.IO.Path.Combine(Application.persistentDataPath, "cache");
+        System.IO.Directory.CreateDirectory(cachePath);
+        var cache = Caching.AddCache(cachePath);
+        Caching.currentCacheForWriting = cache;
+        cache.expirationDelay = 200;
+        
         foreach (var music in MusicData)
         {
             switch (Application.platform)
@@ -163,18 +171,20 @@ public class DownloadProcessManager : MonoBehaviour
     /// </summary>
     private IEnumerator DownloadAssetBundle(MusicList music, string downloadUrl)
     {
-        Debug.Log(music.title + "のダウンロードを開始します");
-        using var request = UnityWebRequestAssetBundle.GetAssetBundle(downloadUrl);
+        var c = new CachedAssetBundle
+        {
+            name = music.name,
+            hash = Hash128.Parse("hash128")
+        };
+        
+        using var request = UnityWebRequestAssetBundle.GetAssetBundle(downloadUrl, c);
         yield return request.SendWebRequest();
 
         switch (request.result)
         {
             case UnityWebRequest.Result.Success:
-                var handler = request.downloadHandler as DownloadHandlerAssetBundle;
-                if (handler != null)
-                {
+                if (request.downloadHandler is DownloadHandlerAssetBundle handler)
                     AssetBundle[music.id - 1] = handler.assetBundle;
-                }
 
                 _downloadedMusicCounts++;
                 downloadPercentage.text = _downloadedMusicCounts + "/" + _musicCounts;
