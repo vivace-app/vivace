@@ -24,7 +24,8 @@ public class SwipeMenu : MonoBehaviour
     public HorizontalLayoutGroup ScrollViewPadding;
     public Text yourHighScoreText;
     public Text onlineHighScoreText;
-    public ToggleGroup[] toggleGroup;
+    public GameObject cardTemplate;
+    private ToggleGroup[] _toggleGroup;
     public static int selectedNumTmp;
     private string selectedLevelTmp;
 
@@ -65,6 +66,7 @@ public class SwipeMenu : MonoBehaviour
         distance = 1f / (pos.Length - 1f);
         for (var i = 0; i < pos.Length; i++) pos[i] = distance * i;
         BackgroundCover();
+        CardCloner();
         GetScoresController(0);
         SetCardInformation();
         SetPreviewMusic();
@@ -83,7 +85,7 @@ public class SwipeMenu : MonoBehaviour
         for (var i = 0; i < pos.Length; i++)
         {
             if (!(scroll_pos < pos[i] + distance / 2) || !(scroll_pos > pos[i] - distance / 2)) continue;
-            
+
             // カードを拡大する
             transform.GetChild(i).localScale =
                 Vector2.Lerp(transform.GetChild(i).localScale, new Vector2(1f, 1f), 0.1f);
@@ -165,13 +167,30 @@ public class SwipeMenu : MonoBehaviour
     }
 
     /// <summary>
+    /// 曲数だけカードを複製します．
+    /// </summary>
+    private void CardCloner()
+    {
+        for (var i = 1; i < _MusicData.Count; i++)
+        {
+            var clone = Instantiate(cardTemplate, cardTemplate.transform.parent, true);
+            if (clone is null) continue;
+            clone.transform.localPosition = cardTemplate.transform.localPosition;
+            clone.transform.localScale = cardTemplate.transform.localScale;
+        }
+
+        _toggleGroup = new ToggleGroup[_MusicData.Count];
+        for (var i = 0; i < _MusicData.Count; i++)
+            _toggleGroup[i] = transform.GetChild(i).Find("Easy").GetComponent<ToggleGroup>();
+    }
+
+    /// <summary>
     /// カードの情報を設定します．
     /// </summary>
     private void SetCardInformation()
     {
         foreach (var music in _MusicData)
         {
-            Debug.Log("Sprite: " + _MusicData[music.id - 1].name + "_artwork");
             transform.GetChild(music.id - 1).Find("Title").GetComponent<Text>().text = _MusicData[music.id - 1].title;
             transform.GetChild(music.id - 1).Find("Artist").GetComponent<Text>().text = _MusicData[music.id - 1].artist;
             var artworkSprite =
@@ -179,7 +198,7 @@ public class SwipeMenu : MonoBehaviour
             transform.GetChild(music.id - 1).Find("Artwork").GetComponent<Image>().sprite = artworkSprite;
         }
     }
-    
+
     /// <summary>
     /// プレビュー曲をAssetBundleから読み込みます．
     /// </summary>
@@ -218,7 +237,7 @@ public class SwipeMenu : MonoBehaviour
     /// </summary>
     public void GetScoresController(int selectedNum)
     {
-        var selectedLevel = toggleGroup[selectedNum].ActiveToggles()
+        var selectedLevel = _toggleGroup[selectedNum].ActiveToggles()
             .First().GetComponentsInChildren<Text>()
             .First(t => t.name == "Label").text;
         if (selectedNumTmp != selectedNum || selectedLevel != selectedLevelTmp)
@@ -242,7 +261,7 @@ public class SwipeMenu : MonoBehaviour
         form.AddField("level", selectedLevel);
         var request = UnityWebRequest.Post(getMyScoreApiUri, form);
         yield return request.SendWebRequest();
-        
+
         switch (request.result)
         {
             case UnityWebRequest.Result.Success:
@@ -284,7 +303,7 @@ public class SwipeMenu : MonoBehaviour
         form.AddField("level", selectedLevel);
         var request = UnityWebRequest.Post(getOnlineScoreApiUri, form);
         yield return request.SendWebRequest();
-        
+
         switch (request.result)
         {
             case UnityWebRequest.Result.Success:
