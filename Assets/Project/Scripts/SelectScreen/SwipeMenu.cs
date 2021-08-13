@@ -38,7 +38,7 @@ public class SwipeMenu : MonoBehaviour
 
     // ------------------------------------------------------------------------------------
 
-    private const string GetMyScoreApiUri = EnvDataStore.ApiUri + "/myScore";
+    private const string GetMyScoreApiUri = EnvDataStore.ApiUri + "/auth/myScore";
     private const string GetOnlineScoreApiUri = EnvDataStore.ApiUri + "/topScore";
     
     // ------------------------------------------------------------------------------------

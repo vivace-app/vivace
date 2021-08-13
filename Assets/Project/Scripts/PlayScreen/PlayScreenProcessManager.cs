@@ -34,7 +34,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     // ------------------------------------------------------------------------------------
 
     // --- Environment variables ----------------------------------------------------------
-    private const string RegisterScoreApiUri = EnvDataStore.ApiUri + "/registScore";
+    private const string RegisterScoreApiUri = EnvDataStore.ApiUri + "/auth/registScore";
     // ------------------------------------------------------------------------------------
 
     // Asset Bundle
