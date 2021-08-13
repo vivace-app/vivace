@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Project.Scripts;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
@@ -22,9 +23,9 @@ public class DownloadProcessManager : MonoBehaviour
     // ------------------------------------------------------------------------------------
 
     // --- Environment variables ----------------------------------------------------------
-    private static readonly string ThisVersion = EnvDataStore.thisVersion;
+    private const string ThisVersion = EnvDataStore.ThisVersion;
 
-    private static readonly string DownloadCheckApiUri = EnvDataStore.downloadCheckApiUri;
+    private const string DownloadCheckApiUri = EnvDataStore.ApiUri + "/downloadCheck";
     // ------------------------------------------------------------------------------------
 
     private int _musicCounts;

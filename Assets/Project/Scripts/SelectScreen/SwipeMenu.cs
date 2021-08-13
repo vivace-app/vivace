@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Project.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
@@ -37,11 +38,9 @@ public class SwipeMenu : MonoBehaviour
 
     // ------------------------------------------------------------------------------------
 
-    static readonly string getMyScoreApiUri = EnvDataStore.getMyScoreApiUri;
-
-    static readonly string getOnlineScoreApiUri = EnvDataStore.getOnlineScoreApiUri;
-    // static readonly string[] musicTitles = MusicTitleDataStore.musicTitles;
-
+    private const string GetMyScoreApiUri = EnvDataStore.ApiUri + "/myScore";
+    private const string GetOnlineScoreApiUri = EnvDataStore.ApiUri + "/topScore";
+    
     // ------------------------------------------------------------------------------------
 
     [Serializable]
@@ -259,7 +258,7 @@ public class SwipeMenu : MonoBehaviour
         form.AddField("token", PlayerPrefs.GetString("jwt"));
         form.AddField("music", selectedMusic);
         form.AddField("level", selectedLevel);
-        var request = UnityWebRequest.Post(getMyScoreApiUri, form);
+        var request = UnityWebRequest.Post(GetMyScoreApiUri, form);
         yield return request.SendWebRequest();
 
         switch (request.result)
@@ -301,7 +300,7 @@ public class SwipeMenu : MonoBehaviour
         var form = new WWWForm();
         form.AddField("music", selectedMusic);
         form.AddField("level", selectedLevel);
-        var request = UnityWebRequest.Post(getOnlineScoreApiUri, form);
+        var request = UnityWebRequest.Post(GetOnlineScoreApiUri, form);
         yield return request.SendWebRequest();
 
         switch (request.result)

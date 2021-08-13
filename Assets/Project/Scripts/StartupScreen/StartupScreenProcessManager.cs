@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Project.Scripts;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
@@ -35,10 +36,10 @@ public class StartupScreenProcessManager : MonoBehaviour
 
     // ------------------------------------------------------------------------------------
 
-    static readonly string thisVersion = EnvDataStore.thisVersion;
-    static readonly string licenceApiUri = EnvDataStore.licenceApiUri;
-    static readonly string registerApiUri = EnvDataStore.registerApiUri;
-    static readonly string recoveryApiUri = EnvDataStore.recoveryApiUri;
+    private const string ThisVersion = EnvDataStore.ThisVersion;
+    private const string LicenceApiUri = EnvDataStore.ApiUri + "/license";
+    private const string RegisterApiUri = EnvDataStore.ApiUri + "/register";
+    private const string RecoveryApiUri = EnvDataStore.ApiUri + "/recovery";
     static readonly bool ignoreNetworkProcess = false; // Allow setting to true only on emulator.
 
     // ------------------------------------------------------------------------------------
@@ -80,7 +81,7 @@ public class StartupScreenProcessManager : MonoBehaviour
         // PlayerPrefs.DeleteAll(); //ユーザ情報を初期化したい場合にコメントアウトを解除
         ScreenResponsive();
         audioSource = GetComponent<AudioSource>();
-        this.showVersion.text = "Ver." + thisVersion;
+        this.showVersion.text = "Ver." + ThisVersion;
         await Task.Delay(1000);
         _touchableFlag = true;
     }
@@ -123,7 +124,7 @@ public class StartupScreenProcessManager : MonoBehaviour
         else
         {
             showConnecting.text = "Connecting Server ...";
-            var request = UnityWebRequest.Get(licenceApiUri);
+            var request = UnityWebRequest.Get(LicenceApiUri);
             yield return request.SendWebRequest();
             
             switch (request.result)
@@ -163,13 +164,13 @@ public class StartupScreenProcessManager : MonoBehaviour
 
             foreach (versionList x in jsnData.version)
             {
-                if (thisVersion == latestVersion)
+                if (ThisVersion == latestVersion)
                 {
                     this.showConnecting.text = "";
                     UserCheck();
                     break;
                 }
-                else if (thisVersion == x.version)
+                else if (ThisVersion == x.version)
                 {
                     dtLocal = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
                     dtServer = DateTime.Parse(x.expirationDate);
@@ -300,7 +301,7 @@ public class StartupScreenProcessManager : MonoBehaviour
             this.showConnecting.text = "Connecting Server ...";
             WWWForm form = new WWWForm();
             form.AddField("name", this.inputUserName.text);
-            UnityWebRequest www = UnityWebRequest.Post(registerApiUri, form);
+            UnityWebRequest www = UnityWebRequest.Post(RegisterApiUri, form);
             yield return www.SendWebRequest();
             if (www.isNetworkError)
             {
@@ -346,7 +347,7 @@ public class StartupScreenProcessManager : MonoBehaviour
             this.showConnecting.text = "Connecting Server ...";
             WWWForm form = new WWWForm();
             form.AddField("code", this.inputUserName.text);
-            UnityWebRequest www = UnityWebRequest.Post(recoveryApiUri, form);
+            UnityWebRequest www = UnityWebRequest.Post(RecoveryApiUri, form);
             yield return www.SendWebRequest();
             if (www.isNetworkError)
             {

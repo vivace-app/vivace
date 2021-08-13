@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Project.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
@@ -20,7 +21,7 @@ public class ResultScreenProcessManager : MonoBehaviour
 
     // ------------------------------------------------------------------------------------
 
-    static readonly string topTenScoreApiUri = EnvDataStore.topTenScoreApiUri;
+    private const string TopTenScoreApiUri = EnvDataStore.ApiUri + "/topTenScore";
 
     // ------------------------------------------------------------------------------------
 
@@ -82,7 +83,7 @@ public class ResultScreenProcessManager : MonoBehaviour
         WWWForm form = new WWWForm();
         form.AddField("music", _MusicData[SwipeMenu.selectedNumTmp].name);
         form.AddField("level", SelectScreenProcessManager.selectedLevel);
-        UnityWebRequest www = UnityWebRequest.Post(topTenScoreApiUri, form);
+        UnityWebRequest www = UnityWebRequest.Post(TopTenScoreApiUri, form);
         yield return www.SendWebRequest();
         if (www.isNetworkError || www.isHttpError)
         {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using DG.Tweening;
+using Project.Scripts;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
@@ -33,7 +34,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     // ------------------------------------------------------------------------------------
 
     // --- Environment variables ----------------------------------------------------------
-    private static readonly string RegistScoreApiUri = EnvDataStore.registScoreApiUri;
+    private const string RegisterScoreApiUri = EnvDataStore.ApiUri + "/registScore";
     // ------------------------------------------------------------------------------------
 
     // Asset Bundle
@@ -438,7 +439,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         form.AddField("music", selectedMusic);
         form.AddField("level", selectedLevel);
         form.AddField("score", Score);
-        var www = UnityWebRequest.Post(RegistScoreApiUri, form);
+        var www = UnityWebRequest.Post(RegisterScoreApiUri, form);
         yield return www.SendWebRequest();
         if (www.isNetworkError)
         {
