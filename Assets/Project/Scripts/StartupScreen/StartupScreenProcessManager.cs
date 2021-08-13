@@ -10,7 +10,6 @@ using UnityEngine.UI;
 
 public class StartupScreenProcessManager : MonoBehaviour
 {
-
     private AudioSource audioSource;
     public AudioClip sound;
     public GameObject panel = null;
@@ -118,21 +117,34 @@ public class StartupScreenProcessManager : MonoBehaviour
         Background.sizeDelta = new Vector2(Screen.width * scale, Screen.height * scale);
     }
 
-    IEnumerator NetworkProcess()
+    private IEnumerator NetworkProcess()
     {
-        if (ignoreNetworkProcess)
-        {
-            UserCheck();
-        }
+        if (ignoreNetworkProcess) UserCheck();
         else
         {
-            this.showConnecting.text = "Connecting Server ...";
-            UnityWebRequest www = UnityWebRequest.Get(licenceApiUri);
-            yield return www.SendWebRequest();
-            if (www.isNetworkError || www.isHttpError)
-                ShowDialog(1, 0);
-            else
-                LicenseCheck(www.downloadHandler.text);
+            showConnecting.text = "Connecting Server ...";
+            var request = UnityWebRequest.Get(licenceApiUri);
+            yield return request.SendWebRequest();
+            
+            switch (request.result)
+            {
+                case UnityWebRequest.Result.Success:
+                    Debug.Log("リクエスト成功");
+                    LicenseCheck(request.downloadHandler.text);
+                    break;
+
+                case UnityWebRequest.Result.ConnectionError:
+                case UnityWebRequest.Result.ProtocolError:
+                case UnityWebRequest.Result.DataProcessingError:
+                    Debug.Log("リクエスト失敗");
+                    ShowDialog(1, 0);
+                    break;
+
+                case UnityWebRequest.Result.InProgress:
+                    Debug.Log("リクエスト中");
+                    break;
+                default: throw new ArgumentOutOfRangeException();
+            }
         }
     }
 
@@ -182,10 +194,10 @@ public class StartupScreenProcessManager : MonoBehaviour
         }
     }
 
-    private async void ScreenTransition()
+    public async void ScreenTransition()
     {
         await Task.Delay(1000);
-        SceneManager.LoadScene("SelectScene");
+        SceneManager.LoadScene("DownloadScene");
     }
 
     public void ButtonTappedController()
@@ -217,7 +229,8 @@ public class StartupScreenProcessManager : MonoBehaviour
             case 0:
                 this.messageTitle.text = "NOTE";
                 this.messageTitle.color = new Color(1f / 255f, 164f / 255f, 255f / 255f);
-                this.messageText.text = "The latest version has been released.\nThis version will expire in " + day + " days.";
+                this.messageText.text = "The latest version has been released.\nThis version will expire in " +
+                                        day + " days.";
                 this.messageButtonLabel.text = "Continue";
                 this.messageButtonImage.sprite = messageButtonSpriteInfo;
                 this.showConnecting.text = "";
@@ -244,7 +257,8 @@ public class StartupScreenProcessManager : MonoBehaviour
             case 3:
                 this.messageTitle.text = "CAUTION !";
                 this.messageTitle.color = new Color(255f / 255f, 92f / 255f, 1f / 255f);
-                this.messageText.text = "Support for this version has ended.\nFor details, see our official website.";
+                this.messageText.text =
+                    "Support for this version has ended.\nFor details, see our official website.";
                 this.messageButtonImage.sprite = messageButtonSpriteError;
                 this.messageButtonLabel.text = "Restart";
                 this.showConnecting.text = "";
