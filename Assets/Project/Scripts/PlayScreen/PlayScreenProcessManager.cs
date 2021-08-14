@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using DG.Tweening;
+using Project.Scripts;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
@@ -18,6 +20,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     [FormerlySerializedAs("ComboText")] public Text comboText;
     [FormerlySerializedAs("ScoreText")] public Text scoreText;
     [FormerlySerializedAs("JudgeText")] public Text judgeText;
+
     [FormerlySerializedAs("AddText")] public Text addText;
     // ------------------------------------------------------------------------------------
 
@@ -31,10 +34,11 @@ public class PlayScreenProcessManager : MonoBehaviour
     // ------------------------------------------------------------------------------------
 
     // --- Environment variables ----------------------------------------------------------
-    private static readonly string RegistScoreApiUri = EnvDataStore.registScoreApiUri;
-
-    private static readonly string[] MusicTitles = MusicTitleDataStore.musicTitles;
+    private const string RegisterScoreApiUri = EnvDataStore.ApiUri + "/auth/registScore";
     // ------------------------------------------------------------------------------------
+
+    // Asset Bundle
+    private AssetBundle[] _assetBundle;
 
     // Audio
     private AudioSource _playAudioSource;
@@ -56,10 +60,13 @@ public class PlayScreenProcessManager : MonoBehaviour
     private int _startTimingIndex; // 判定調整 (正: 遅くタップする)
     private int _jTextCounter; // JudgeText の変更回数
 
-    // Magic number
+    // Magic Number
     private const int SepPoint = 50;
 
-    // Tweener animation
+    // Music Data
+    private List<DownloadProcessManager.MusicList> _MusicData;
+
+    // Tweener Animation
     private Tweener _jTextFade, _jTextReduce, _aTextFade, _aTextReduce;
     // ====================================================================================
 
@@ -73,6 +80,9 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     private async void Start()
     {
+        _assetBundle = DownloadProcessManager.AssetBundle;
+        _MusicData = DownloadProcessManager.MusicData;
+
         // 初期化関連
         BackgroundCover();
         TextInitialization();
@@ -82,15 +92,15 @@ public class PlayScreenProcessManager : MonoBehaviour
 
         _startTimingIndex = (PlayerPrefs.GetInt("TimingAdjustment", 5) - 5) * 10; // 判定調整
         notesSpeedIndex = 5.0f + (PlayerPrefs.GetInt("NotesFallSpeed", 5) - 5) * 0.5f;
-        FallPerFrame = (Vector3.down + Vector3.back * (float) Math.Sqrt(3)) * 0.6f * notesSpeedIndex; // ノーツ落下速度
+        FallPerFrame = (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * 0.6f * notesSpeedIndex; // ノーツ落下速度
 
         LoadCsv();
         BaseScoreCalculation();
 
         IsPlaying = true;
-        
+
         _startTime = Time.time;
-        await Task.Delay((int) ((7800 + 10 * _startTimingIndex) / notesSpeedIndex));
+        await Task.Delay((int)((7800 + 10 * _startTimingIndex) / notesSpeedIndex));
         _playAudioSource.Play();
 
         _isEndOfPlay = true;
@@ -115,7 +125,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         if (Screen.width < 1920)
             scale = 1.5f;
         if (Screen.width < Screen.height)
-            scale = (float) (Screen.height * 16) / (Screen.width * 9);
+            scale = (float)(Screen.height * 16) / (Screen.width * 9);
         background.sizeDelta = new Vector2(Screen.width * scale, Screen.height * scale);
     }
 
@@ -127,7 +137,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         addText.text = "";
         judgeText.text = "";
         comboText.text = _combo.ToString("D");
-        scoreText.text = ((int) Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
+        scoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
     }
 
     /// <summary>
@@ -149,7 +159,8 @@ public class PlayScreenProcessManager : MonoBehaviour
     {
         _judgeAudioSources = GameObject.Find("SoundEffect").GetComponents<AudioSource>();
         _playAudioSource = gameObject.AddComponent<AudioSource>();
-        _playMusic = Resources.Load<AudioClip>("music/" + MusicTitles[SwipeMenu.selectedNumTmp]);
+        var musicName = _MusicData[SwipeMenu.selectedNumTmp].name;
+        _playMusic = _assetBundle[SwipeMenu.selectedNumTmp].LoadAsset<AudioClip>(musicName);
         _playAudioSource.clip = _playMusic;
     }
 
@@ -171,8 +182,11 @@ public class PlayScreenProcessManager : MonoBehaviour
     /// </summary>
     private void LoadCsv()
     {
-        if (!(Resources.Load("CSV/" + MusicTitles[SwipeMenu.selectedNumTmp] + "_" +
-                             SelectScreenProcessManager.selectedLevel) is TextAsset { } csv)) return;
+        var musicName = _MusicData[SwipeMenu.selectedNumTmp].name;
+        _playMusic = _assetBundle[SwipeMenu.selectedNumTmp].LoadAsset<AudioClip>(musicName);
+
+        if (!(_assetBundle[SwipeMenu.selectedNumTmp]
+            .LoadAsset<TextAsset>(musicName + "_" + SelectScreenProcessManager.selectedLevel) is { } csv)) return;
         var reader = new StringReader(csv.text);
         while (reader.Peek() > -1)
         {
@@ -195,7 +209,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
         for (var i = 0; i < denominator; i++)
         {
-            _logSq[i] = Math.Log10(1 + (9 * ((double) i + 1) / denominator));
+            _logSq[i] = Math.Log10(1 + (9 * ((double)i + 1) / denominator));
             _logSqSum += _logSq[i];
         }
 
@@ -368,7 +382,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         // 加算スコア表示の文字色を変更
         addText.color = _scoreC;
         // 加算スコア表示の値を更新
-        addText.text = "+" + ((int) Math.Round(scoreTemp, 0, MidpointRounding.AwayFromZero)).ToString("D");
+        addText.text = "+" + ((int)Math.Round(scoreTemp, 0, MidpointRounding.AwayFromZero)).ToString("D");
         // アニメーション
         addText.transform.localScale = vl;
         _aTextReduce = addText.transform.DOScale(vo, 0.2f);
@@ -379,14 +393,14 @@ public class PlayScreenProcessManager : MonoBehaviour
             for (var i = 0; i < 15; i++)
             {
                 _score += scoreTemp / 15;
-                scoreText.text = ((int) Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
+                scoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
                 await Task.Delay(33);
             }
         }
         else
         {
             _score += scoreTemp;
-            scoreText.text = ((int) Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
+            scoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
         }
 
         //  ↓なんで!=じゃないんだっけ
@@ -404,13 +418,13 @@ public class PlayScreenProcessManager : MonoBehaviour
     /// </summary>
     public async void ResultSceneTransition()
     {
-        Score = (int) Math.Round(_score, 0, MidpointRounding.AwayFromZero);
+        Score = (int)Math.Round(_score, 0, MidpointRounding.AwayFromZero);
         Perfect = _perfect;
         Great = _great;
         Good = _good;
         Miss = _miss;
-        StartCoroutine(RegistScoreNetworkProcess(MusicTitles[SwipeMenu.selectedNumTmp],
-            SelectScreenProcessManager.selectedLevel, Score));
+        StartCoroutine(RegistScoreNetworkProcess(_MusicData[SwipeMenu.selectedNumTmp].name,
+            SelectScreenProcessManager.selectedLevel));
         await Task.Delay(1000);
         SceneManager.LoadScene("ResultScene");
     }
@@ -418,14 +432,14 @@ public class PlayScreenProcessManager : MonoBehaviour
     /// <summary>
     /// データベースにユーザとスコアを送信します．
     /// </summary>
-    IEnumerator RegistScoreNetworkProcess(string selectedMusic, string selectedLevel, int score)
+    IEnumerator RegistScoreNetworkProcess(string selectedMusic, string selectedLevel)
     {
         var form = new WWWForm();
         form.AddField("token", PlayerPrefs.GetString("jwt"));
         form.AddField("music", selectedMusic);
         form.AddField("level", selectedLevel);
         form.AddField("score", Score);
-        var www = UnityWebRequest.Post(RegistScoreApiUri, form);
+        var www = UnityWebRequest.Post(RegisterScoreApiUri, form);
         yield return www.SendWebRequest();
         if (www.isNetworkError)
         {

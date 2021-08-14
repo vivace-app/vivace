@@ -1,26 +1,24 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Toggle))]
-public class ToggleImage : MonoBehaviour
+// 難易度のToggleの非アクティブ時の画像を切り替えます
+namespace Project.Scripts
 {
-    public Graphic offGraphic;
-
-    void Start()
+    [RequireComponent(typeof(Toggle))]
+    public class ToggleImage : MonoBehaviour
     {
-        Toggle toggle = GetComponent<Toggle>();
-        toggle.onValueChanged.AddListener((value) =>
-        {
-            OnValueChanged(value);
-        });
-        offGraphic.enabled = !toggle.isOn;
-    }
+        public Graphic offGraphic;
 
-    void OnValueChanged(bool value)
-    {
-        if (offGraphic != null)
+        private void Start()
         {
-            offGraphic.enabled = !value;
+            var toggle = GetComponent<Toggle>();
+            toggle.onValueChanged.AddListener(OnValueChanged);
+            offGraphic.enabled = !toggle.isOn;
+        }
+
+        public void OnValueChanged(bool value)
+        {
+            if (offGraphic != null) offGraphic.enabled = !value;
         }
     }
 }

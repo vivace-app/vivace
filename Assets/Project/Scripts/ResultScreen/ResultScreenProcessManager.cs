@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Project.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
@@ -14,11 +15,13 @@ public class ResultScreenProcessManager : MonoBehaviour
     public Text[] ScoreListScore = new Text[9];
     public Text Res_Perfect, Res_Great, Res_Good, Res_Miss, Res_Total, Rank;
     private Color Rank_c;
+    
+    // Music Data
+    private List<DownloadProcessManager.MusicList> _MusicData;
 
     // ------------------------------------------------------------------------------------
 
-    static readonly string topTenScoreApiUri = EnvDataStore.topTenScoreApiUri;
-    static readonly string[] musicTitles = MusicTitleDataStore.musicTitles;
+    private const string TopTenScoreApiUri = EnvDataStore.ApiUri + "/topTenScore";
 
     // ------------------------------------------------------------------------------------
 
@@ -38,6 +41,8 @@ public class ResultScreenProcessManager : MonoBehaviour
 
     private void Start()
     {
+        _MusicData = DownloadProcessManager.MusicData;
+
         ScreenResponsive();
         StartCoroutine(GetTopTenNetworkProcess());
         CountsDelayer();
@@ -76,9 +81,9 @@ public class ResultScreenProcessManager : MonoBehaviour
     IEnumerator GetTopTenNetworkProcess()
     {
         WWWForm form = new WWWForm();
-        form.AddField("music", musicTitles[SwipeMenu.selectedNumTmp]);
+        form.AddField("music", _MusicData[SwipeMenu.selectedNumTmp].name);
         form.AddField("level", SelectScreenProcessManager.selectedLevel);
-        UnityWebRequest www = UnityWebRequest.Post(topTenScoreApiUri, form);
+        UnityWebRequest www = UnityWebRequest.Post(TopTenScoreApiUri, form);
         yield return www.SendWebRequest();
         if (www.isNetworkError || www.isHttpError)
         {

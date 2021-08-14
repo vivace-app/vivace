@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using Project.Scripts;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
@@ -10,152 +10,197 @@ using UnityEngine.UI;
 public class DownloadProcessManager : MonoBehaviour
 {
     // --- Attach from Unity --------------------------------------------------------------
-    public RectTransform Background;
-    public Text Percent;
+    public RectTransform background;
+    public Text downloadPercentage;
+
     public Text showVersion;
     // ------------------------------------------------------------------------------------
 
-    // --- Environment variables ----------------------------------------------------------
-    static readonly string thisVersion = EnvDataStore.thisVersion;
-    static readonly string downloadCheckApiUri = EnvDataStore.downloadCheckApiUri;
+    // --- External variables -------------------------------------------------------------
+    public static AssetBundle[] AssetBundle; // 参照: SwipeMenu.
+
+    public static List<MusicList> MusicData; // 参照: SwipeMenu.
     // ------------------------------------------------------------------------------------
+
+    // --- Environment variables ----------------------------------------------------------
+    private const string ThisVersion = EnvDataStore.ThisVersion;
+
+    private const string DownloadCheckApiUri = EnvDataStore.ApiUri + "/downloadCheck";
+    // ------------------------------------------------------------------------------------
+
+    private int _musicCounts;
+    private int _downloadedMusicCounts;
 
     // ====================================================================================
 
     [Serializable]
-    public class downloadCheckResponse
+    public class DownloadCheckResponse
     {
         public bool success;
-        public List<musicList> music;
+        public List<MusicList> music;
     }
 
     [Serializable]
-    public class musicList
+    public class MusicList
     {
         public int id;
         public string name;
-        public string url_easy;
-        public string url_basic;
-        public string url_hard;
-        public string url_demon;
-        public string url_music;
-        public string url_music_preview;
+        public string title;
+        public string artist;
+        public string asset_bundle_ios;
+        public string asset_bundle_android;
         public string updated_at;
     }
 
     // ====================================================================================
 
-    void Start()
+    private void Start()
     {
-        this.showVersion.text = "Ver." + thisVersion;
-        ScreenResponsive();
+        showVersion.text = "Ver." + ThisVersion;
+        BackgroundCover();
         StartCoroutine(DownloadCheckNetworkProcess());
     }
 
-    private void ScreenResponsive()
+    private void Update()
     {
-        float scale = 1f;
+        if (_musicCounts != 0 && _downloadedMusicCounts == _musicCounts) SelectScreenTransition();
+    }
+
+    /// <summary>
+    /// 背景画像を画面いっぱいに広げます．
+    /// </summary>
+    private void BackgroundCover()
+    {
+        var scale = 1f;
         if (Screen.width < 1920)
             scale = 1.5f;
         if (Screen.width < Screen.height)
-            scale = (Screen.height * 16) / (Screen.width * 9);
-        Background.sizeDelta = new Vector2(Screen.width * scale, Screen.height * scale);
+            scale = (float)(Screen.height * 16) / (Screen.width * 9);
+        background.sizeDelta = new Vector2(Screen.width * scale, Screen.height * scale);
     }
 
-    IEnumerator DownloadCheckNetworkProcess()
+    /// <summary>
+    /// ダウンロードするAssetBundle一覧を取得します．
+    /// </summary>
+    private IEnumerator DownloadCheckNetworkProcess()
     {
-        UnityWebRequest www = UnityWebRequest.Get(downloadCheckApiUri);
-        yield return www.SendWebRequest();
-        if (www.isNetworkError)
+        var request = UnityWebRequest.Get(DownloadCheckApiUri);
+        yield return request.SendWebRequest();
+
+        switch (request.result)
         {
-            Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
-        }
-        else
-        {
-            ResponseCheck(www.downloadHandler.text);
+            case UnityWebRequest.Result.Success:
+                ResponseCheck(request.downloadHandler.text);
+                break;
+
+            case UnityWebRequest.Result.ConnectionError:
+            case UnityWebRequest.Result.ProtocolError:
+            case UnityWebRequest.Result.DataProcessingError:
+                Debug.LogError("ネットワークに接続できません．(" + request.error + ")");
+                SceneManager.LoadScene("StartupScene");
+                break;
+
+            case UnityWebRequest.Result.InProgress:
+                break;
+            default: throw new ArgumentOutOfRangeException();
         }
     }
 
+    /// <summary>
+    /// サーバからのレスポンスを処理します．
+    /// </summary>
     private void ResponseCheck(string data)
     {
-        downloadCheckResponse jsnData = JsonUtility.FromJson<downloadCheckResponse>(data);
+        var jsnData = JsonUtility.FromJson<DownloadCheckResponse>(data);
 
         if (jsnData.success)
-            CountsDownloadItems(jsnData);
+            DownloadAssetBundles(jsnData);
         else
             Debug.Log("通信に失敗しました");
     }
 
-    private void SelectScreenTransition()
+    /// <summary>
+    /// SelectSceneに遷移します．
+    /// </summary>
+    private static void SelectScreenTransition()
     {
         SceneManager.LoadScene("SelectScene");
     }
 
-    private void CountsDownloadItems(downloadCheckResponse jsnData)
+    /// <summary>
+    /// AssetBundle一覧のダウンロード管理を行います．
+    /// </summary>
+    private void DownloadAssetBundles(DownloadCheckResponse jsnData)
     {
-        // PlayerPrefs.DeleteAll(); //ユーザ情報を初期化したい場合にコメントアウトを解除
-
-        int key = 1;
-        List<int> downloadList = new List<int>();
-
-        foreach (musicList music in jsnData.music)
+        string downloadUrl = null;
+        MusicData = jsnData.music;
+        _musicCounts = MusicData.Count;
+        AssetBundle = new AssetBundle[_musicCounts];
+        
+        var cachePath = System.IO.Path.Combine(Application.persistentDataPath, "cache");
+        System.IO.Directory.CreateDirectory(cachePath);
+        var cache = Caching.AddCache(cachePath);
+        Caching.currentCacheForWriting = cache;
+        cache.expirationDelay = 200;
+        
+        foreach (var music in MusicData)
         {
-            if (PlayerPrefs.GetString("music_" + key) == "" || PlayerPrefs.GetString("music_" + key) != music.updated_at)
+            switch (Application.platform)
             {
-                Debug.Log("RESET: key=" + key);
-                downloadList.Add(key);
-                PlayerPrefs.SetString("music_" + key, music.updated_at);
+                case RuntimePlatform.IPhonePlayer:
+                    downloadUrl = "https://drive.google.com/uc?id=" +
+                                  music.asset_bundle_ios.Replace("https://drive.google.com/file/d/", "")
+                                      .Replace("/view?usp=sharing", "") + "&usp=sharing";
+                    break;
+                case RuntimePlatform.Android:
+                    downloadUrl = "https://drive.google.com/uc?id=" +
+                                  music.asset_bundle_android.Replace("https://drive.google.com/file/d/", "")
+                                      .Replace("/view?usp=sharing", "") + "&usp=sharing";
+                    break;
+                default:
+                    Debug.LogError("AssetBundleを使用するため，iOSまたはAndroidでデバッグを行ってください．");
+                    Application.Quit();
+                    break;
             }
-            key++;
-        }
 
-        if (!(downloadList?.Count > 0)) SelectScreenTransition();
-        else Download(jsnData, downloadList);
-    }
-
-    private void Download(downloadCheckResponse jsnData, List<int> downloadList)
-    {
-        foreach (int downloadNum in downloadList)
-        {
-            this.Percent.text = "Download (" + downloadNum + " / " + downloadList.Count + ")";
-            DownloadMusic(jsnData.music[downloadNum - 1].name, jsnData.music[downloadNum - 1].url_music);
-            if (downloadNum == downloadList.Count)
-                SelectScreenTransition(); //TODO: 同期関数に変更したい
+            StartCoroutine(DownloadAssetBundle(music, downloadUrl));
         }
     }
 
-    private void DownloadMusic(string fileName, string googleDriveUrl)
+    /// <summary>
+    /// AssetBundleをダウンロードします．
+    /// </summary>
+    private IEnumerator DownloadAssetBundle(MusicList music, string downloadUrl)
     {
-        string downloadUrl = "https://drive.google.com/uc?id=" + googleDriveUrl.Replace("https://drive.google.com/file/d/", "").Replace("/view?usp=sharing", "") + "&usp=sharing";
-        StartCoroutine(SaveMusic(fileName, downloadUrl));
-        StartCoroutine(SaveMusicPreview(fileName, downloadUrl));
-    }
+        var c = new CachedAssetBundle
+        {
+            name = music.name,
+            hash = Hash128.Parse("hash128")
+        };
+        
+        using var request = UnityWebRequestAssetBundle.GetAssetBundle(downloadUrl, c);
+        yield return request.SendWebRequest();
 
-    private IEnumerator SaveMusic(string fileName, string url)
-    {
-        UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.WAV);
-        yield return www.Send();
-        if (www.isNetworkError)
+        switch (request.result)
         {
-            Debug.LogWarning("Audio error:" + www.error);
-        }
-        else
-        {
-            SavWav.Save(fileName, "/Project/Resources/Music/", ((DownloadHandlerAudioClip)www.downloadHandler).audioClip);
-        }
-    }
+            case UnityWebRequest.Result.Success:
+                if (request.downloadHandler is DownloadHandlerAssetBundle handler)
+                    AssetBundle[music.id - 1] = handler.assetBundle;
 
-    private IEnumerator SaveMusicPreview(string fileName, string url)
-    {
-        UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.WAV);
-        yield return www.Send();
-        if (www.isNetworkError)
-        {
-            Debug.LogWarning("Audio error:" + www.error);
-        }
-        else
-        {
-            SavWav.Save(fileName, "/Project/Resources/MusicPreview/", ((DownloadHandlerAudioClip)www.downloadHandler).audioClip);
+                _downloadedMusicCounts++;
+                downloadPercentage.text = _downloadedMusicCounts + "/" + _musicCounts;
+                break;
+
+            case UnityWebRequest.Result.ConnectionError:
+            case UnityWebRequest.Result.ProtocolError:
+            case UnityWebRequest.Result.DataProcessingError:
+                Debug.LogError("ネットワークに接続できません．(" + request.error + ")");
+                SceneManager.LoadScene("StartupScene");
+                break;
+
+            case UnityWebRequest.Result.InProgress:
+                break;
+            default: throw new ArgumentOutOfRangeException();
         }
     }
 }
