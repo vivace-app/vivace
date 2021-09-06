@@ -49,8 +49,8 @@ public class PlayScreenProcessManager : MonoBehaviour
     private Color _perfectC, _greatC, _goodC, _missC, _scoreC;
 
     // CSV
-    private readonly int[] _noteLaneNum = new int[2048];
-    private readonly float[] _noteTouchTime = new float[2048];
+    private readonly int[] _noteLaneNum = new int[4096];
+    private readonly float[] _noteTouchTime = new float[4096];
 
     private bool _isEndOfPlay, _isPaused, _isLowGraphicsMode, _enableNotesTouchSound;
     private double _score, _baseScore, _logSqSum;
@@ -100,7 +100,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         IsPlaying = true;
 
         _startTime = Time.time;
-        await Task.Delay((int)((7800 + 10 * _startTimingIndex) / notesSpeedIndex));
+        await Task.Delay((int)((8100 + 10 * _startTimingIndex) / notesSpeedIndex));
         _playAudioSource.Play();
 
         _isEndOfPlay = true;
@@ -221,7 +221,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     /// </summary>
     private void CheckNextNotes() // != 0だと反転孤独線の譜面が正常に読み込めません． >=0はどうですか？
     {
-        while (_noteTouchTime[_currentNote] < (Time.time - _startTime) && _noteTouchTime[_currentNote] != 0)
+        while (_noteTouchTime[_currentNote] < (Time.time - _startTime) && (Time.time - _startTime < 1 || _noteTouchTime[_currentNote] != 0))
             SpawnNotes(_noteLaneNum[_currentNote++]);
     }
 
