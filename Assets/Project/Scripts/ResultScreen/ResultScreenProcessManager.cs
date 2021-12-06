@@ -15,7 +15,7 @@ public class ResultScreenProcessManager : MonoBehaviour
     public Text[] ScoreListScore = new Text[9];
     public Text Res_Perfect, Res_Great, Res_Good, Res_Miss, Res_Total, Rank;
     private Color Rank_c;
-    
+
     // Music Data
     private List<DownloadProcessManager.MusicList> _MusicData;
 
@@ -124,18 +124,19 @@ public class ResultScreenProcessManager : MonoBehaviour
         }
     }
 
-    private async void CountsAnimation(int sep, double value, Text scoreboard)
+    private async void CountsAnimation(int sep, float value, Text scoreboard)
     {
-        double valueShow = 0;
+        float valueShow = 0;
 
         for (int i = 0; i <= sep; i++) //sep分割したものを33ミリ秒ごとにsep回加算()
         {
+            if(valueShow > 1000000) valueShow = 1000000; // 100万点以上が表示されないように修正
             scoreboard.text = ((int)Math.Round(valueShow, 0, MidpointRounding.AwayFromZero)).ToString("D");
             valueShow += value / sep;
             await Task.Delay(33);
         }
     }
-    private void Ranker(double value)
+    private void Ranker(float value)
     {
         if (value >= 900000)
         {

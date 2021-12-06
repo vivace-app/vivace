@@ -34,7 +34,7 @@ public class NotesScript : MonoBehaviour
 
     void Update()
     {
-        if (PlayScreenProcessManager.IsPlaying) // Playing
+        if (PlayScreenProcessManager.isPlaying) // Playing
         {
             //this.transform.position += deltaPosition * Time.deltaTime;
             if (stopNotesFlag)
@@ -47,10 +47,10 @@ public class NotesScript : MonoBehaviour
                 _playScreenProcessManager.MissTimingFunc();
                 Destroy(this.gameObject);
             }
-            if (isInLineLevel >= 1 && isInLineLevel <= 5 && !PlayScreenProcessManager.IsAutoPlay) CheckInput(_lineKey);
+            if (isInLineLevel >= 1 && isInLineLevel <= 5 && !PlayScreenProcessManager.isAutoPlay) CheckInput(_lineKey);
             else currentTouch = 0; // Prevent Long press.
         }
-        if (!PlayScreenProcessManager.IsPlaying && !stopNotesFlag) // Paused
+        if (!PlayScreenProcessManager.isPlaying && !stopNotesFlag) // Paused
         {
             rigidBody.velocity = Vector3.zero;
             stopNotesFlag = true;
@@ -60,7 +60,7 @@ public class NotesScript : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "GoodJudge" || other.gameObject.tag == "GreatJudge" || other.gameObject.tag == "PerfectJudge") isInLineLevel++;
-        if (other.gameObject.tag == "PerfectJudge" && PlayScreenProcessManager.IsAutoPlay) AutoPlayFunc();
+        if (other.gameObject.tag == "PerfectJudge" && PlayScreenProcessManager.isAutoPlay) AutoPlayFunc();
     }
 
     void OnTriggerExit(Collider other)
