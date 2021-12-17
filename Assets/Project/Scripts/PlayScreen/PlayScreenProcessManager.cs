@@ -441,13 +441,18 @@ public class PlayScreenProcessManager : MonoBehaviour
         form.AddField("score", Score);
         var www = UnityWebRequest.Post(RegisterScoreApiUri, form);
         yield return www.SendWebRequest();
-        if (www.isNetworkError)
+        switch (www.result)
         {
-            Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
-        }
-        else
-        {
-            ResponseCheck(www.downloadHandler.text);
+            case UnityWebRequest.Result.Success:
+                ResponseCheck(www.downloadHandler.text);
+                break;
+            case UnityWebRequest.Result.ConnectionError:
+            case UnityWebRequest.Result.ProtocolError:
+            case UnityWebRequest.Result.DataProcessingError:
+                Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 

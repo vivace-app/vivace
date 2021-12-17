@@ -76,17 +76,17 @@ public class StartupScreenProcessManager : MonoBehaviour
         public string token;
     }
 
-    async void Start()
+    private async void Start()
     {
         // PlayerPrefs.DeleteAll(); //ユーザ情報を初期化したい場合にコメントアウトを解除
         ScreenResponsive();
         audioSource = GetComponent<AudioSource>();
-        this.showVersion.text = "Ver." + ThisVersion;
+        showVersion.text = "Ver." + ThisVersion;
         await Task.Delay(1000);
         _touchableFlag = true;
     }
 
-    void Update()
+    public void Update()
     {
         if (_touchableFlag && Input.GetMouseButtonUp(0))
         {
@@ -126,7 +126,7 @@ public class StartupScreenProcessManager : MonoBehaviour
             showConnecting.text = "Connecting Server ...";
             var request = UnityWebRequest.Get(LicenceApiUri);
             yield return request.SendWebRequest();
-            
+
             switch (request.result)
             {
                 case UnityWebRequest.Result.Success:
@@ -166,7 +166,7 @@ public class StartupScreenProcessManager : MonoBehaviour
             {
                 if (ThisVersion == latestVersion)
                 {
-                    this.showConnecting.text = "";
+                    showConnecting.text = "";
                     UserCheck();
                     break;
                 }
@@ -190,7 +190,7 @@ public class StartupScreenProcessManager : MonoBehaviour
         }
         else
         {
-            this.showConnecting.text = "";
+            showConnecting.text = "";
             ShowDialog(1, 0);
         }
     }
@@ -228,41 +228,41 @@ public class StartupScreenProcessManager : MonoBehaviour
         switch (arg)
         {
             case 0:
-                this.messageTitle.text = "NOTE";
-                this.messageTitle.color = new Color(1f / 255f, 164f / 255f, 255f / 255f);
-                this.messageText.text = "The latest version has been released.\nThis version will expire in " +
+                messageTitle.text = "NOTE";
+                messageTitle.color = new Color(1f / 255f, 164f / 255f, 255f / 255f);
+                messageText.text = "The latest version has been released.\nThis version will expire in " +
                                         day + " days.";
-                this.messageButtonLabel.text = "Continue";
-                this.messageButtonImage.sprite = messageButtonSpriteInfo;
-                this.showConnecting.text = "";
+                messageButtonLabel.text = "Continue";
+                messageButtonImage.sprite = messageButtonSpriteInfo;
+                showConnecting.text = "";
                 panel.SetActive(true);
                 break;
             case 1:
-                this.messageTitle.text = "CAUTION !";
-                this.messageTitle.color = new Color(255f / 255f, 92f / 255f, 1f / 255f);
-                this.messageText.text = "Cannot connect to the API server.\nPlease check your network.";
-                this.messageButtonImage.sprite = messageButtonSpriteError;
-                this.messageButtonLabel.text = "Restart";
-                this.showConnecting.text = "";
+                messageTitle.text = "CAUTION !";
+                messageTitle.color = new Color(255f / 255f, 92f / 255f, 1f / 255f);
+                messageText.text = "Cannot connect to the API server.\nPlease check your network.";
+                messageButtonImage.sprite = messageButtonSpriteError;
+                messageButtonLabel.text = "Restart";
+                showConnecting.text = "";
                 panel.SetActive(true);
                 break;
             case 2:
-                this.messageTitle.text = "CAUTION !";
-                this.messageTitle.color = new Color(255f / 255f, 92f / 255f, 1f / 255f);
-                this.messageText.text = "The device time is not set correctly.\nThe time zone is JST only.";
-                this.messageButtonImage.sprite = messageButtonSpriteError;
-                this.messageButtonLabel.text = "Restart";
-                this.showConnecting.text = "";
+                messageTitle.text = "CAUTION !";
+                messageTitle.color = new Color(255f / 255f, 92f / 255f, 1f / 255f);
+                messageText.text = "The device time is not set correctly.\nThe time zone is JST only.";
+                messageButtonImage.sprite = messageButtonSpriteError;
+                messageButtonLabel.text = "Restart";
+                showConnecting.text = "";
                 panel.SetActive(true);
                 break;
             case 3:
-                this.messageTitle.text = "CAUTION !";
-                this.messageTitle.color = new Color(255f / 255f, 92f / 255f, 1f / 255f);
-                this.messageText.text =
+                messageTitle.text = "CAUTION !";
+                messageTitle.color = new Color(255f / 255f, 92f / 255f, 1f / 255f);
+                messageText.text =
                     "Support for this version has ended.\nFor details, see our official website.";
-                this.messageButtonImage.sprite = messageButtonSpriteError;
-                this.messageButtonLabel.text = "Restart";
-                this.showConnecting.text = "";
+                messageButtonImage.sprite = messageButtonSpriteError;
+                messageButtonLabel.text = "Restart";
+                showConnecting.text = "";
                 panel.SetActive(true);
                 break;
         }
@@ -296,38 +296,43 @@ public class StartupScreenProcessManager : MonoBehaviour
 
     IEnumerator RegisterNetworkProcess()
     {
-        if (this.inputUserName.text.Length >= 3 && this.inputUserName.text.Length <= 15)
+        if (inputUserName.text.Length >= 3 && inputUserName.text.Length <= 15)
         {
-            this.showConnecting.text = "Connecting Server ...";
+            showConnecting.text = "Connecting Server ...";
             WWWForm form = new WWWForm();
-            form.AddField("name", this.inputUserName.text);
+            form.AddField("name", inputUserName.text);
             UnityWebRequest www = UnityWebRequest.Post(RegisterApiUri, form);
             yield return www.SendWebRequest();
-            if (www.isNetworkError)
+            switch (www.result)
             {
-                ShowDialog(1, 0);
-                _continueButtonFlag = true; //Continueボタンを再度有効化
-            }
-            else
-            {
-                UserRegistCheck(www.downloadHandler.text);
+                case UnityWebRequest.Result.Success:
+                    UserRegistCheck(www.downloadHandler.text);
+                    break;
+                case UnityWebRequest.Result.ConnectionError:
+                case UnityWebRequest.Result.ProtocolError:
+                case UnityWebRequest.Result.DataProcessingError:
+                    ShowDialog(1, 0);
+                    _continueButtonFlag = true; //Continueボタンを再度有効化
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
         else
         {
-            this.registerText.text = "Please enter between 3 and 15 characters.";
+            registerText.text = "Please enter between 3 and 15 characters.";
             _continueButtonFlag = true; //Continueボタンを再度有効化
         }
     }
 
-    async private void UserRegistCheck(string data)
+    private async void UserRegistCheck(string data)
     {
         registerResponse jsnData = JsonUtility.FromJson<registerResponse>(data);
 
         if (jsnData.success)
         {
-            this.showConnecting.text = "";
-            this.registerText.text = "";
+            showConnecting.text = "";
+            registerText.text = "";
             PlayerPrefs.SetString("name", jsnData.name);
             PlayerPrefs.SetString("jwt", jsnData.token);
             await Task.Delay(1000);
@@ -335,45 +340,50 @@ public class StartupScreenProcessManager : MonoBehaviour
         }
         else if (!jsnData.success)
         {
-            this.registerText.text = "This name is already in use.";
+            registerText.text = "This name is already in use.";
             _continueButtonFlag = true; //Continueボタンを再度有効化
         }
     }
 
-    IEnumerator RecoveryNetworkProcess()
+    private IEnumerator RecoveryNetworkProcess()
     {
-        if (this.inputUserName.text.Length == 8)
+        if (inputUserName.text.Length == 8)
         {
-            this.showConnecting.text = "Connecting Server ...";
+            showConnecting.text = "Connecting Server ...";
             WWWForm form = new WWWForm();
-            form.AddField("code", this.inputUserName.text);
+            form.AddField("code", inputUserName.text);
             UnityWebRequest www = UnityWebRequest.Post(RecoveryApiUri, form);
             yield return www.SendWebRequest();
-            if (www.isNetworkError)
+            switch (www.result)
             {
-                ShowDialog(1, 0);
-                _continueButtonFlag = true; //Continueボタンを再度有効化
-            }
-            else
-            {
-                RecoveryCodeCheck(www.downloadHandler.text);
+                case UnityWebRequest.Result.Success:
+                    RecoveryCodeCheck(www.downloadHandler.text);
+                    break;
+                case UnityWebRequest.Result.ConnectionError:
+                case UnityWebRequest.Result.ProtocolError:
+                case UnityWebRequest.Result.DataProcessingError:
+                    ShowDialog(1, 0);
+                    _continueButtonFlag = true; //Continueボタンを再度有効化
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
         else
         {
-            this.registerText.text = "Please enter 8 characters.";
+            registerText.text = "Please enter 8 characters.";
             _continueButtonFlag = true; //Continueボタンを再度有効化
         }
     }
 
-    async private void RecoveryCodeCheck(string data)
+    private async void RecoveryCodeCheck(string data)
     {
         recoveryResponse jsnData = JsonUtility.FromJson<recoveryResponse>(data);
 
         if (jsnData.success)
         {
-            this.showConnecting.text = "";
-            this.registerText.text = "";
+            showConnecting.text = "";
+            registerText.text = "";
             PlayerPrefs.SetString("name", jsnData.name);
             PlayerPrefs.SetString("jwt", jsnData.token);
             await Task.Delay(1000);
@@ -381,8 +391,8 @@ public class StartupScreenProcessManager : MonoBehaviour
         }
         else if (!jsnData.success)
         {
-            this.showConnecting.text = "";
-            this.registerText.text = "This code is invalid.";
+            showConnecting.text = "";
+            registerText.text = "This code is invalid.";
             _continueButtonFlag = true; //Continueボタンを再度有効化
         }
     }
@@ -396,19 +406,19 @@ public class StartupScreenProcessManager : MonoBehaviour
         switch (arg)
         {
             case 0:
-                this.registerTitle.text = "ENTER  YOUR  NAME";
-                this.registerText.text = "";
-                this.registerPlaceholder.text = "Half-Width Alphanumeric Only...";
-                this.registerBottom.text = "Do you have Recovery Code ?";
-                this.showConnecting.text = "";
+                registerTitle.text = "ENTER  YOUR  NAME";
+                registerText.text = "";
+                registerPlaceholder.text = "Half-Width Alphanumeric Only...";
+                registerBottom.text = "Do you have Recovery Code ?";
+                showConnecting.text = "";
                 registerPanel.SetActive(true);
                 break;
             case 1:
-                this.registerTitle.text = "ENTER  ISSUE  CODE";
-                this.registerText.text = "";
-                this.registerPlaceholder.text = "Your Code...";
-                this.registerBottom.text = "↩ Back to Create Account";
-                this.showConnecting.text = "";
+                registerTitle.text = "ENTER  ISSUE  CODE";
+                registerText.text = "";
+                registerPlaceholder.text = "Your Code...";
+                registerBottom.text = "↩ Back to Create Account";
+                showConnecting.text = "";
                 registerPanel.SetActive(true);
                 break;
         }
