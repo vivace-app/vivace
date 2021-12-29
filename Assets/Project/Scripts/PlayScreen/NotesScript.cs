@@ -25,7 +25,7 @@ namespace Project.Scripts.PlayScreen
 
         private void Start()
         {
-            _isAutoPlay = PlayScreenProcessManager.IsAutoPlay;
+            _isAutoPlay = PlayScreenProcessManager.isAutoPlay;
             playScreenProcessManager = GameObject.Find("ProcessManager").GetComponent<PlayScreenProcessManager>(); // Instance <- PlayScreenProcessManager.cs
             _rigidBody = GetComponent<Rigidbody>();
             _lineKey = GameUtil.GetKeyCodeByLineNum(lineNum); // Get Key Code.
@@ -35,7 +35,7 @@ namespace Project.Scripts.PlayScreen
 
         private void Update()
         {
-            switch (PlayScreenProcessManager.IsPlaying)
+            switch (PlayScreenProcessManager.isPlaying)
             {
                 // Playing
                 case true:
@@ -66,7 +66,7 @@ namespace Project.Scripts.PlayScreen
         private void OnTriggerEnter(Collider other)
         {
             if (other.gameObject.tag == "GoodJudge" || other.gameObject.tag == "GreatJudge" || other.gameObject.tag == "PerfectJudge") _isInLineLevel++;
-            if (other.gameObject.tag == "PerfectJudge" && PlayScreenProcessManager.IsAutoPlay) AutoPlayFunc();
+            if (other.gameObject.tag == "PerfectJudge" && PlayScreenProcessManager.isAutoPlay) AutoPlayFunc();
         }
 
         public void OnTriggerExit(Collider other)

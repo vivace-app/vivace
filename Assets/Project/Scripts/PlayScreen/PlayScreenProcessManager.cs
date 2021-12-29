@@ -25,8 +25,8 @@ public class PlayScreenProcessManager : MonoBehaviour
     // ------------------------------------------------------------------------------------
 
     // --- External variables -------------------------------------------------------------
-    public const bool IsAutoPlay = false; // 参照: NotesScript.
-    public static bool IsPlaying; // 参照: NotesScript.
+    public const bool isAutoPlay = false; // 参照: NotesScript.
+    public static bool isPlaying; // 参照: NotesScript.
     public static int Score, Perfect, Great, Good, Miss; // 参照: ResultScreenProcessManager.
     public float notesSpeedIndex = 5.0f; // 3.0f ~ 8.0f の値. 参照: NotesScript.
 
@@ -53,8 +53,8 @@ public class PlayScreenProcessManager : MonoBehaviour
     private readonly float[] _noteTouchTime = new float[4096];
 
     private bool _isEndOfPlay, _isPaused, _isLowGraphicsMode, _enableNotesTouchSound;
-    private double _score, _baseScore, _logSqSum;
-    private double[] _logSq; // 区分求積法での各分点（0～最大49）におけるlogの値
+    private float _score, _baseScore, _logSqSum;
+    private float[] _logSq; // 区分求積法での各分点（0～最大49）におけるlogの値
     private float _startTime, _stopTime; // _stopTimeは一時停止の時刻を記録
     private int _combo, _perfect, _great, _good, _miss, _totalNotes, _currentNote;
     private int _startTimingIndex; // 判定調整 (正: 遅くタップする)
@@ -97,7 +97,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         LoadCsv();
         BaseScoreCalculation();
 
-        IsPlaying = true;
+        isPlaying = true;
 
         _startTime = Time.time;
         await Task.Delay((int)((8100 + 10 * _startTimingIndex) / notesSpeedIndex));
@@ -110,7 +110,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     private void Update()
     {
-        if (IsPlaying) CheckNextNotes();
+        if (isPlaying) CheckNextNotes();
         if (!_isEndOfPlay || _playAudioSource.isPlaying) return;
         _isEndOfPlay = false;
         ResultSceneTransition();
@@ -203,13 +203,13 @@ public class PlayScreenProcessManager : MonoBehaviour
     /// </summary>
     private void BaseScoreCalculation()
     {
-        _logSq = new double[SepPoint];
+        _logSq = new float[SepPoint];
 
         var denominator = _totalNotes >= SepPoint ? SepPoint : _totalNotes;
 
         for (var i = 0; i < denominator; i++)
         {
-            _logSq[i] = Math.Log10(1 + (9 * ((double)i + 1) / denominator));
+            _logSq[i] = (float)Math.Log10(1 + (9 * ((float)i + 1) / denominator));
             _logSqSum += _logSq[i];
         }
 
@@ -239,10 +239,10 @@ public class PlayScreenProcessManager : MonoBehaviour
     /// </summary>
     public async void Pause()
     {
-        switch (IsPlaying)
+        switch (isPlaying)
         {
             case true when !_isPaused:
-                IsPlaying = false;
+                isPlaying = false;
                 _stopTime = Time.time;
                 _playAudioSource.pitch = 0.0f;
                 _isPaused = true;
@@ -259,7 +259,7 @@ public class PlayScreenProcessManager : MonoBehaviour
                 }
 
                 await Task.Delay(1000);
-                IsPlaying = true;
+                isPlaying = true;
                 _startTime += Time.time - _stopTime;
                 await Task.Delay(10);
                 _playAudioSource.pitch = 1.0f;
@@ -320,7 +320,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     /// </summary>
     public async void AddScore(int num) // 0：Perfect，1：Great，2：Good，3：Miss
     {
-        double magni = 0, scoreTemp = 0, jTextTemp = ++_jTextCounter;
+        float magni = 0, scoreTemp = 0, jTextTemp = ++_jTextCounter;
         var vl = new Vector3(1.5f, 1.5f, 1.5f);
         var vo = Vector3.one;
 
@@ -342,7 +342,7 @@ public class PlayScreenProcessManager : MonoBehaviour
                 judgeText.text = "Perfect!";
                 break;
             case 1:
-                magni = 0.75;
+                magni = 0.75f;
                 _combo++;
                 _great++;
                 judgeText.transform.localScale = vl;
@@ -351,7 +351,7 @@ public class PlayScreenProcessManager : MonoBehaviour
                 judgeText.text = "Great!";
                 break;
             case 2:
-                magni = 0.25;
+                magni = 0.25f;
                 _combo = 0;
                 _good++;
                 judgeText.transform.localScale = vo;
@@ -378,6 +378,8 @@ public class PlayScreenProcessManager : MonoBehaviour
             true => _baseScore * _logSq[0] * magni,
             _ => _baseScore * magni
         };
+
+        if(_perfect == _totalNotes) scoreTemp = 1000000 - _score; // floatへの変更でAP時に100万点にならないので強制代入
 
         // 加算スコア表示の文字色を変更
         addText.color = _scoreC;
