@@ -43,7 +43,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     // Audio
     private AudioSource _playAudioSource;
     private AudioClip _playMusic;
-    private AudioSource[] _judgeAudioSources;
+    private CriAtomSource[] _judgeAudioSources;
 
     // Color
     private Color _perfectC, _greatC, _goodC, _missC, _scoreC;
@@ -90,7 +90,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         AudioInitialization();
         AdjustJudgeRange();
 
-        _startTimingIndex = (PlayerPrefs.GetInt("TimingAdjustment", 5) - 5) * 10; // 判定調整
+        _startTimingIndex = (PlayerPrefs.GetInt("TimingAdjustment", 9) - 9) * 10; // 判定調整
         notesSpeedIndex = 5.0f + (PlayerPrefs.GetInt("NotesFallSpeed", 5) - 5) * 0.5f;
         FallPerFrame = (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * 0.6f * notesSpeedIndex; // ノーツ落下速度
 
@@ -157,7 +157,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     /// </summary>
     private void AudioInitialization()
     {
-        _judgeAudioSources = GameObject.Find("SoundEffect").GetComponents<AudioSource>();
+        _judgeAudioSources = GameObject.Find("SoundEffect").GetComponents<CriAtomSource>();
         _playAudioSource = gameObject.AddComponent<AudioSource>();
         var musicName = _MusicData[SwipeMenu.selectedNumTmp].name;
         _playMusic = _assetBundle[SwipeMenu.selectedNumTmp].LoadAsset<AudioClip>(musicName);
@@ -313,7 +313,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     /// </summary>
     public void SoundEffect(int num) =>
         //0：Perfect，1：Great，2：Good，3：Miss
-        _judgeAudioSources[num].PlayOneShot(_judgeAudioSources[num].clip);
+        _judgeAudioSources[num].Play();
 
     /// <summary>
     /// スコアを加算します．
@@ -441,13 +441,18 @@ public class PlayScreenProcessManager : MonoBehaviour
         form.AddField("score", Score);
         var www = UnityWebRequest.Post(RegisterScoreApiUri, form);
         yield return www.SendWebRequest();
-        if (www.isNetworkError)
+        switch (www.result)
         {
-            Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
-        }
-        else
-        {
-            ResponseCheck(www.downloadHandler.text);
+            case UnityWebRequest.Result.Success:
+                ResponseCheck(www.downloadHandler.text);
+                break;
+            case UnityWebRequest.Result.ConnectionError:
+            case UnityWebRequest.Result.ProtocolError:
+            case UnityWebRequest.Result.DataProcessingError:
+                Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 

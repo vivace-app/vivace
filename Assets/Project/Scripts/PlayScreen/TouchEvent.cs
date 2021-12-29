@@ -1,18 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class TouchEvent : MonoBehaviour
+namespace Project.Scripts.PlayScreen
 {
-    public static int[] OnTouch = { 0, 0, 0, 0, 0 };
-
-    public void Touch(int num) //クリック・タッチ中
+    public class TouchEvent : MonoBehaviour
     {
-        OnTouch[num] = 1;
-    }
+        public static readonly int[] OnTouch = {0, 0, 0, 0, 0};
 
-    public void Up(int num) //クリックまたはタッチを離したとき
-    {
-        OnTouch[num] = 0;
+        public void Touch(int num) //クリック・タッチ中
+        {
+            OnTouch[num] = 1;
+        }
+
+        public void Up(int num) //クリックまたはタッチを離したとき
+        {
+            OnTouch[num] = 0;
+        }
     }
 }

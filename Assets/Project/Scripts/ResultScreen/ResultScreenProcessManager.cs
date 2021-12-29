@@ -85,13 +85,18 @@ public class ResultScreenProcessManager : MonoBehaviour
         form.AddField("level", SelectScreenProcessManager.selectedLevel);
         UnityWebRequest www = UnityWebRequest.Post(TopTenScoreApiUri, form);
         yield return www.SendWebRequest();
-        if (www.isNetworkError || www.isHttpError)
+        switch (www.result)
         {
-            Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
-        }
-        else
-        {
-            GetTopTenScore(www.downloadHandler.text);
+            case UnityWebRequest.Result.Success:
+                GetTopTenScore(www.downloadHandler.text);
+                break;
+            case UnityWebRequest.Result.ConnectionError:
+            case UnityWebRequest.Result.ProtocolError:
+            case UnityWebRequest.Result.DataProcessingError:
+                Debug.LogError("ネットワークに接続できません．(" + www.error + ")");
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 

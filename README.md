@@ -32,4 +32,6 @@ This project is licensed under the MIT License - see  [LICENSE.md](https://githu
 
 However, files of song and artwork are not licensed under it - see [WORKSRIGHTS.md](https://github.com/smpny7/vivace/blob/master/WORKSRIGHTS.md).
 
+Powered by "CRIWARE".CRIWARE is a trademark of CRI Middleware Co., Ltd.
+
 *©︎ 2020 VIVACE Project*
