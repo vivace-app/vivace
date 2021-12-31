@@ -1,6 +1,9 @@
 # VIVACE
 
-![VIVACE](https://raw.githubusercontent.com/smpny7/vivace/master/screenshot.jpg)
+![Screenshot_1](https://raw.githubusercontent.com/smpny7/vivace/main/Screenshot_2208x1242_1.jpg)
+![Screenshot_2](https://raw.githubusercontent.com/smpny7/vivace/main/Screenshot_2208x1242_2.jpg)
+![Screenshot_3](https://raw.githubusercontent.com/smpny7/vivace/main/Screenshot_2208x1242_3.jpg)
+![Screenshot_4](https://raw.githubusercontent.com/smpny7/vivace/main/Screenshot_2208x1242_4.jpg)
 
 
 # Demo Video
@@ -34,4 +37,4 @@ However, files of song and artwork are not licensed under it - see [WORKSRIGHTS.
 
 Powered by "CRIWARE".CRIWARE is a trademark of CRI Middleware Co., Ltd.
 
-*©︎ 2020 VIVACE Project*
+*©︎ 2022 VIVACE Project*
