@@ -7415,13 +7415,15 @@ MonoBehaviour:
     type: 3}
   messageButtonLabel: {fileID: 341144801}
   registerPanel: {fileID: 1176799818}
-  Background: {fileID: 1419064786}
+  background: {fileID: 1419064786}
   registerTitle: {fileID: 131066105}
   registerText: {fileID: 1440874094}
   registerPlaceholder: {fileID: 1435385948}
   registerBottom: {fileID: 1086313683}
   showConnecting: {fileID: 2037856118}
   inputUserName: {fileID: 1362612810}
+  isRecoveryMode: 0
+  continueButtonFlag: 1
 --- !u!82 &1552985627
 AudioSource:
   m_ObjectHideFlags: 0
@@ -7732,7 +7734,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: (c) 2021 VIVACE PROJECT
+  m_Text: (c) 2022 VIVACE PROJECT
 --- !u!222 &1771609945
 CanvasRenderer:
   m_ObjectHideFlags: 0

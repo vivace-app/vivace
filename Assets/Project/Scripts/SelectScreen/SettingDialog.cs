@@ -1,49 +1,51 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
-public class SettingDialog : MonoBehaviour
+namespace Project.Scripts.SelectScreen
 {
-    // --- Attach from Unity --------------------------------------------------------------
-    public GameObject SettingPanel = null;
-    public Slider NotesFallSpeedSlider;
-    public Slider TimingAdjustmentSlider;
-    public Toggle NotesTouchSoundToggle;
-    public Toggle LowGraphicsModeToggle;
-    // ------------------------------------------------------------------------------------
-
-    public void SettingTappedController()
+    public class SettingDialog : MonoBehaviour
     {
-        SettingPanel.SetActive(true);
-        NotesFallSpeedSlider.value = PlayerPrefs.GetInt("NotesFallSpeed", 5);
-        TimingAdjustmentSlider.value = PlayerPrefs.GetInt("TimingAdjustment", 5);
-        NotesTouchSoundToggle.isOn = (PlayerPrefs.GetInt("NotesTouchSound", 1) == 1 ? true : false);
-        LowGraphicsModeToggle.isOn = (PlayerPrefs.GetInt("LowGraphicsMode", 0) == 1 ? true : false);
-    }
+        // --- Attach from Unity --------------------------------------------------------------
+        public GameObject settingPanel;
+        public Slider notesFallSpeedSlider;
+        public Slider timingAdjustmentSlider;
+        public Toggle notesTouchSoundToggle;
+        public Toggle lowGraphicsModeToggle;
+        // ------------------------------------------------------------------------------------
 
-    public void OnNotesFallSpeedSliderChanged()
-    {
-        PlayerPrefs.SetInt("NotesFallSpeed", (int)NotesFallSpeedSlider.value);
-    }
+        public void SettingTappedController()
+        {
+            settingPanel.SetActive(true);
+            notesFallSpeedSlider.value = PlayerPrefs.GetInt("NotesFallSpeed", 5);
+            timingAdjustmentSlider.value = PlayerPrefs.GetInt("TimingAdjustment", 5);
+            notesTouchSoundToggle.isOn = PlayerPrefs.GetInt("NotesTouchSound", 1) == 1;
+            lowGraphicsModeToggle.isOn = PlayerPrefs.GetInt("LowGraphicsMode", 0) == 1;
+        }
 
-    public void OnTimingAdjustmentSliderChanged()
-    {
-        PlayerPrefs.SetInt("TimingAdjustment", (int)TimingAdjustmentSlider.value);
-    }
+        public void OnNotesFallSpeedSliderChanged()
+        {
+            PlayerPrefs.SetInt("NotesFallSpeed", (int) notesFallSpeedSlider.value);
+        }
 
-    public void OnNotesTouchSoundToggleChanged()
-    {
-        PlayerPrefs.SetInt("NotesTouchSound", NotesTouchSoundToggle.isOn ? 1 : 0);
-    }
+        public void OnTimingAdjustmentSliderChanged()
+        {
+            PlayerPrefs.SetInt("TimingAdjustment", (int) timingAdjustmentSlider.value);
+        }
 
-    public void OnLowGraphicsModeToggleChanged()
-    {
-        PlayerPrefs.SetInt("LowGraphicsMode", LowGraphicsModeToggle.isOn ? 1 : 0);
-    }
+        public void OnNotesTouchSoundToggleChanged()
+        {
+            PlayerPrefs.SetInt("NotesTouchSound", notesTouchSoundToggle.isOn ? 1 : 0);
+        }
 
-    public void SaveTappedController()
-    {
-        SettingPanel.SetActive(false);
-        PlayerPrefs.Save();
+        public void OnLowGraphicsModeToggleChanged()
+        {
+            PlayerPrefs.SetInt("LowGraphicsMode", lowGraphicsModeToggle.isOn ? 1 : 0);
+        }
+
+        public void SaveTappedController()
+        {
+            settingPanel.SetActive(false);
+            PlayerPrefs.Save();
+        }
     }
 }

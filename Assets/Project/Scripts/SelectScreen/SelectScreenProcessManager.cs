@@ -1,36 +1,37 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using System.Collections;
-using System.Linq;
 
-public class SelectScreenProcessManager : MonoBehaviour
+namespace Project.Scripts.SelectScreen
 {
-    public ToggleGroup toggleGroup;
-    public static string selectedLevel;
-
-    private void ScreenTransition()
+    public class SelectScreenProcessManager : MonoBehaviour
     {
-        SceneManager.LoadScene("PlayScene");
-    }
+        public ToggleGroup toggleGroup;
+        public static string selectedLevel;
 
-    public void PlayButtonTappedController()
-    {
-        selectedLevel = toggleGroup.ActiveToggles()
-            .First().GetComponentsInChildren<Text>()
-            .First(t => t.name == "Label").text;
-        ScreenTransition();
-    }
+        private static void ScreenTransition()
+        {
+            SceneManager.LoadScene("PlayScene");
+        }
 
-    public void PrivacyPolicyButtonTappedController()
-    {
-        Application.OpenURL(
-            "https://lab316.github.io/app-static-page/ja/privacy.html?company=vivace,%20inc.&department=%E9%96%8B%E7%99%BA%E6%8B%85%E5%BD%93%E8%80%85&email=developer.ikep%40gmail.com");
-    }
+        public void PlayButtonTappedController()
+        {
+            selectedLevel = toggleGroup.ActiveToggles()
+                .First().GetComponentsInChildren<Text>()
+                .First(t => t.name == "Label").text;
+            ScreenTransition();
+        }
 
-    public void SupportButtonTappedController()
-    {
-        Application.OpenURL("https://forms.gle/qS1RevqH7iHvjk6B6");
+        public void PrivacyPolicyButtonTappedController()
+        {
+            Application.OpenURL(
+                "https://github.com/vivace-app/vivace/wiki/VIVACE-%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3-%E3%83%97%E3%83%A9%E3%82%A4%E3%83%90%E3%82%B7%E3%83%BC%E3%83%9D%E3%83%AA%E3%82%B7%E3%83%BC");
+        }
+
+        public void SupportButtonTappedController()
+        {
+            Application.OpenURL("https://forms.gle/qS1RevqH7iHvjk6B6");
+        }
     }
 }

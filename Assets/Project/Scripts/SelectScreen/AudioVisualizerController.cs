@@ -1,19 +1,22 @@
 using UnityEngine;
 
-public class AudioVisualizerController : MonoBehaviour
+namespace Project.Scripts.SelectScreen
 {
-    public AudioSpectrum spectrum;
-    public Transform[] cubes;
-    public float scale;
-
-    void Update()
+    public class AudioVisualizerController : MonoBehaviour
     {
-        for (int i = 0; i < cubes.Length; i++)
+        public AudioSpectrum spectrum;
+        public Transform[] cubes;
+        public float scale;
+
+        public void Update()
         {
-            var cube = cubes[i];
-            var localScale = cube.localScale;
-            localScale.y = spectrum.Levels[i] * scale;
-            cube.localScale = localScale;
+            for (var i = 0; i < cubes.Length; i++)
+            {
+                var cube = cubes[i];
+                var localScale = cube.localScale;
+                localScale.y = spectrum.Levels[i] * scale;
+                cube.localScale = localScale;
+            }
         }
     }
 }
