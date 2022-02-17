@@ -49,6 +49,8 @@ public class DownloadProcessManager : MonoBehaviour
         public string artist;
         public string asset_bundle_ios;
         public string asset_bundle_android;
+        public string asset_bundle_standalone_osx_universal;
+        public string asset_bundle_standalone_windows_64;
         public string updated_at;
     }
 
@@ -157,8 +159,20 @@ public class DownloadProcessManager : MonoBehaviour
                                   music.asset_bundle_android.Replace("https://drive.google.com/file/d/", "")
                                       .Replace("/view?usp=sharing", "") + "&usp=sharing";
                     break;
+                case RuntimePlatform.OSXEditor:
+                case RuntimePlatform.OSXPlayer:
+                    downloadUrl = "https://drive.google.com/uc?id=" +
+                                  music.asset_bundle_standalone_osx_universal.Replace("https://drive.google.com/file/d/", "")
+                                      .Replace("/view?usp=sharing", "") + "&usp=sharing";
+                    break;
+                case RuntimePlatform.WindowsPlayer:
+                case RuntimePlatform.WindowsEditor:
+                    downloadUrl = "https://drive.google.com/uc?id=" +
+                                  music.asset_bundle_standalone_windows_64.Replace("https://drive.google.com/file/d/", "")
+                                      .Replace("/view?usp=sharing", "") + "&usp=sharing";
+                    break;
                 default:
-                    Debug.LogError("AssetBundleを使用するため，iOSまたはAndroidでデバッグを行ってください．");
+                    Debug.LogError("対応したAssetBundleが見つかりませんでした");
                     Application.Quit();
                     break;
             }
