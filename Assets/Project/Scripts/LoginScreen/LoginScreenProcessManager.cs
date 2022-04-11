@@ -12,6 +12,7 @@ using Firebase;
 using Firebase.Auth;
 using Firebase.Extensions;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static UnityEngine.Screen;
 
@@ -20,6 +21,7 @@ namespace Project.Scripts.LoginScreen
     public class LoginScreenProcessManager : MonoBehaviour
     {
         public Text showVersion;
+        public Text uid;
         public RectTransform background;
         private bool _touchableFlag;
         private bool _playableFlag;
@@ -39,7 +41,7 @@ namespace Project.Scripts.LoginScreen
         {
             ScreenResponsive();
             showVersion.text = "Ver." + ThisVersion;
-            
+
             await FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
             {
                 var dependencyStatus = task.Result;
@@ -83,6 +85,7 @@ namespace Project.Scripts.LoginScreen
                     Debug.Log("IsEmailVerified " + user.IsEmailVerified);
                     Debug.Log("ProviderId " + user.ProviderId);
                     Debug.Log("UserId " + user.UserId);
+                    uid.text = user.UserId;
                 }
             }
         }
@@ -112,7 +115,7 @@ namespace Project.Scripts.LoginScreen
                 this.appleAuthManager = new AppleAuthManager(deserializer);
             }
 
-            Invoke(nameof(SignInWithApple), 3.5f);
+            // Invoke(nameof(SignInWithApple), 3.5f);
         }
 
         // Update()で呼び出す処理
@@ -181,6 +184,13 @@ namespace Project.Scripts.LoginScreen
             return result;
         }
 
+        public void SignOut()
+        {
+            Debug.Log("Sign Out しました");
+            auth.SignOut();
+            SceneManager.LoadScene (SceneManager.GetActiveScene().name);
+        }
+
         // Sign In with Apple認証の実行
         public void SignInWithApple()
         {
@@ -200,11 +210,12 @@ namespace Project.Scripts.LoginScreen
                         Debug.Log(String.Format("appleIdCredential:{0} | rawNonce:{1}", appleIdCredential, rawNonce));
                         var identityToken = Encoding.UTF8.GetString(appleIdCredential.IdentityToken);
                         var authorizationCode = Encoding.UTF8.GetString(appleIdCredential.AuthorizationCode);
-                        
+
                         auth.SignInAndRetrieveDataWithCredentialAsync(
-                            Firebase.Auth.OAuthProvider.GetCredential("apple.com", identityToken, rawNonce, authorizationCode)).ContinueWithOnMainThread(
+                            Firebase.Auth.OAuthProvider.GetCredential("apple.com", identityToken, rawNonce,
+                                authorizationCode)).ContinueWithOnMainThread(
                             HandleSignInWithUser);
-                        
+
                         // Credential firebaseCredential =
                         //     OAuthProvider.GetCredential("apple.com", identityToken, rawNonce, authorizationCode);
                         // SignInOrLinkCredentialAsync(firebaseCredential);
@@ -228,7 +239,7 @@ namespace Project.Scripts.LoginScreen
         //
         //     task.ContinueWithOnMainThread(HandleSignInWithUser);
         // }
-        
+
         // Called when a sign-in without fetching profile data completes.
         private static void HandleSignInWithUser(Task<Firebase.Auth.SignInResult> task)
         {
@@ -245,7 +256,7 @@ namespace Project.Scripts.LoginScreen
                 var firebaseUser = task.Result.Info;
                 Debug.Log("Firebase auth completed | User ID:" + firebaseUser.UserName);
             }
-            
+
             // string indent = new String(' ', indentLevel * 2);
             // var metadata = result.Meta;
             // if (metadata != null)
@@ -262,7 +273,7 @@ namespace Project.Scripts.LoginScreen
             //     DisplayProfile<string>(info.Profile, indentLevel + 1);
             // }
         }
-        
+
         // Log the result of the specified task, returning true if the task
         // completed successfully, false otherwise.
         protected bool LogTaskCompletion(Task task, string operation)
@@ -282,8 +293,9 @@ namespace Project.Scripts.LoginScreen
                     if (firebaseEx != null)
                     {
                         authErrorCode = String.Format("AuthError.{0}: ",
-                            ((Firebase.Auth.AuthError)firebaseEx.ErrorCode).ToString());
+                            ((Firebase.Auth.AuthError) firebaseEx.ErrorCode).ToString());
                     }
+
                     Debug.Log(authErrorCode + exception.ToString());
                 }
             }
@@ -292,6 +304,7 @@ namespace Project.Scripts.LoginScreen
                 Debug.Log(operation + " completed");
                 complete = true;
             }
+
             return complete;
         }
     }
