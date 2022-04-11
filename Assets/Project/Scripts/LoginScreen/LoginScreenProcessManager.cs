@@ -11,6 +11,7 @@ using AppleAuth.Native;
 using Firebase;
 using Firebase.Auth;
 using Firebase.Extensions;
+using Google;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -29,6 +30,7 @@ namespace Project.Scripts.LoginScreen
         // ------------------------------------------------------------------------------------
 
         private const string ThisVersion = EnvDataStore.ThisVersion;
+        private const string GoogleClientId = EnvDataStore.GoogleClientId;
 
         // ------------------------------------------------------------------------------------
 
@@ -36,7 +38,7 @@ namespace Project.Scripts.LoginScreen
         private FirebaseAuth auth;
         private IAppleAuthManager appleAuthManager;
         private FirebaseUser user;
-
+        
         public async void Start()
         {
             ScreenResponsive();
@@ -56,6 +58,7 @@ namespace Project.Scripts.LoginScreen
 
                     // Set a flag here to indicate whether Firebase is ready to use by your app.
                     StartWithSIWA();
+                    StartWithSignInGoogle();
                 }
                 else
                 {
@@ -65,6 +68,11 @@ namespace Project.Scripts.LoginScreen
             });
         }
 
+        private void OnDestroy() {
+            auth.StateChanged -= AuthStateChanged;
+            auth = null;
+        }
+        
         void AuthStateChanged(object sender, EventArgs eventArgs)
         {
             if (auth.CurrentUser != user)
@@ -116,6 +124,17 @@ namespace Project.Scripts.LoginScreen
             }
 
             // Invoke(nameof(SignInWithApple), 3.5f);
+        }
+        
+        // Start()で呼び出す初期化処理
+        private void StartWithSignInGoogle() {
+            // Google SignInの設定
+            GoogleSignIn.Configuration = new GoogleSignInConfiguration {
+                RequestIdToken = true,
+                // Copy this value from the google-service.json file.
+                // oauth_client with type == 3
+                WebClientId = GoogleClientId
+            };
         }
 
         // Update()で呼び出す処理
@@ -213,8 +232,7 @@ namespace Project.Scripts.LoginScreen
 
                         auth.SignInAndRetrieveDataWithCredentialAsync(
                             Firebase.Auth.OAuthProvider.GetCredential("apple.com", identityToken, rawNonce,
-                                authorizationCode)).ContinueWithOnMainThread(
-                            HandleSignInWithUser);
+                                authorizationCode));
 
                         // Credential firebaseCredential =
                         //     OAuthProvider.GetCredential("apple.com", identityToken, rawNonce, authorizationCode);
@@ -229,83 +247,21 @@ namespace Project.Scripts.LoginScreen
                 }
             );
         }
+        
+        public void SignInWithGoogle() {
+            var signIn = GoogleSignIn.DefaultInstance.SignIn();
 
-        // ゲストユーザーで認証済みの時はリンクさせる、新規の場合はそのまま認証完了
-        // private void SignInOrLinkCredentialAsync(Credential firebaseCredential)
-        // {
-        //     var task = auth.SignInWithCredentialAsync(firebaseCredential);
-        //     if (task.Exception != null)
-        //         Debug.Log("GC Credential Task - Exception: " + task.Exception.Message);
-        //
-        //     task.ContinueWithOnMainThread(HandleSignInWithUser);
-        // }
-
-        // Called when a sign-in without fetching profile data completes.
-        private static void HandleSignInWithUser(Task<Firebase.Auth.SignInResult> task)
-        {
-            if (task.IsCanceled)
-            {
-                Debug.Log("Firebase auth was canceled");
-            }
-            else if (task.IsFaulted)
-            {
-                Debug.Log("Firebase auth failed");
-            }
-            else
-            {
-                var firebaseUser = task.Result.Info;
-                Debug.Log("Firebase auth completed | User ID:" + firebaseUser.UserName);
-            }
-
-            // string indent = new String(' ', indentLevel * 2);
-            // var metadata = result.Meta;
-            // if (metadata != null)
-            // {
-            //     Debug.Log(String.Format("{0}Created: {1}", indent, metadata.CreationTimestamp));
-            //     Debug.Log(String.Format("{0}Last Sign-in: {1}", indent, metadata.LastSignInTimestamp));
-            // }
-            // var info = result.Info;
-            // if (info != null)
-            // {
-            //     Debug.Log(String.Format("{0}Additional User Info:", indent));
-            //     Debug.Log(String.Format("{0}  User Name: {1}", indent, info.UserName));
-            //     Debug.Log(String.Format("{0}  Provider ID: {1}", indent, info.ProviderId));
-            //     DisplayProfile<string>(info.Profile, indentLevel + 1);
-            // }
-        }
-
-        // Log the result of the specified task, returning true if the task
-        // completed successfully, false otherwise.
-        protected bool LogTaskCompletion(Task task, string operation)
-        {
-            bool complete = false;
-            if (task.IsCanceled)
-            {
-                Debug.Log(operation + " canceled.");
-            }
-            else if (task.IsFaulted)
-            {
-                Debug.Log(operation + " encounted an error.");
-                foreach (Exception exception in task.Exception.Flatten().InnerExceptions)
-                {
-                    string authErrorCode = "";
-                    Firebase.FirebaseException firebaseEx = exception as Firebase.FirebaseException;
-                    if (firebaseEx != null)
-                    {
-                        authErrorCode = String.Format("AuthError.{0}: ",
-                            ((Firebase.Auth.AuthError) firebaseEx.ErrorCode).ToString());
-                    }
-
-                    Debug.Log(authErrorCode + exception.ToString());
+            signIn.ContinueWith (task => {
+                if (task.IsCanceled) {
+                    Debug.Log("GoogleSignIn was canceled.");
+                } else if (task.IsFaulted) {
+                    Debug.Log("GoogleSignIn was error.");
+                } else {
+                    auth.SignInAndRetrieveDataWithCredentialAsync(
+                        Firebase.Auth.GoogleAuthProvider.GetCredential(((Task<GoogleSignInUser>)task).Result.IdToken, null));
+                    // SignInOrLinkCredentialAsync(credential);
                 }
-            }
-            else if (task.IsCompleted)
-            {
-                Debug.Log(operation + " completed");
-                complete = true;
-            }
-
-            return complete;
+            });
         }
     }
 }
