@@ -8,12 +8,12 @@ using AppleAuth.Native;
 using Firebase.Auth;
 using UnityEngine;
 
-namespace Project.Scripts.LoginScene.Authentication
+namespace Project.Scripts.Authentication
 {
     /// <summary>
     /// Appleでサインインの処理関係です。
     /// </summary>
-    public partial class Auth
+    public partial class Main
     {
         private IAppleAuthManager _appleAuthManager;
 

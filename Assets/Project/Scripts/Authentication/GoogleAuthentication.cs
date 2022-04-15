@@ -2,12 +2,12 @@ using Firebase.Auth;
 using Google;
 using UnityEngine;
 
-namespace Project.Scripts.LoginScene.Authentication
+namespace Project.Scripts.Authentication
 {
     /// <summary>
     /// Googleでサインインの処理関係です。
     /// </summary>
-    public partial class Auth
+    public partial class Main
     {
         private static void InitializeSignInWithGoogle()
         {

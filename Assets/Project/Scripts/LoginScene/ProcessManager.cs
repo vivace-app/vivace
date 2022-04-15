@@ -1,6 +1,6 @@
-﻿using Project.Scripts.LoginScene.Authentication;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using Auth = Project.Scripts.Authentication.Main;
 
 namespace Project.Scripts.LoginScene
 {

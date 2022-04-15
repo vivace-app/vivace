@@ -1,27 +1,18 @@
 using System;
 using Firebase;
 using Firebase.Auth;
+using Project.Scripts.LoginScene;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Project.Scripts.LoginScene.Authentication
+namespace Project.Scripts.Authentication
 {
     /// <summary>
-    /// Login Scene で呼び出すユーザ認証周りのライブラリです。
+    /// ユーザ認証周りのライブラリです。
     /// </summary>
-    public partial class Auth
+    public partial class Main
     {
-        public void Start() => InitializeFirebase();
-        public void Update() => UpdateSignInWithApple();
-        public void OnDestroy() => DestroyFirebase();
-
-        public void OnClickSignInWithApple() => SignInWithApple();
-        public void OnClickSignInWithGoogleButton() => SignInWithGoogle();
-        public void OnClickUpdateDisplayNameButton() => UpdateDisplayName();
-        public void OnClickSignOutButton() => SignOut();
-
         private FirebaseAuth _auth;
-        private FirebaseUser _user;
 
         private void InitializeFirebase()
         {
@@ -51,28 +42,28 @@ namespace Project.Scripts.LoginScene.Authentication
 
         private void AuthStateHandler(object sender, EventArgs eventArgs)
         {
-            if (_auth.CurrentUser == _user) return;
-            var signedIn = _user != _auth.CurrentUser && _auth.CurrentUser != null;
+            if (_auth.CurrentUser == User) return;
+            var signedIn = User != _auth.CurrentUser && _auth.CurrentUser != null;
 
             // Sign out
-            if (!signedIn && _user != null) Debug.Log("Signed out: " + _user.UserId);
-            _user = _auth.CurrentUser;
+            if (!signedIn && User != null) Debug.Log("Signed out: " + User.UserId);
+            User = _auth.CurrentUser;
 
             // Sign in
             if (!signedIn) return;
-            Debug.Log("Signed in: " + _user.UserId);
-            View.instance.UidText = _user.UserId ?? "No credentials";
-            View.instance.DisplayNameText = _user.DisplayName ?? "No Name";
+            Debug.Log("Signed in: " + User.UserId);
+            View.instance.UidText = User.UserId ?? "No credentials";
+            View.instance.DisplayNameText = User.DisplayName ?? "No Name";
         }
 
         private void UpdateDisplayName()
         {
-            if (_user == null) return;
+            if (User == null) return;
             var profile = new UserProfile
             {
                 DisplayName = View.instance.DisplayNameInputField,
             };
-            _user.UpdateUserProfileAsync(profile).ContinueWith(task =>
+            User.UpdateUserProfileAsync(profile).ContinueWith(task =>
             {
                 if (task.IsCanceled)
                 {
@@ -88,8 +79,8 @@ namespace Project.Scripts.LoginScene.Authentication
 
                 Debug.Log("User profile updated successfully.");
                 View.instance.DisplayNameInputField = null;
-                View.instance.UidText = _user.UserId ?? "No credentials";
-                View.instance.DisplayNameText = _user.DisplayName ?? "No Name";
+                View.instance.UidText = User.UserId ?? "No credentials";
+                View.instance.DisplayNameText = User.DisplayName ?? "No Name";
             });
         }
 

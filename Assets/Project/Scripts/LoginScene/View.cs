@@ -17,15 +17,15 @@ namespace Project.Scripts.LoginScene
         public Text uidText;
         public Text versionText;
 
+        private void Awake()
+        {
+            if (instance == null) instance = this;
+        }
+        
         private void Start()
         {
             InitializeCredit();
             InitializeVersion();
-        }
-
-        private void Awake()
-        {
-            if (instance == null) instance = this;
         }
         
         public string DisplayNameInputField

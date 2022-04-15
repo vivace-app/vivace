@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Auth = Project.Scripts.Authentication.Main;
 
 namespace Project.Scripts.SelectScreen
 {
@@ -11,41 +11,31 @@ namespace Project.Scripts.SelectScreen
         public ToggleGroup toggleGroup;
         public static string selectedLevel;
 
-        private Firebase.Auth.FirebaseAuth _auth;
-        private Firebase.Auth.FirebaseUser _user;
+        private readonly Auth _auth = new Auth();
 
-        private void Start() => InitializeFirebase();
-
-        private void InitializeFirebase()
+        private void Start()
         {
-            Debug.Log("Setting up Firebase Auth");
-            _auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
-            _auth.StateChanged += AuthStateChanged;
-            AuthStateChanged(this, null);
-            
-            var user = _auth.CurrentUser;
-            if (user == null) return;
-            var displayName = user.DisplayName;
-            var userId = user.UserId;
+            _auth.Start();
 
-            Debug.Log("name: " + displayName);
-            Debug.Log("uid: " + userId);
+            var user = _auth.User;
+            if (user != null)
+            {
+                var displayName = user.DisplayName;
+                var userId = user.UserId;
+
+                Debug.Log("name: " + displayName);
+                Debug.Log("uid: " + userId);
+            }
         }
 
-        private void AuthStateChanged(object sender, EventArgs eventArgs)
+        private void Update()
         {
-            if (_auth.CurrentUser == _user) return;
-            var signedIn = _user != _auth.CurrentUser && _auth.CurrentUser != null;
-            if (!signedIn && _user != null) Debug.Log("Signed out " + _user.UserId);
-
-            _user = _auth.CurrentUser;
-            if (signedIn) Debug.Log("Signed in " + _user.UserId);
+            _auth.Update();
         }
 
         private void OnDestroy()
         {
-            _auth.StateChanged -= AuthStateChanged;
-            _auth = null;
+            _auth.OnDestroy();
         }
 
         private static void ScreenTransition()

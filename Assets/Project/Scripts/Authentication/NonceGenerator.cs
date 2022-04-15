@@ -4,12 +4,12 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Project.Scripts.LoginScene.Authentication
+namespace Project.Scripts.Authentication
 {
     /// <summary>
     /// SHA-256 のノンスを生成するライブラリです。
     /// </summary>
-    public partial class Auth
+    public partial class Main
     {
         private static string GenerateRandomString(int length)
         {
