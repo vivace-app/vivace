@@ -4,7 +4,7 @@ using Firebase.Auth;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Project.Scripts.LoginScreen
+namespace Project.Scripts.LoginScene.Authentication
 {
     public partial class Authentication
     {
@@ -51,15 +51,15 @@ namespace Project.Scripts.LoginScreen
             // Sign in
             if (!signedIn) return;
             Debug.Log("Signed in: " + _user.UserId);
-            Presenter.instance.UidText = _user.UserId ?? "No credentials";
-            Presenter.instance.DisplayNameText = _user.DisplayName ?? "No Name";
+            View.instance.UidText = _user.UserId ?? "No credentials";
+            View.instance.DisplayNameText = _user.DisplayName ?? "No Name";
         }
 
         public void UpdateDisplayName()
         {
             if (_user == null) return;
             var profile = new UserProfile {
-                DisplayName = Presenter.instance.DisplayNameInputField,
+                DisplayName = View.instance.DisplayNameInputField,
             };
             _user.UpdateUserProfileAsync(profile).ContinueWith(task => {
                 if (task.IsCanceled) {
@@ -72,9 +72,9 @@ namespace Project.Scripts.LoginScreen
                 }
 
                 Debug.Log("User profile updated successfully.");
-                Presenter.instance.DisplayNameInputField = null;
-                Presenter.instance.UidText = _user.UserId ?? "No credentials";
-                Presenter.instance.DisplayNameText = _user.DisplayName ?? "No Name";
+                View.instance.DisplayNameInputField = null;
+                View.instance.UidText = _user.UserId ?? "No credentials";
+                View.instance.DisplayNameText = _user.DisplayName ?? "No Name";
             });
         }
         

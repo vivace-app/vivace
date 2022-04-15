@@ -2,7 +2,7 @@ using Firebase.Auth;
 using Google;
 using UnityEngine;
 
-namespace Project.Scripts.LoginScreen
+namespace Project.Scripts.LoginScene.Authentication
 {
     public partial class Authentication
     {

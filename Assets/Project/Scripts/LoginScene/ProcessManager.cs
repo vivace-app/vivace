@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Project.Scripts.LoginScreen
+namespace Project.Scripts.LoginScene
 {
     public class ProcessManager : MonoBehaviour
     {

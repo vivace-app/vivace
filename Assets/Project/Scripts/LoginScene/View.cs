@@ -1,20 +1,32 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
-namespace Project.Scripts.LoginScreen
+namespace Project.Scripts.LoginScene
 {
-    public class Presenter : MonoBehaviour
+    public class View : MonoBehaviour
     {
-        public static Presenter instance;
+        public static View instance;
 
         public InputField displayNameInputField;
+        public Text creditText;
         public Text displayNameText;
         public Text uidText;
+        public Text versionText;
+
+        private void Start()
+        {
+            InitializeCredit();
+            InitializeVersion();
+        }
 
         private void Awake()
         {
             if (instance == null) instance = this;
         }
+
+        private void InitializeCredit() => creditText.text = $"(c) {DateTime.Now.Year} VIVACE PROJECT";
+        private void InitializeVersion() => versionText.text = $"Ver.{EnvDataStore.ThisVersion}";
 
         public string DisplayNameInputField
         {

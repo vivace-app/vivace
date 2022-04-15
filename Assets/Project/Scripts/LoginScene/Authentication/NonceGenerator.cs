@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Project.Scripts.LoginScreen
+namespace Project.Scripts.LoginScene.Authentication
 {
     public partial class Authentication
     {
