@@ -6,18 +6,21 @@ using System.Text;
 
 namespace Project.Scripts.LoginScene.Authentication
 {
-    public partial class Authentication
+    /// <summary>
+    /// SHA-256 のノンスを生成するライブラリです。
+    /// </summary>
+    public partial class Auth
     {
         private static string GenerateRandomString(int length)
         {
             if (length <= 0)
                 throw new Exception("Expected nonce to have positive length");
 
-            var uppercase = string.Concat(Enumerable.Range('A', 26).Select(c => (char)c));
-            var lowercase = string.Concat(Enumerable.Range('a', 26).Select(c => (char)c));
+            var uppercase = string.Concat(Enumerable.Range('A', 26).Select(c => (char) c));
+            var lowercase = string.Concat(Enumerable.Range('a', 26).Select(c => (char) c));
             var number = string.Concat(Enumerable.Range(0, 10));
             var charset = uppercase + lowercase + number + "-._";
-            
+
             var cryptographicallySecureRandomNumberGenerator = new RNGCryptoServiceProvider();
             var result = string.Empty;
             var remainingLength = length;

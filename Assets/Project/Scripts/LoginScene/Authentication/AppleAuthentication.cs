@@ -10,7 +10,10 @@ using UnityEngine;
 
 namespace Project.Scripts.LoginScene.Authentication
 {
-    public partial class Authentication
+    /// <summary>
+    /// Appleでサインインの処理関係です。
+    /// </summary>
+    public partial class Auth
     {
         private IAppleAuthManager _appleAuthManager;
 
@@ -23,7 +26,7 @@ namespace Project.Scripts.LoginScene.Authentication
 
         private void UpdateSignInWithApple() => _appleAuthManager?.Update();
 
-        public void SignInWithApple()
+        private void SignInWithApple()
         {
             switch (Application.platform)
             {
@@ -47,8 +50,8 @@ namespace Project.Scripts.LoginScene.Authentication
                         },
                         e =>
                         {
-                            Debug.Log("AppleSignIn was error.");
-                            Debug.Log(e.GetAuthorizationErrorCode());
+                            Debug.LogError("Sign in with Apple was error.");
+                            Debug.LogError(e.GetAuthorizationErrorCode());
                         }
                     );
                     break;
@@ -67,14 +70,13 @@ namespace Project.Scripts.LoginScene.Authentication
 
                     _auth.SignInWithProviderAsync(provider).ContinueWith(task =>
                     {
-                        if (task.IsCanceled)
-                            Debug.Log("AppleSignIn was canceled.");
-                        else if (task.IsFaulted) Debug.Log("GoogleSignIn was error.");
+                        if (task.IsCanceled) Debug.Log("Sign in with Apple was canceled.");
+                        else if (task.IsFaulted) Debug.LogError("Sign in with Apple was error.");
                     });
                     break;
                 }
                 default:
-                    Debug.LogError("No applicable platform");
+                    Debug.LogError("No applicable platform.");
                     break;
             }
         }

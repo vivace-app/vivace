@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 namespace Project.Scripts.LoginScene
 {
+    /// <summary>
+    /// Login Scene 内のコンテンツを書き換えます。
+    /// </summary>
     public class View : MonoBehaviour
     {
         public static View instance;
@@ -24,10 +27,7 @@ namespace Project.Scripts.LoginScene
         {
             if (instance == null) instance = this;
         }
-
-        private void InitializeCredit() => creditText.text = $"(c) {DateTime.Now.Year} VIVACE PROJECT";
-        private void InitializeVersion() => versionText.text = $"Ver.{EnvDataStore.ThisVersion}";
-
+        
         public string DisplayNameInputField
         {
             get => displayNameInputField.text;
@@ -43,5 +43,8 @@ namespace Project.Scripts.LoginScene
         {
             set => uidText.text = value;
         }
+
+        private void InitializeCredit() => creditText.text = $"(c) {DateTime.Now.Year} VIVACE PROJECT";
+        private void InitializeVersion() => versionText.text = $"Ver.{EnvDataStore.ThisVersion}";
     }
 }

@@ -4,7 +4,10 @@ using UnityEngine;
 
 namespace Project.Scripts.LoginScene.Authentication
 {
-    public partial class Authentication
+    /// <summary>
+    /// Googleでサインインの処理関係です。
+    /// </summary>
+    public partial class Auth
     {
         private static void InitializeSignInWithGoogle()
         {
@@ -15,16 +18,16 @@ namespace Project.Scripts.LoginScene.Authentication
             };
         }
 
-        public void SignInWithGoogle()
+        private void SignInWithGoogle()
         {
             var signIn = GoogleSignIn.DefaultInstance.SignIn();
 
             signIn.ContinueWith(task =>
             {
                 if (task.IsCanceled)
-                    Debug.Log("GoogleSignIn was canceled.");
+                    Debug.Log("Sign in with Google was canceled.");
                 else if (task.IsFaulted)
-                    Debug.Log("GoogleSignIn was error.");
+                    Debug.LogError("Sign in with Google was error.");
                 else
                     _auth.SignInAndRetrieveDataWithCredentialAsync(
                         GoogleAuthProvider.GetCredential(task.Result.IdToken, null));

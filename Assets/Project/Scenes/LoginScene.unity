@@ -257,49 +257,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3394684}
   m_CullTransparentMesh: 1
---- !u!1 &61209433
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 61209436}
-  - component: {fileID: 61209434}
-  m_Layer: 0
-  m_Name: Authentication
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &61209434
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 61209433}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 470e6d01c8fb495884f58a7e66e7b126, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &61209436
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 61209433}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 61.97487, y: 8.83387, z: 117.22946}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &72260880
 GameObject:
   m_ObjectHideFlags: 0
@@ -932,9 +889,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 61209434}
-        m_TargetAssemblyTypeName: Project.Scripts.LoginScreen.Authentication, Assembly-CSharp
-        m_MethodName: SignInWithApple
+      - m_Target: {fileID: 1552985626}
+        m_TargetAssemblyTypeName: Project.Scripts.LoginScene.ProcessManager, Assembly-CSharp
+        m_MethodName: OnClickSignInWithApple
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6061,7 +6018,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1182358620
 GameObject:
@@ -6465,9 +6422,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 61209434}
-        m_TargetAssemblyTypeName: Project.Scripts.LoginScreen.Authentication, Assembly-CSharp
-        m_MethodName: SignInWithGoogle
+      - m_Target: {fileID: 1552985626}
+        m_TargetAssemblyTypeName: Project.Scripts.LoginScene.ProcessManager, Assembly-CSharp
+        m_MethodName: OnClickSignInWithGoogleButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6654,7 +6611,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1395364895
 GameObject:
@@ -6966,7 +6923,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1552985626
 MonoBehaviour:
@@ -7064,8 +7021,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1552985626}
-        m_TargetAssemblyTypeName: Project.Scripts.LoginScreen.ProcessManager, Assembly-CSharp
-        m_MethodName: SceneTransition
+        m_TargetAssemblyTypeName: Project.Scripts.LoginScene.ProcessManager, Assembly-CSharp
+        m_MethodName: OnClickIgnoreAndPlayButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7449,9 +7406,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 61209434}
-        m_TargetAssemblyTypeName: Project.Scripts.LoginScreen.Authentication, Assembly-CSharp
-        m_MethodName: SignOut
+      - m_Target: {fileID: 1552985626}
+        m_TargetAssemblyTypeName: Project.Scripts.LoginScene.ProcessManager, Assembly-CSharp
+        m_MethodName: OnClickSignOutButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7675,9 +7632,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 61209434}
-        m_TargetAssemblyTypeName: Project.Scripts.LoginScreen.Authentication, Assembly-CSharp
-        m_MethodName: UpdateDisplayName
+      - m_Target: {fileID: 1552985626}
+        m_TargetAssemblyTypeName: Project.Scripts.LoginScene.ProcessManager, Assembly-CSharp
+        m_MethodName: OnClickUpdateDisplayNameButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

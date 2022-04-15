@@ -6,8 +6,20 @@ using UnityEngine.SceneManagement;
 
 namespace Project.Scripts.LoginScene.Authentication
 {
-    public partial class Authentication
+    /// <summary>
+    /// Login Scene で呼び出すユーザ認証周りのライブラリです。
+    /// </summary>
+    public partial class Auth
     {
+        public void Start() => InitializeFirebase();
+        public void Update() => UpdateSignInWithApple();
+        public void OnDestroy() => DestroyFirebase();
+
+        public void OnClickSignInWithApple() => SignInWithApple();
+        public void OnClickSignInWithGoogleButton() => SignInWithGoogle();
+        public void OnClickUpdateDisplayNameButton() => UpdateDisplayName();
+        public void OnClickSignOutButton() => SignOut();
+
         private FirebaseAuth _auth;
         private FirebaseUser _user;
 
@@ -39,15 +51,13 @@ namespace Project.Scripts.LoginScene.Authentication
 
         private void AuthStateHandler(object sender, EventArgs eventArgs)
         {
-            Debug.Log("## AuthStateHandler Called");
-
             if (_auth.CurrentUser == _user) return;
             var signedIn = _user != _auth.CurrentUser && _auth.CurrentUser != null;
 
             // Sign out
             if (!signedIn && _user != null) Debug.Log("Signed out: " + _user.UserId);
             _user = _auth.CurrentUser;
-            
+
             // Sign in
             if (!signedIn) return;
             Debug.Log("Signed in: " + _user.UserId);
@@ -55,18 +65,23 @@ namespace Project.Scripts.LoginScene.Authentication
             View.instance.DisplayNameText = _user.DisplayName ?? "No Name";
         }
 
-        public void UpdateDisplayName()
+        private void UpdateDisplayName()
         {
             if (_user == null) return;
-            var profile = new UserProfile {
+            var profile = new UserProfile
+            {
                 DisplayName = View.instance.DisplayNameInputField,
             };
-            _user.UpdateUserProfileAsync(profile).ContinueWith(task => {
-                if (task.IsCanceled) {
+            _user.UpdateUserProfileAsync(profile).ContinueWith(task =>
+            {
+                if (task.IsCanceled)
+                {
                     Debug.LogError("UpdateUserProfileAsync was canceled.");
                     return;
                 }
-                if (task.IsFaulted) {
+
+                if (task.IsFaulted)
+                {
                     Debug.LogError("UpdateUserProfileAsync encountered an error: " + task.Exception);
                     return;
                 }
@@ -77,8 +92,8 @@ namespace Project.Scripts.LoginScene.Authentication
                 View.instance.DisplayNameText = _user.DisplayName ?? "No Name";
             });
         }
-        
-        public void SignOut()
+
+        private void SignOut()
         {
             _auth.SignOut();
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
