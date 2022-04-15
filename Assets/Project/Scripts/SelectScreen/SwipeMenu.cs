@@ -221,7 +221,7 @@ namespace Project.Scripts.SelectScreen
             {
                 if (i == num) // numは現在選択中の楽曲通し番号
                 {
-                    if (!_previewAudioSource[i].isPlaying) _previewAudioSource[num].Play(); // 選択中の楽曲がプレビュー再生されていないとき楽曲を再生
+                    if (!_previewAudioSource[num].isPlaying) _previewAudioSource[num].Play(); // 選択中の楽曲がプレビュー再生されていないとき楽曲を再生
                 }
                 else
                 {

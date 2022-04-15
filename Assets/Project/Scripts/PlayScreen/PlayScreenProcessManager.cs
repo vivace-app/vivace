@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using DG.Tweening;
 using Project.Scripts;
@@ -50,14 +51,15 @@ public class PlayScreenProcessManager : MonoBehaviour
     private Color _perfectC, _greatC, _goodC, _missC, _scoreC;
 
     // CSV
-    private readonly int[] _noteLaneNum = new int[4096];
-    private readonly float[] _noteTouchTime = new float[4096];
+    private readonly float[,] _noteTouchTime = new float[5, 4096];
+    private int[] _totalNotes = {0, 0, 0, 0, 0};
+    private int[] _currentNote = {0, 0, 0, 0, 0};
 
     private bool _isEndOfPlay, _isPaused, _isLowGraphicsMode, _enableNotesTouchSound;
     private float _score, _baseScore, _logSqSum;
     private float[] _logSq; // 区分求積法での各分点（0～最大49）におけるlogの値
     private float _startTime, _stopTime; // _stopTimeは一時停止の時刻を記録
-    private int _combo, _perfect, _great, _good, _miss, _totalNotes, _currentNote;
+    private int _combo, _perfect, _great, _good, _miss;
     private int _startTimingIndex; // 判定調整 (正: 遅くタップする)
     private int _jTextCounter; // JudgeText の変更回数
 
@@ -93,7 +95,7 @@ public class PlayScreenProcessManager : MonoBehaviour
 
         _startTimingIndex = (PlayerPrefs.GetInt("TimingAdjustment", 9) - 9) * 10; // 判定調整
         notesSpeedIndex = 5.0f + (PlayerPrefs.GetInt("NotesFallSpeed", 5) - 5) * 0.5f;
-        FallPerFrame = (Vector3.down + Vector3.back * (float)Math.Sqrt(3)) * 0.6f * notesSpeedIndex; // ノーツ落下速度
+        FallPerFrame = (Vector3.down + Vector3.back * (float) Math.Sqrt(3)) * 0.6f * notesSpeedIndex; // ノーツ落下速度
 
         LoadCsv();
         BaseScoreCalculation();
@@ -101,8 +103,9 @@ public class PlayScreenProcessManager : MonoBehaviour
         isPlaying = true;
 
         _startTime = Time.time;
-        await Task.Delay((int)((8100 + 10 * _startTimingIndex) / notesSpeedIndex));
+        await Task.Delay((int) ((8100 + 10 * _startTimingIndex) / notesSpeedIndex));
         _playAudioSource.Play();
+
 
         _isEndOfPlay = true;
         _isLowGraphicsMode = PlayerPrefs.GetInt("lowGraphicsMode", 1) == 1;
@@ -126,7 +129,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         if (Screen.width < 1920)
             scale = 1.5f;
         if (Screen.width < Screen.height)
-            scale = (float)(Screen.height * 16) / (Screen.width * 9);
+            scale = (float) (Screen.height * 16) / (Screen.width * 9);
         background.sizeDelta = new Vector2(Screen.width * scale, Screen.height * scale);
     }
 
@@ -138,7 +141,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         addText.text = "";
         judgeText.text = "";
         comboText.text = _combo.ToString("D");
-        scoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
+        scoreText.text = ((int) Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
     }
 
     /// <summary>
@@ -187,15 +190,14 @@ public class PlayScreenProcessManager : MonoBehaviour
         _playMusic = _assetBundle[SwipeMenu.selectedNumTmp].LoadAsset<AudioClip>(musicName);
 
         if (!(_assetBundle[SwipeMenu.selectedNumTmp]
-            .LoadAsset<TextAsset>(musicName + "_" + SelectScreenProcessManager.selectedLevel) is { } csv)) return;
+                .LoadAsset<TextAsset>(musicName + "_" + SelectScreenProcessManager.selectedLevel) is { } csv)) return;
         var reader = new StringReader(csv.text);
         while (reader.Peek() > -1)
         {
             var line = reader.ReadLine();
             if (line == null) continue;
             var values = line.Split(',');
-            _noteTouchTime[_totalNotes] = float.Parse(values[0]);
-            _noteLaneNum[_totalNotes++] = int.Parse(values[1]);
+            _noteTouchTime[int.Parse(values[1]), _totalNotes[int.Parse(values[1])]++] = float.Parse(values[0]);
         }
     }
 
@@ -206,15 +208,15 @@ public class PlayScreenProcessManager : MonoBehaviour
     {
         _logSq = new float[SepPoint];
 
-        var denominator = _totalNotes >= SepPoint ? SepPoint : _totalNotes;
+        var denominator = _totalNotes.Sum() >= SepPoint ? SepPoint : _totalNotes.Sum();
 
         for (var i = 0; i < denominator; i++)
         {
-            _logSq[i] = (float)Math.Log10(1 + (9 * ((float)i + 1) / denominator));
+            _logSq[i] = (float) Math.Log10(1 + (9 * ((float) i + 1) / denominator));
             _logSqSum += _logSq[i];
         }
 
-        _baseScore = 1000000 / (_logSqSum + _totalNotes - denominator);
+        _baseScore = 1000000 / (_logSqSum + _totalNotes.Sum() - denominator);
     }
 
     /// <summary>
@@ -222,8 +224,13 @@ public class PlayScreenProcessManager : MonoBehaviour
     /// </summary>
     private void CheckNextNotes() // != 0だと反転孤独線の譜面が正常に読み込めません． >=0はどうですか？
     {
-        while (_noteTouchTime[_currentNote] < (Time.time - _startTime) && (Time.time - _startTime < 1 || _noteTouchTime[_currentNote] != 0))
-            SpawnNotes(_noteLaneNum[_currentNote++]);
+        for (var i = 0; i < 5; i++)
+            while (_noteTouchTime[i, _currentNote[i]] < (Time.time - _startTime) &&
+                   (Time.time - _startTime < 1 || _noteTouchTime[i, _currentNote[i]] != 0))
+            {
+                SpawnNotes(i);
+                _currentNote[i]++;
+            }
     }
 
     /// <summary>
@@ -231,7 +238,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     /// </summary>
     private void SpawnNotes(int lineNum)
     {
-        Instantiate(notes[lineNum], new Vector3(-0.73f + (0.365f * lineNum), 5.4f, -0.57f),
+        Instantiate(notes[lineNum], new Vector3(-0.73f + 0.365f * lineNum, 5.4f, -0.57f),
             Quaternion.Euler(-30f, 0, 0));
     }
 
@@ -380,12 +387,12 @@ public class PlayScreenProcessManager : MonoBehaviour
             _ => _baseScore * magni
         };
 
-        if(_perfect == _totalNotes) scoreTemp = 1000000 - _score; // floatへの変更でAP時に100万点にならないので強制代入
+        if (_perfect == _totalNotes.Sum()) scoreTemp = 1000000 - _score; // floatへの変更でAP時に100万点にならないので強制代入
 
         // 加算スコア表示の文字色を変更
         addText.color = _scoreC;
         // 加算スコア表示の値を更新
-        addText.text = "+" + ((int)Math.Round(scoreTemp, 0, MidpointRounding.AwayFromZero)).ToString("D");
+        addText.text = "+" + ((int) Math.Round(scoreTemp, 0, MidpointRounding.AwayFromZero)).ToString("D");
         // アニメーション
         addText.transform.localScale = vl;
         _aTextReduce = addText.transform.DOScale(vo, 0.2f);
@@ -396,14 +403,14 @@ public class PlayScreenProcessManager : MonoBehaviour
             for (var i = 0; i < 15; i++)
             {
                 _score += scoreTemp / 15;
-                scoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
+                scoreText.text = ((int) Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
                 await Task.Delay(33);
             }
         }
         else
         {
             _score += scoreTemp;
-            scoreText.text = ((int)Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
+            scoreText.text = ((int) Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
         }
 
         //  ↓なんで!=じゃないんだっけ
@@ -421,7 +428,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     /// </summary>
     public async void ResultSceneTransition()
     {
-        Score = (int)Math.Round(_score, 0, MidpointRounding.AwayFromZero);
+        Score = (int) Math.Round(_score, 0, MidpointRounding.AwayFromZero);
         Perfect = _perfect;
         Great = _great;
         Good = _good;
