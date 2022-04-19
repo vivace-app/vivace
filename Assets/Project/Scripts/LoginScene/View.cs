@@ -12,6 +12,7 @@ namespace Project.Scripts.LoginScene
         public static View instance;
 
         public InputField displayNameInputField;
+        public Text completionRateText;
         public Text creditText;
         public Text displayNameText;
         public Text uidText;
@@ -21,11 +22,19 @@ namespace Project.Scripts.LoginScene
         {
             if (instance == null) instance = this;
         }
+
+        private void InitializeCredit() => creditText.text = $"(c) {DateTime.Now.Year} VIVACE PROJECT";
+        private void InitializeVersion() => versionText.text = $"Ver.{EnvDataStore.ThisVersion}";
         
         private void Start()
         {
             InitializeCredit();
             InitializeVersion();
+        }
+
+        public string CompletionRateText
+        {
+            set => completionRateText.text = value;
         }
         
         public string DisplayNameInputField
@@ -43,8 +52,5 @@ namespace Project.Scripts.LoginScene
         {
             set => uidText.text = value;
         }
-
-        private void InitializeCredit() => creditText.text = $"(c) {DateTime.Now.Year} VIVACE PROJECT";
-        private void InitializeVersion() => versionText.text = $"Ver.{EnvDataStore.ThisVersion}";
     }
 }

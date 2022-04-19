@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using DG.Tweening;
 using Project.Scripts;
+using Project.Scripts.AssetBundleHandler;
+using Project.Scripts.Model;
 using Project.Scripts.SelectScreen;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -40,7 +42,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     // ------------------------------------------------------------------------------------
 
     // Asset Bundle
-    private AssetBundle[] _assetBundle;
+    private AssetBundle[] _assetBundles;
 
     // Audio
     private AudioSource _playAudioSource;
@@ -67,7 +69,7 @@ public class PlayScreenProcessManager : MonoBehaviour
     private const int SepPoint = 50;
 
     // Music Data
-    private List<DownloadProcessManager.MusicList> _MusicData;
+    private Music[] _musics;
 
     // Tweener Animation
     private Tweener _jTextFade, _jTextReduce, _aTextFade, _aTextReduce;
@@ -83,8 +85,8 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     private async void Start()
     {
-        _assetBundle = DownloadProcessManager.AssetBundle;
-        _MusicData = DownloadProcessManager.MusicData;
+        _assetBundles = Main.GetAssetBundles();
+        _musics = Main.GetMusics();
 
         // 初期化関連
         BackgroundCover();
@@ -163,8 +165,8 @@ public class PlayScreenProcessManager : MonoBehaviour
     {
         _judgeAudioSources = GameObject.Find("SoundEffect").GetComponents<CriAtomSource>();
         _playAudioSource = gameObject.AddComponent<AudioSource>();
-        var musicName = _MusicData[SwipeMenu.selectedNumTmp].name;
-        _playMusic = _assetBundle[SwipeMenu.selectedNumTmp].LoadAsset<AudioClip>(musicName);
+        var musicName = _musics[SwipeMenu.selectedNumTmp].Name;
+        _playMusic = _assetBundles[SwipeMenu.selectedNumTmp].LoadAsset<AudioClip>(musicName);
         _playAudioSource.clip = _playMusic;
     }
 
@@ -186,10 +188,10 @@ public class PlayScreenProcessManager : MonoBehaviour
     /// </summary>
     private void LoadCsv()
     {
-        var musicName = _MusicData[SwipeMenu.selectedNumTmp].name;
-        _playMusic = _assetBundle[SwipeMenu.selectedNumTmp].LoadAsset<AudioClip>(musicName);
+        var musicName = _musics[SwipeMenu.selectedNumTmp].Name;
+        _playMusic = _assetBundles[SwipeMenu.selectedNumTmp].LoadAsset<AudioClip>(musicName);
 
-        if (!(_assetBundle[SwipeMenu.selectedNumTmp]
+        if (!(_assetBundles[SwipeMenu.selectedNumTmp]
                 .LoadAsset<TextAsset>(musicName + "_" + SelectScreenProcessManager.selectedLevel) is { } csv)) return;
         var reader = new StringReader(csv.text);
         while (reader.Peek() > -1)
@@ -433,7 +435,7 @@ public class PlayScreenProcessManager : MonoBehaviour
         Great = _great;
         Good = _good;
         Miss = _miss;
-        StartCoroutine(RegistScoreNetworkProcess(_MusicData[SwipeMenu.selectedNumTmp].name,
+        StartCoroutine(RegistScoreNetworkProcess(_musics[SwipeMenu.selectedNumTmp].Name,
             SelectScreenProcessManager.selectedLevel));
         await Task.Delay(1000);
         SceneManager.LoadScene("ResultScene");

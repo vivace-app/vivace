@@ -15,6 +15,7 @@ namespace Project.Scripts.Authentication
 
         public void OnClickSignInWithApple() => SignInWithApple();
         public void OnClickSignInWithGoogleButton() => SignInWithGoogle();
+        public void OnClickSignInWithAnonymouslyButton() => SignInWithAnonymously();
         public void OnClickUpdateDisplayNameButton() => UpdateDisplayName();
         public void OnClickSignOutButton() => SignOut();
     }

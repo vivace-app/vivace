@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Project.Scripts.AssetBundleHandler;
+using Project.Scripts.Model;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -21,6 +23,7 @@ namespace Project.Scripts.SelectScreen
         // private static float[] _musicTime; //楽曲の再生時間を格納
         // [FormerlySerializedAs("DisplayedMusicTime")] public Text displayedMusicTime; //画面に表示される楽曲の再生時間
         public RectTransform background;
+
         // [FormerlySerializedAs("ScrollView")] public RectTransform scrollView;
         // [FormerlySerializedAs("ScrollViewPadding")] public HorizontalLayoutGroup scrollViewPadding;
         public Text yourHighScoreText;
@@ -33,14 +36,14 @@ namespace Project.Scripts.SelectScreen
         private AudioClip[] _previewAudioClip;
         private AudioSource[] _previewAudioSource;
 
-        private List<DownloadProcessManager.MusicList> _musicData;
-        private AssetBundle[] _assetBundle;
+        private Music[] _musics;
+        private AssetBundle[] _assetBundles;
 
         // ------------------------------------------------------------------------------------
 
         private const string GetMyScoreApiUri = EnvDataStore.ApiUri + "/auth/myScore";
         private const string GetOnlineScoreApiUri = EnvDataStore.ApiUri + "/topScore";
-    
+
         // ------------------------------------------------------------------------------------
 
         [Serializable]
@@ -59,9 +62,9 @@ namespace Project.Scripts.SelectScreen
 
         private void Start()
         {
-            _assetBundle = DownloadProcessManager.AssetBundle;
-            _musicData = DownloadProcessManager.MusicData;
-            _pos = new float[_musicData.Count];
+            _musics = Main.GetMusics();
+            _assetBundles = Main.GetAssetBundles();
+            _pos = new float[_musics.Length];
             _distance = 1f / (_pos.Length - 1f);
             for (var i = 0; i < _pos.Length; i++) _pos[i] = _distance * i;
             BackgroundCover();
@@ -161,7 +164,7 @@ namespace Project.Scripts.SelectScreen
             if (Screen.width < 1920)
                 scale = 1.5f;
             if (Screen.width < Screen.height)
-                scale = (float)(Screen.height * 16) / (Screen.width * 9);
+                scale = (float) (Screen.height * 16) / (Screen.width * 9);
             background.sizeDelta = new Vector2(Screen.width * scale, Screen.height * scale);
         }
 
@@ -170,7 +173,7 @@ namespace Project.Scripts.SelectScreen
         /// </summary>
         private void CardCloner()
         {
-            for (var i = 1; i < _musicData.Count; i++)
+            for (var i = 1; i < _musics.Length; i++)
             {
                 var clone = Instantiate(cardTemplate, cardTemplate.transform.parent, true);
                 if (clone is null) continue;
@@ -178,8 +181,8 @@ namespace Project.Scripts.SelectScreen
                 clone.transform.localScale = cardTemplate.transform.localScale;
             }
 
-            _toggleGroup = new ToggleGroup[_musicData.Count];
-            for (var i = 0; i < _musicData.Count; i++)
+            _toggleGroup = new ToggleGroup[_musics.Length];
+            for (var i = 0; i < _musics.Length; i++)
                 _toggleGroup[i] = transform.GetChild(i).Find("Easy").GetComponent<ToggleGroup>();
         }
 
@@ -188,13 +191,15 @@ namespace Project.Scripts.SelectScreen
         /// </summary>
         private void SetCardInformation()
         {
-            foreach (var music in _musicData)
+            foreach (var music in _musics)
             {
-                transform.GetChild(music.id - 1).Find("Title").GetComponent<Text>().text = _musicData[music.id - 1].title;
-                transform.GetChild(music.id - 1).Find("Artist").GetComponent<Text>().text = _musicData[music.id - 1].artist;
+                transform.GetChild(music.Id - 1).Find("Title").GetComponent<Text>().text =
+                    music.Title;
+                transform.GetChild(music.Id - 1).Find("Artist").GetComponent<Text>().text =
+                    music.Artist;
                 var artworkSprite =
-                    _assetBundle[music.id - 1].LoadAsset<Sprite>(_musicData[music.id - 1].name + "_artwork");
-                transform.GetChild(music.id - 1).Find("Artwork").GetComponent<Image>().sprite = artworkSprite;
+                    _assetBundles[music.Id - 1].LoadAsset<Sprite>(music.Name + "_artwork");
+                transform.GetChild(music.Id - 1).Find("Artwork").GetComponent<Image>().sprite = artworkSprite;
             }
         }
 
@@ -203,12 +208,12 @@ namespace Project.Scripts.SelectScreen
         /// </summary>
         private void SetPreviewMusic()
         {
-            _previewAudioClip = new AudioClip[_musicData.Count];
+            _previewAudioClip = new AudioClip[_musics.Length];
             _previewAudioSource = gameObject.GetComponents<AudioSource>();
-            foreach (var music in _musicData)
+            foreach (var music in _musics)
             {
-                _previewAudioClip[music.id - 1] = _assetBundle[music.id - 1].LoadAsset<AudioClip>(music.name + "_pre");
-                _previewAudioSource[music.id - 1].clip = _previewAudioClip[music.id - 1];
+                _previewAudioClip[music.Id - 1] = _assetBundles[music.Id - 1].LoadAsset<AudioClip>(music.Name + "_pre");
+                _previewAudioSource[music.Id - 1].clip = _previewAudioClip[music.Id - 1];
             }
         }
 
@@ -221,7 +226,8 @@ namespace Project.Scripts.SelectScreen
             {
                 if (i == num) // numは現在選択中の楽曲通し番号
                 {
-                    if (!_previewAudioSource[num].isPlaying) _previewAudioSource[num].Play(); // 選択中の楽曲がプレビュー再生されていないとき楽曲を再生
+                    if (!_previewAudioSource[num].isPlaying)
+                        _previewAudioSource[num].Play(); // 選択中の楽曲がプレビュー再生されていないとき楽曲を再生
                 }
                 else
                 {
@@ -241,8 +247,8 @@ namespace Project.Scripts.SelectScreen
                 .First(t => t.name == "Label").text;
             if (selectedNumTmp != selectedNum || selectedLevel != _selectedLevelTmp)
             {
-                StartCoroutine(MyScoreNetworkProcess(_musicData[selectedNum].name, selectedLevel));
-                StartCoroutine(OnlineScoreNetworkProcess(_musicData[selectedNum].name, selectedLevel));
+                StartCoroutine(MyScoreNetworkProcess(_musics[selectedNum].Name, selectedLevel));
+                StartCoroutine(OnlineScoreNetworkProcess(_musics[selectedNum].Name, selectedLevel));
             }
 
             selectedNumTmp = selectedNum;

@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Project.Scripts;
+using Project.Scripts.AssetBundleHandler;
+using Project.Scripts.Model;
 using Project.Scripts.SelectScreen;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,7 +20,7 @@ public class ResultScreenProcessManager : MonoBehaviour
     private Color Rank_c;
 
     // Music Data
-    private List<DownloadProcessManager.MusicList> _MusicData;
+    private Music[] _musics;
 
     // ------------------------------------------------------------------------------------
 
@@ -42,7 +44,7 @@ public class ResultScreenProcessManager : MonoBehaviour
 
     private void Start()
     {
-        _MusicData = DownloadProcessManager.MusicData;
+        _musics = Main.GetMusics();
 
         ScreenResponsive();
         StartCoroutine(GetTopTenNetworkProcess());
@@ -82,7 +84,7 @@ public class ResultScreenProcessManager : MonoBehaviour
     IEnumerator GetTopTenNetworkProcess()
     {
         WWWForm form = new WWWForm();
-        form.AddField("music", _MusicData[SwipeMenu.selectedNumTmp].name);
+        form.AddField("music", _musics[SwipeMenu.selectedNumTmp].Name);
         form.AddField("level", SelectScreenProcessManager.selectedLevel);
         UnityWebRequest www = UnityWebRequest.Post(TopTenScoreApiUri, form);
         yield return www.SendWebRequest();
