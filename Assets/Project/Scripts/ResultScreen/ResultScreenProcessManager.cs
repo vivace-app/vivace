@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Project.Scripts;
-using Project.Scripts.AssetBundleHandler;
-using Project.Scripts.Model;
 using Project.Scripts.SelectScreen;
+using Project.Scripts.Tools.Firestore.Model;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using AB = Project.Scripts.Tools.AssetBundleHandler.Main;
 
 public class ResultScreenProcessManager : MonoBehaviour
 {
@@ -44,7 +44,7 @@ public class ResultScreenProcessManager : MonoBehaviour
 
     private void Start()
     {
-        _musics = Main.GetMusics();
+        _musics = AB.GetMusics();
 
         ScreenResponsive();
         StartCoroutine(GetTopTenNetworkProcess());

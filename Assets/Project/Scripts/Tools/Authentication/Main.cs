@@ -1,6 +1,6 @@
 using Firebase.Auth;
 
-namespace Project.Scripts.Authentication
+namespace Project.Scripts.Tools.Authentication
 {
     /// <summary>
     /// ユーザ認証周りのライブラリです。

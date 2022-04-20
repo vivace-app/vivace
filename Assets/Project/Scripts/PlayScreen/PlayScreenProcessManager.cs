@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DG.Tweening;
 using Project.Scripts;
-using Project.Scripts.AssetBundleHandler;
-using Project.Scripts.Model;
 using Project.Scripts.SelectScreen;
+using Project.Scripts.Tools.Firestore.Model;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using AB = Project.Scripts.Tools.AssetBundleHandler.Main;
 
 public class PlayScreenProcessManager : MonoBehaviour
 {
@@ -85,8 +84,8 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     private async void Start()
     {
-        _assetBundles = Main.GetAssetBundles();
-        _musics = Main.GetMusics();
+        _assetBundles = AB.GetAssetBundles();
+        _musics = AB.GetMusics();
 
         // 初期化関連
         BackgroundCover();

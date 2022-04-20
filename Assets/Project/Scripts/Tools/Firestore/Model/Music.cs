@@ -1,7 +1,7 @@
 using Firebase.Firestore;
 using JetBrains.Annotations;
 
-namespace Project.Scripts.Model
+namespace Project.Scripts.Tools.Firestore.Model
 {
     [FirestoreData]
     public class Music

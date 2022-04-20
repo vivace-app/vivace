@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
-using Project.Scripts.Model;
+using Project.Scripts.Tools.Firestore.Model;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
-namespace Project.Scripts.AssetBundleHandler
+namespace Project.Scripts.Tools.AssetBundleHandler
 {
     public partial class Main
     {

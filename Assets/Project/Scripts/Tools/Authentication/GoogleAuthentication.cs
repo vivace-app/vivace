@@ -2,7 +2,7 @@ using Firebase.Auth;
 using Google;
 using UnityEngine;
 
-namespace Project.Scripts.Authentication
+namespace Project.Scripts.Tools.Authentication
 {
     /// <summary>
     /// Googleでサインインの処理関係です。

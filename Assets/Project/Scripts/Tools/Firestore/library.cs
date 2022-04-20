@@ -1,12 +1,11 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Firebase.Firestore;
-using Project.Scripts.Model;
+using Project.Scripts.Tools.Firestore.Model;
 using UnityEngine;
 
-namespace Project.Scripts.Firestore
+namespace Project.Scripts.Tools.Firestore
 {
     public partial class Main
     {

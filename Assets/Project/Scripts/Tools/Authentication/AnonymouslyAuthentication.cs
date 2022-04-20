@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Project.Scripts.Authentication
+namespace Project.Scripts.Tools.Authentication
 {
     /// <summary>
     /// 匿名認証でサインインの処理関係です。

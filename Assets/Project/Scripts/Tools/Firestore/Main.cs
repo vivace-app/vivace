@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace Project.Scripts.Firestore
+namespace Project.Scripts.Tools.Firestore
 {
     public partial class Main
     {

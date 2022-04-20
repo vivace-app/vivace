@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Project.Scripts.AssetBundleHandler;
-using Project.Scripts.Model;
+using Project.Scripts.Tools.Firestore.Model;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using AB = Project.Scripts.Tools.AssetBundleHandler.Main;
 
 namespace Project.Scripts.SelectScreen
 {
@@ -62,8 +62,8 @@ namespace Project.Scripts.SelectScreen
 
         private void Start()
         {
-            _musics = Main.GetMusics();
-            _assetBundles = Main.GetAssetBundles();
+            _musics = AB.GetMusics();
+            _assetBundles = AB.GetAssetBundles();
             _pos = new float[_musics.Length];
             _distance = 1f / (_pos.Length - 1f);
             for (var i = 0; i < _pos.Length; i++) _pos[i] = _distance * i;

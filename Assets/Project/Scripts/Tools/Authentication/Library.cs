@@ -5,7 +5,7 @@ using Project.Scripts.LoginScene;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Project.Scripts.Authentication
+namespace Project.Scripts.Tools.Authentication
 {
     /// <summary>
     /// ユーザ認証周りのライブラリです。

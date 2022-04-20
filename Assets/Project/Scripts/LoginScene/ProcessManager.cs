@@ -1,9 +1,11 @@
 ﻿using System.Collections;
-using Project.Scripts.Model;
+using System.IO;
+using Project.Scripts.Tools.Firestore.Model;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Auth = Project.Scripts.Authentication.Main;
-using DB = Project.Scripts.Firestore.Main;
+using AB = Project.Scripts.Tools.AssetBundleHandler.Main;
+using Auth = Project.Scripts.Tools.Authentication.Main;
+using DB = Project.Scripts.Tools.Firestore.Main;
 
 namespace Project.Scripts.LoginScene
 {
@@ -60,13 +62,13 @@ namespace Project.Scripts.LoginScene
             var musicList = (Music[]) ie.Current;
 
             // Cache Setting
-            var cachePath = System.IO.Path.Combine(Application.persistentDataPath, "cache");
-            System.IO.Directory.CreateDirectory(cachePath);
+            var cachePath = Path.Combine(Application.persistentDataPath, "cache");
+            Directory.CreateDirectory(cachePath);
             var cache = Caching.AddCache(cachePath);
             Caching.currentCacheForWriting = cache;
 
             // Download Asset Bundles
-            var assetBundleHandler = new AssetBundleHandler.Main(musicList);
+            var assetBundleHandler = new AB(musicList);
             assetBundleHandler.OnCompletionRateChanged += rate => View.instance.CompletionRateText = $"DL: {rate}%";
             assetBundleHandler.OnDownloadCompleted += () => SceneManager.LoadScene("SelectScene");
             var downloadEnumerator = assetBundleHandler.Download();

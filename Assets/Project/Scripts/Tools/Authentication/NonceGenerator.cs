@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Project.Scripts.Authentication
+namespace Project.Scripts.Tools.Authentication
 {
     /// <summary>
     /// SHA-256 のノンスを生成するライブラリです。

@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Project.Scripts.Firestore
+namespace Project.Scripts.Tools.Firestore
 {
     internal class WaitForTaskCompletion : CustomYieldInstruction
     {

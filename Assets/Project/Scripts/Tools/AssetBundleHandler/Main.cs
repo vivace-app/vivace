@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
-using Project.Scripts.Model;
+using Project.Scripts.Tools.Firestore.Model;
 using UnityEngine;
 
-namespace Project.Scripts.AssetBundleHandler
+namespace Project.Scripts.Tools.AssetBundleHandler
 {
     public partial class Main
     {

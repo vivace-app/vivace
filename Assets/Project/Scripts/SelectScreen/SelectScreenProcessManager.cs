@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Auth = Project.Scripts.Authentication.Main;
+using Auth = Project.Scripts.Tools.Authentication.Main;
 
 namespace Project.Scripts.SelectScreen
 {
