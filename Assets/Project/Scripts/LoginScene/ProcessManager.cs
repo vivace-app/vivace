@@ -14,7 +14,7 @@ namespace Project.Scripts.LoginScene
     /// </summary>
     public class ProcessManager : MonoBehaviour
     {
-        private readonly Auth _auth = new Auth();
+        private readonly Auth _auth = new();
 
         private void Start()
         {

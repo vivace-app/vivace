@@ -4,6 +4,7 @@ using Project.Scripts.Tools.Firestore.Model;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using Project.Scripts.Tools.CloudStorageHandler;
 
 namespace Project.Scripts.Tools.AssetBundleHandler
 {
@@ -56,7 +57,9 @@ namespace Project.Scripts.Tools.AssetBundleHandler
                 hash = Hash128.Parse($"{music.Name}_{music.Version}")
             };
 
-            var downloadUrl = GenerateDownloadUrlFromDriveLink(music);
+            var ie = GenerateDownloadUrl(music);
+            yield return ie;
+            var downloadUrl = (Uri)ie.Current;
 
             while (!Caching.ready)
                 yield return null;
@@ -89,35 +92,38 @@ namespace Project.Scripts.Tools.AssetBundleHandler
             }
         }
 
-        private static string GenerateDownloadUrlFromDriveLink(Music music)
+        private static IEnumerator GenerateDownloadUrl(Music music)
         {
+            var storage = new CloudStorage();
+            IEnumerator ie;
             switch (Application.platform)
             {
                 case RuntimePlatform.IPhonePlayer:
-                    return "https://drive.google.com/uc?id=" +
-                           music.AssetBundleIos.Replace("https://drive.google.com/file/d/", "")
-                               .Replace("/view?usp=sharing", "") + "&usp=sharing";
+                    ie = storage.FetchTheDownloadURL(music.AssetBundleIos);
+                    yield return ie;
+                    yield return (Uri)ie.Current;
+                    break;
                 case RuntimePlatform.Android:
-                    return "https://drive.google.com/uc?id=" +
-                           music.AssetBundleAndroid.Replace("https://drive.google.com/file/d/",
-                                   "")
-                               .Replace("/view?usp=sharing", "") + "&usp=sharing";
+                    ie = storage.FetchTheDownloadURL(music.AssetBundleAndroid);
+                    yield return ie;
+                    yield return (Uri)ie.Current;
+                    break;
                 case RuntimePlatform.OSXEditor:
                 case RuntimePlatform.OSXPlayer:
-                    return "https://drive.google.com/uc?id=" +
-                           music.AssetBundleStandaloneOsxUniversal
-                               .Replace("https://drive.google.com/file/d/", "")
-                               .Replace("/view?usp=sharing", "") +
-                           "&usp=sharing";
+                    ie = storage.FetchTheDownloadURL(music.AssetBundleStandaloneOsxUniversal);
+                    yield return ie;
+                    yield return (Uri)ie.Current;
+                    break;
                 case RuntimePlatform.WindowsPlayer:
                 case RuntimePlatform.WindowsEditor:
-                    return "https://drive.google.com/uc?id=" +
-                           music.AssetBundleStandaloneWindows64
-                               .Replace("https://drive.google.com/file/d/", "")
-                               .Replace("/view?usp=sharing", "") + "&usp=sharing";
+                    ie = storage.FetchTheDownloadURL(music.AssetBundleStandaloneWindows64);
+                    yield return ie;
+                    yield return (Uri)ie.Current;
+                    break;
                 default:
                     Debug.LogError("対応したAssetBundleが見つかりませんでした");
-                    return "";
+                    yield return new Uri("");
+                    break;
             }
         }
     }
