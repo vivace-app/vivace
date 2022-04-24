@@ -3,17 +3,11 @@
     "m_SelectedPackage": {
         "deviceId": "A3201809092712",
         "name": "com.vivace_app",
-        "processId": 3996,
+        "processId": 16608,
         "exited": false
     },
     "m_SelectedPriority": 0,
     "m_KnownPackagesForSerialization": [
-        {
-            "deviceId": "A3201809092712",
-            "name": "com.vivace_app",
-            "processId": 2183,
-            "exited": true
-        },
         {
             "deviceId": "A3201809092712",
             "name": "com.android.launcher3",
@@ -23,19 +17,49 @@
         {
             "deviceId": "A3201809092712",
             "name": "com.vivace_app",
-            "processId": 2929,
+            "processId": 4571,
+            "exited": true
+        },
+        {
+            "deviceId": "A3201809092712",
+            "name": "com.vivace_app",
+            "processId": 6807,
+            "exited": true
+        },
+        {
+            "deviceId": "A3201809092712",
+            "name": "com.vivace_app",
+            "processId": 7331,
+            "exited": true
+        },
+        {
+            "deviceId": "A3201809092712",
+            "name": "com.vivace_app",
+            "processId": 7705,
+            "exited": true
+        },
+        {
+            "deviceId": "A3201809092712",
+            "name": "com.vivace_app",
+            "processId": 12870,
+            "exited": true
+        },
+        {
+            "deviceId": "A3201809092712",
+            "name": "com.vivace_app",
+            "processId": 13416,
             "exited": false
         },
         {
             "deviceId": "A3201809092712",
             "name": "com.vivace_app",
-            "processId": 3358,
+            "processId": 15845,
             "exited": false
         },
         {
             "deviceId": "A3201809092712",
             "name": "com.vivace_app",
-            "processId": 3996,
+            "processId": 16608,
             "exited": false
         }
     ],
