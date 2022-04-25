@@ -1,14 +1,12 @@
 # =============== #
 # Unity generated #
 # =============== #
-EnvDataStore.cs
-EnvDataStore.cs.meta
-
-Temp/
-Obj/
-UnityGenerated/
-Library/
-Logs/
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+Assets/AssetStoreTools*
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
@@ -36,10 +34,26 @@ Icon?
 ehthumbs.db
 Thumbs.db
 
-# ============ #
-# for others   #
-# ============ #
+# ====== #
+# Builds #
+# ====== #
+*.apk
+*.unitypackage
+
+# ========================== #
+# Crashlytics generated file #
+# ========================== #
+Assets/StreamingAssets/crashlytics-build.properties
+
+# ========== #
+# for others #
+# ========== #
 .vscode
 .idea
 *.log
 sysinfo.txt
+
+google-services.json*
+GoogleService-Info.plist*
+EnvDataStore.cs
+EnvDataStore.cs.meta

@@ -3,7 +3,7 @@
     "m_SelectedPackage": {
         "deviceId": "A3201809092712",
         "name": "com.vivace_app",
-        "processId": 16608,
+        "processId": 30608,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -60,6 +60,12 @@
             "deviceId": "A3201809092712",
             "name": "com.vivace_app",
             "processId": 16608,
+            "exited": false
+        },
+        {
+            "deviceId": "A3201809092712",
+            "name": "com.vivace_app",
+            "processId": 30608,
             "exited": false
         }
     ],
