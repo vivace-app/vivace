@@ -4,23 +4,20 @@ using UnityEngine.UI;
 
 namespace Project.Scripts.LoginScene
 {
-    /// <summary>
-    /// Login Scene 内のコンテンツを書き換えます。
-    /// </summary>
     public class View : MonoBehaviour
     {
-        public static View instance;
+        public static View Instance;
 
-        public InputField displayNameInputField;
-        public Text completionRateText;
-        public Text creditText;
-        public Text displayNameText;
-        public Text uidText;
-        public Text versionText;
+        [SerializeField] private InputField displayNameInputField;
+        [SerializeField] private Text completionRateText;
+        [SerializeField] private Text creditText;
+        [SerializeField] private Text displayNameText;
+        [SerializeField] private Text uidText;
+        [SerializeField] private Text versionText;
 
         private void Awake()
         {
-            if (instance == null) instance = this;
+            if (Instance == null) Instance = this;
         }
 
         private void InitializeCredit() => creditText.text = $"(c) {DateTime.Now.Year} VIVACE PROJECT";

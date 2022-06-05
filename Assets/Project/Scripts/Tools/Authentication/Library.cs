@@ -7,14 +7,12 @@ using UnityEngine.SceneManagement;
 
 namespace Project.Scripts.Tools.Authentication
 {
-    /// <summary>
-    /// ユーザ認証周りのライブラリです。
-    /// </summary>
-    public partial class Main
+    public partial class AuthenticationHandler
     {
         private FirebaseAuth _auth;
+        private FirebaseUser _user;
 
-        private void InitializeFirebase()
+        private void _InitializeFirebase(EventHandler authStateChangedHandler)
         {
             FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
             {
@@ -22,69 +20,61 @@ namespace Project.Scripts.Tools.Authentication
                 if (dependencyStatus == DependencyStatus.Available)
                 {
                     _auth = FirebaseAuth.DefaultInstance;
-                    _auth.StateChanged += AuthStateHandler;
-                    AuthStateHandler(this, null);
+                    _auth.StateChanged += _AuthStateHandler;
+                    _AuthStateHandler(this, null);
+                    _auth.StateChanged += authStateChangedHandler;
 
                     // Firebase is ready to use.
                     InitializeSignInWithApple();
                     InitializeSignInWithGoogle();
                 }
                 else
-                    Debug.LogError($"Could not resolve all Firebase dependencies: {dependencyStatus}");
+                    OnErrorOccured.Invoke("Firebaseの初期化に失敗しました");
             });
         }
 
-        private void DestroyFirebase()
+        private void _DestroyFirebase(EventHandler authStateChangedHandler)
         {
-            _auth.StateChanged -= AuthStateHandler;
+            _auth.StateChanged -= _AuthStateHandler;
+            _auth.StateChanged -= authStateChangedHandler;
             _auth = null;
         }
 
-        private void AuthStateHandler(object sender, EventArgs eventArgs)
+        private void _AuthStateHandler(object sender, EventArgs eventArgs)
         {
-            if (_auth.CurrentUser == User) return;
-            var signedIn = User != _auth.CurrentUser && _auth.CurrentUser != null;
+            if (_auth.CurrentUser == _user) return;
+            var signedIn = _user != _auth.CurrentUser && _auth.CurrentUser != null;
 
             // Sign out
-            if (!signedIn && User != null) Debug.Log("Signed out: " + User.UserId);
-            User = _auth.CurrentUser;
+            if (!signedIn && _user != null) Debug.Log("Signed out: " + _user.UserId);
+            _user = _auth.CurrentUser;
 
             // Sign in
             if (!signedIn) return;
-            Debug.Log("Signed in: " + User.UserId);
-            View.instance.UidText = User.UserId ?? "No credentials";
-            View.instance.DisplayNameText = User.DisplayName ?? "No Name";
+            Debug.Log("Signed in: " + _user.UserId);
         }
 
-        private void UpdateDisplayName()
+        private void _UpdateDisplayName(string displayName)
         {
-            if (User == null) return;
+            if (_user == null) return;
             var profile = new UserProfile
             {
-                DisplayName = View.instance.DisplayNameInputField,
+                DisplayName = displayName
             };
-            User.UpdateUserProfileAsync(profile).ContinueWith(task =>
+            _user.UpdateUserProfileAsync(profile).ContinueWith(task =>
             {
                 if (task.IsCanceled)
                 {
-                    Debug.LogError("UpdateUserProfileAsync was canceled.");
+                    OnErrorOccured.Invoke("ユーザ名の更新がキャンセルされました");
                     return;
                 }
 
-                if (task.IsFaulted)
-                {
-                    Debug.LogError("UpdateUserProfileAsync encountered an error: " + task.Exception);
-                    return;
-                }
-
-                Debug.Log("User profile updated successfully.");
-                View.instance.DisplayNameInputField = null;
-                View.instance.UidText = User.UserId ?? "No credentials";
-                View.instance.DisplayNameText = User.DisplayName ?? "No Name";
+                if (!task.IsFaulted) return;
+                OnErrorOccured.Invoke("ユーザ名の更新に失敗しました");
             });
         }
 
-        private void SignOut()
+        private void _SignOut()
         {
             _auth.SignOut();
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);

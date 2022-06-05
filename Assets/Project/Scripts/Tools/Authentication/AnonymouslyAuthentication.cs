@@ -1,18 +1,12 @@
-using UnityEngine;
-
 namespace Project.Scripts.Tools.Authentication
 {
-    /// <summary>
-    /// 匿名認証でサインインの処理関係です。
-    /// </summary>
-    public partial class Main
+    public partial class AuthenticationHandler
     {
-        private void SignInWithAnonymously()
+        private void _SignInWithAnonymously()
         {
             _auth.SignInAnonymouslyAsync().ContinueWith(task =>
             {
-                if (task.IsCanceled) Debug.Log("Sign in with Anonymously was canceled.");
-                else if (task.IsFaulted) Debug.LogError("Sign in with Anonymously was error.");
+                if (task.IsFaulted) OnErrorOccured.Invoke("通信に失敗しました\nインターネットの接続状況を確認してください");
             });
         }
     }

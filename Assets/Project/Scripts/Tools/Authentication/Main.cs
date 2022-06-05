@@ -1,22 +1,29 @@
+using System;
 using Firebase.Auth;
 
 namespace Project.Scripts.Tools.Authentication
 {
-    /// <summary>
-    /// ユーザ認証周りのライブラリです。
-    /// </summary>
-    public partial class Main
+    public partial class AuthenticationHandler
     {
-        public FirebaseUser User { get; private set; }
-        
-        public void Start() => InitializeFirebase(); // required
-        public void Update() => UpdateSignInWithApple(); // only when making a sign-in call with Apple
-        public void OnDestroy() => DestroyFirebase(); // required
+        public void Start(EventHandler authStateChangedHandler) => _InitializeFirebase(authStateChangedHandler);
 
-        public void OnClickSignInWithApple() => SignInWithApple();
-        public void OnClickSignInWithGoogleButton() => SignInWithGoogle();
-        public void OnClickSignInWithAnonymouslyButton() => SignInWithAnonymously();
-        public void OnClickUpdateDisplayNameButton() => UpdateDisplayName();
-        public void OnClickSignOutButton() => SignOut();
+        public void Update() => _UpdateSignInWithApple();
+
+        public void OnDestroy(EventHandler authStateChangedHandler) => _DestroyFirebase(authStateChangedHandler);
+
+
+        public void SignInWithApple() => _SignInWithApple();
+
+        public void SignInWithGoogle() => _SignInWithGoogle();
+
+        public void SignInWithAnonymously() => _SignInWithAnonymously();
+
+        public void UpdateDisplayName(string displayName) => _UpdateDisplayName(displayName);
+
+        public void SignOut() => _SignOut();
+
+        public FirebaseUser GetUser() => _user;
+        
+        public event Action<string> OnErrorOccured;
     }
 }

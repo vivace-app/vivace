@@ -12,7 +12,7 @@ using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
-using AB = Project.Scripts.Tools.AssetBundleHandler.Main;
+using Project.Scripts.Tools.AssetBundle;
 
 public class PlayScreenProcessManager : MonoBehaviour
 {
@@ -84,8 +84,8 @@ public class PlayScreenProcessManager : MonoBehaviour
 
     private async void Start()
     {
-        _assetBundles = AB.GetAssetBundles();
-        _musics = AB.GetMusics();
+        _assetBundles = AssetBundleHandler.GetAssetBundles();
+        _musics = AssetBundleHandler.GetMusics();
 
         // 初期化関連
         BackgroundCover();

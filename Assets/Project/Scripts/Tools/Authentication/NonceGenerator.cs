@@ -6,10 +6,7 @@ using System.Text;
 
 namespace Project.Scripts.Tools.Authentication
 {
-    /// <summary>
-    /// SHA-256 のノンスを生成するライブラリです。
-    /// </summary>
-    public partial class Main
+    public partial class AuthenticationHandler
     {
         private static string GenerateRandomString(int length)
         {

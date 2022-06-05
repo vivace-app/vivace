@@ -1,8 +1,8 @@
 ﻿using System.Linq;
+using Project.Scripts.Tools.Authentication;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Auth = Project.Scripts.Tools.Authentication.Main;
 
 namespace Project.Scripts.SelectScreen
 {
@@ -11,13 +11,13 @@ namespace Project.Scripts.SelectScreen
         public ToggleGroup toggleGroup;
         public static string selectedLevel;
 
-        private readonly Auth _auth = new Auth();
+        private readonly AuthenticationHandler _auth = new AuthenticationHandler();
 
         private void Start()
         {
-            _auth.Start();
+            // _auth.Start();
 
-            var user = _auth.User;
+            var user = _auth.GetUser();
             if (user != null)
             {
                 var displayName = user.DisplayName;
@@ -35,7 +35,7 @@ namespace Project.Scripts.SelectScreen
 
         private void OnDestroy()
         {
-            _auth.OnDestroy();
+            // _auth.OnDestroy();
         }
 
         private static void ScreenTransition()

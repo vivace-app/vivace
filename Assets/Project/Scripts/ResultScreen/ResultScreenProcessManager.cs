@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
-using AB = Project.Scripts.Tools.AssetBundleHandler.Main;
+using Project.Scripts.Tools.AssetBundle;
 
 public class ResultScreenProcessManager : MonoBehaviour
 {
@@ -44,7 +44,7 @@ public class ResultScreenProcessManager : MonoBehaviour
 
     private void Start()
     {
-        _musics = AB.GetMusics();
+        _musics = AssetBundleHandler.GetMusics();
 
         ScreenResponsive();
         StartCoroutine(GetTopTenNetworkProcess());

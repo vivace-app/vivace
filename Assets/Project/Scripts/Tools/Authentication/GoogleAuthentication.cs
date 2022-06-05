@@ -1,13 +1,9 @@
 using Firebase.Auth;
 using Google;
-using UnityEngine;
 
 namespace Project.Scripts.Tools.Authentication
 {
-    /// <summary>
-    /// Googleでサインインの処理関係です。
-    /// </summary>
-    public partial class Main
+    public partial class AuthenticationHandler
     {
         private static void InitializeSignInWithGoogle()
         {
@@ -18,16 +14,14 @@ namespace Project.Scripts.Tools.Authentication
             };
         }
 
-        private void SignInWithGoogle()
+        private void _SignInWithGoogle()
         {
             var signIn = GoogleSignIn.DefaultInstance.SignIn();
 
             signIn.ContinueWith(task =>
             {
-                if (task.IsCanceled)
-                    Debug.Log("Sign in with Google was canceled.");
-                else if (task.IsFaulted)
-                    Debug.LogError("Sign in with Google was error.");
+                if (task.IsFaulted)
+                    OnErrorOccured.Invoke("通信に失敗しました\nインターネットの接続状況を確認してください");
                 else
                     _auth.SignInAndRetrieveDataWithCredentialAsync(
                         GoogleAuthProvider.GetCredential(task.Result.IdToken, null));
