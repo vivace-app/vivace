@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
-using Project.Scripts;
+using Tools.AssetBundle;
+using Tools.Authentication;
+using Tools.Firestore;
 using Tools.Firestore.Model;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using AssetBundleHandler = Tools.AssetBundle.AssetBundleHandler;
-using AuthenticationHandler = Tools.Authentication.AuthenticationHandler;
-using FirestoreHandler = Tools.Firestore.FirestoreHandler;
 
 namespace StartupScene
 {
@@ -15,15 +14,37 @@ namespace StartupScene
     {
         private readonly AuthenticationHandler _auth = new();
 
+        private bool _hasPressedStartButton;
+
         private void Start()
         {
             _auth.Start(_setUserData);
             _setUserData(this, null);
+            View.Instance.UidText = _auth.GetUser()?.UserId;
+            View.Instance.setOnClickSignInWithAppleCustomButtonAction = () => _auth.SignInWithApple();
+            View.Instance.setOnClickSignInWithGoogleCustomButtonAction = () => _auth.SignInWithGoogle();
+            View.Instance.setOnClickSignInWithAnonymouslyCustomButtonAction = () => _auth.SignInWithAnonymously();
+            View.Instance.setOnClickNicknameRegistrationSaveCustomButtonCustomButtonAction =
+                () =>
+                {
+                    if (View.Instance.DisplayNameInputField.Length is 0 or > 12)
+                        View.Instance.DisplayNameErrorText = "12文字以内で入力してください";
+                    else
+                    {
+                        _auth.UpdateDisplayName(View.Instance.DisplayNameInputField);
+                        View.Instance.setNicknameRegistrationModalVisible = false;
+                        StartCoroutine(_TransitionToSelectScene());
+                    }
+                };
         }
 
         private void Update()
         {
             _auth.Update();
+
+            if (_hasPressedStartButton || Input.touchCount <= 0) return;
+            OnPressedStartButton();
+            _hasPressedStartButton = true;
         }
 
         private void OnDestroy()
@@ -31,20 +52,45 @@ namespace StartupScene
             _auth.OnDestroy(_setUserData);
         }
 
-        public void OnClickSignInWithApple() => _auth.SignInWithApple();
-        public void OnClickSignInWithGoogleButton() => _auth.SignInWithGoogle();
-        public void OnClickSignInWithAnonymouslyButton() => _auth.SignInWithAnonymously();
-        public void OnClickUpdateDisplayNameButton() => _auth.UpdateDisplayName(View.Instance.DisplayNameInputField);
-
-        public void OnClickSignOutButton() => _auth.SignOut();
-
-        public void OnClickIgnoreAndPlayButton() => StartCoroutine(_TransitionToSelectScene());
+        public void OnClickSignOutButton()
+        {
+            _auth.SignOut();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
 
         private void _setUserData(object sender, EventArgs eventArgs)
         {
             var user = _auth.GetUser();
-            View.Instance.UidText = user?.UserId ?? "No credentials";
-            View.Instance.DisplayNameText = user?.DisplayName ?? "No Name";
+            View.Instance.UidText = user?.UserId;
+            Debug.Log(user?.UserId != null);
+            if (user?.UserId != null)
+            {
+                View.Instance.setAccountLinkageModalVisible = false;
+                Debug.Log("user.DisplayName == null");
+                Debug.Log(user.DisplayName == null);
+                Debug.Log(user.ProviderData);
+                if (user.DisplayName == "")
+                {
+                    _hasPressedStartButton = true;
+                    View.Instance.setNicknameRegistrationModalVisible = true;
+                    View.Instance.DisplayNameInputField = user.DisplayName;
+                } else if (_hasPressedStartButton)
+                {
+                    StartCoroutine(_TransitionToSelectScene());
+                }
+            }
+        }
+
+        private void OnPressedStartButton()
+        {
+            View.Instance.StartAudioSource.Play();
+            var user = _auth.GetUser();
+            if (user?.UserId != null)
+                StartCoroutine(_TransitionToSelectScene());
+            else
+            {
+                View.Instance.setAccountLinkageModalVisible = true;
+            }
         }
 
         private IEnumerator _TransitionToSelectScene()
@@ -52,7 +98,7 @@ namespace StartupScene
             var db = new FirestoreHandler();
 
             // Check License
-            var ie = db.GetIsSupportedVersionCoroutine(EnvDataStore.ThisVersion);
+            var ie = db.GetIsSupportedVersionCoroutine(Application.version);
             yield return ie;
             var isValidLicense = ie.Current != null && (bool)ie.Current;
 
