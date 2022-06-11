@@ -1,7 +1,8 @@
 using Firebase.Auth;
 using Google;
+using Project.Scripts;
 
-namespace Project.Scripts.Tools.Authentication
+namespace Tools.Authentication
 {
     public partial class AuthenticationHandler
     {

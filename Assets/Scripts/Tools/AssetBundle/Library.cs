@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
-using Project.Scripts.Tools.CloudStorage;
-using Project.Scripts.Tools.Firestore.Model;
+using Tools.Firestore.Model;
 using UnityEngine;
 using UnityEngine.Networking;
+using CloudStorageHandler = Tools.CloudStorage.CloudStorageHandler;
 
-namespace Project.Scripts.Tools.AssetBundle
+namespace Tools.AssetBundle
 {
     public partial class AssetBundleHandler
     {

@@ -7,7 +7,7 @@ using AppleAuth.Native;
 using Firebase.Auth;
 using UnityEngine;
 
-namespace Project.Scripts.Tools.Authentication
+namespace Tools.Authentication
 {
     public partial class AuthenticationHandler
     {
@@ -29,8 +29,8 @@ namespace Project.Scripts.Tools.Authentication
                 // iOS
                 case RuntimePlatform.IPhonePlayer:
                 {
-                    var rawNonce = GenerateRandomString(32);
-                    var nonce = GenerateSHA256NonceFromRawNonce(rawNonce);
+                    var rawNonce = AuthenticationHandler.GenerateRandomString(32);
+                    var nonce = AuthenticationHandler.GenerateSHA256NonceFromRawNonce(rawNonce);
                     var loginArgs =
                         new AppleAuthLoginArgs(LoginOptions.IncludeEmail | LoginOptions.IncludeFullName, nonce);
                     _appleAuthManager.LoginWithAppleId(loginArgs,

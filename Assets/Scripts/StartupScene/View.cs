@@ -1,8 +1,9 @@
 ﻿using System;
+using Project.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Project.Scripts.LoginScene
+namespace StartupScene
 {
     public class View : MonoBehaviour
     {

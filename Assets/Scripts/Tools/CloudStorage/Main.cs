@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace Project.Scripts.Tools.CloudStorage
+namespace Tools.CloudStorage
 {
     public partial class CloudStorageHandler
     {

@@ -2,13 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Project.Scripts.Tools.Firestore.Model;
+using Project.Scripts;
+using Tools.Firestore.Model;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-using Project.Scripts.Tools.AssetBundle;
+using AssetBundleHandler = Tools.AssetBundle.AssetBundleHandler;
 
-namespace Project.Scripts.SelectScreen
+namespace SelectScreen
 {
     public class SwipeMenu : MonoBehaviour
     {

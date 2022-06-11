@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
-using Project.Scripts.Tools.Firestore.Model;
+using Tools.Firestore.Model;
 
-namespace Project.Scripts.Tools.AssetBundle
+namespace Tools.AssetBundle
 {
     public partial class AssetBundleHandler
     {

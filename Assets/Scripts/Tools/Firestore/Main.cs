@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace Project.Scripts.Tools.Firestore
+namespace Tools.Firestore
 {
     public partial class FirestoreHandler
     {

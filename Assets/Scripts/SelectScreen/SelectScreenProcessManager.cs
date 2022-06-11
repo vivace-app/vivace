@@ -1,10 +1,10 @@
 ﻿using System.Linq;
-using Project.Scripts.Tools.Authentication;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using AuthenticationHandler = Tools.Authentication.AuthenticationHandler;
 
-namespace Project.Scripts.SelectScreen
+namespace SelectScreen
 {
     public class SelectScreenProcessManager : MonoBehaviour
     {

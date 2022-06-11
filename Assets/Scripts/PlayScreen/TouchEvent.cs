@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Project.Scripts.PlayScreen
+namespace PlayScreen
 {
     public class TouchEvent : MonoBehaviour
     {

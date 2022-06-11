@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Project.Scripts.Tools
+namespace Tools
 {
     internal class WaitForTaskCompletion : CustomYieldInstruction
     {

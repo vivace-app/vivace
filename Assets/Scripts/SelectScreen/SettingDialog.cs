@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Project.Scripts.SelectScreen
+namespace SelectScreen
 {
     public class SettingDialog : MonoBehaviour
     {

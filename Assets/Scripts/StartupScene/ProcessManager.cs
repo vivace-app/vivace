@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
-using Project.Scripts.Tools.AssetBundle;
-using Project.Scripts.Tools.Authentication;
-using Project.Scripts.Tools.Firestore;
-using Project.Scripts.Tools.Firestore.Model;
+using Project.Scripts;
+using Tools.Firestore.Model;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using AssetBundleHandler = Tools.AssetBundle.AssetBundleHandler;
+using AuthenticationHandler = Tools.Authentication.AuthenticationHandler;
+using FirestoreHandler = Tools.Firestore.FirestoreHandler;
 
-namespace Project.Scripts.LoginScene
+namespace StartupScene
 {
     public class ProcessManager : MonoBehaviour
     {

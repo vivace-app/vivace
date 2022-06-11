@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Firebase.Firestore;
-using Project.Scripts.Tools.Firestore.Model;
+using Tools.Firestore.Model;
 
-namespace Project.Scripts.Tools.Firestore
+namespace Tools.Firestore
 {
     public partial class FirestoreHandler
     {

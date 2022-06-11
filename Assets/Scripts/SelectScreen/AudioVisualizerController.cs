@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Project.Scripts.SelectScreen
+namespace SelectScreen
 {
     public class AudioVisualizerController : MonoBehaviour
     {

@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Project.Scripts.PlayScreen
+namespace PlayScreen
 {
     public class NotesScript : MonoBehaviour
     {

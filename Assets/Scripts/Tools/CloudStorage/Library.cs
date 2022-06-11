@@ -1,7 +1,7 @@
 using System.Collections;
 using Firebase.Storage;
 
-namespace Project.Scripts.Tools.CloudStorage
+namespace Tools.CloudStorage
 {
     public partial class CloudStorageHandler
     {

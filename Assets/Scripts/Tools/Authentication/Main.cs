@@ -1,7 +1,7 @@
 using System;
 using Firebase.Auth;
 
-namespace Project.Scripts.Tools.Authentication
+namespace Tools.Authentication
 {
     public partial class AuthenticationHandler
     {
