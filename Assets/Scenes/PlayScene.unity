@@ -3306,8 +3306,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   acfFile: vivace.acf
   cueSheets:
-  - name: CueSheet_0
-    acbFile: CueSheet_0.acb
+  - name: play_scene
+    acbFile: play_scene.acb
     awbFile: 
     loaderStatus: 0
   dspBusSetting: 
@@ -3664,8 +3664,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playOnStart: 0
-  _cueName: Good
-  _cueSheet: CueSheet_0
+  _cueName: good
+  _cueSheet: play_scene
   _regionOnStart: {fileID: 0}
   _listenerOnStart: {fileID: 0}
   _use3dPositioning: 1
@@ -3697,8 +3697,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playOnStart: 0
-  _cueName: Great
-  _cueSheet: CueSheet_0
+  _cueName: great
+  _cueSheet: play_scene
   _regionOnStart: {fileID: 0}
   _listenerOnStart: {fileID: 0}
   _use3dPositioning: 1
@@ -3730,8 +3730,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playOnStart: 0
-  _cueName: Perfect
-  _cueSheet: CueSheet_0
+  _cueName: perfect
+  _cueSheet: play_scene
   _regionOnStart: {fileID: 0}
   _listenerOnStart: {fileID: 0}
   _use3dPositioning: 1
