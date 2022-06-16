@@ -1,6 +1,6 @@
 using Firebase.Auth;
 using Google;
-using Project.Scripts;
+using Tools.Config;
 
 namespace Tools.Authentication
 {
@@ -11,7 +11,7 @@ namespace Tools.Authentication
             GoogleSignIn.Configuration = new GoogleSignInConfiguration
             {
                 RequestIdToken = true,
-                WebClientId = EnvDataStore.GoogleClientId
+                WebClientId = ConfigProvider.Firebase.clientId
             };
         }
 

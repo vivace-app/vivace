@@ -27,7 +27,7 @@ namespace ResultScreen
 
         // ------------------------------------------------------------------------------------
 
-        private const string TopTenScoreApiUri = EnvDataStore.ApiUri + "/topTenScore";
+        private const string TopTenScoreApiUri = "";
 
         // ------------------------------------------------------------------------------------
 

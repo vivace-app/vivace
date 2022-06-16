@@ -39,7 +39,7 @@ namespace PlayScreen
         // ------------------------------------------------------------------------------------
 
         // --- Environment variables ----------------------------------------------------------
-        private const string RegisterScoreApiUri = EnvDataStore.ApiUri + "/auth/registScore";
+        private const string RegisterScoreApiUri = "";
         // ------------------------------------------------------------------------------------
 
         // Asset Bundle

@@ -72,7 +72,6 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # Custom
-google-services.json*
-google-services-desktop.json*
-GoogleService-Info.plist*
-EnvDataStore.cs*
+google-services.*
+google-services-desktop.*
+GoogleService-Info.*

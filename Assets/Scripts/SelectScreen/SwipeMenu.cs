@@ -42,8 +42,8 @@ namespace SelectScreen
 
         // ------------------------------------------------------------------------------------
 
-        private const string GetMyScoreApiUri = EnvDataStore.ApiUri + "/auth/myScore";
-        private const string GetOnlineScoreApiUri = EnvDataStore.ApiUri + "/topScore";
+        private const string GetMyScoreApiUri = "";
+        private const string GetOnlineScoreApiUri = "";
 
         // ------------------------------------------------------------------------------------
 
