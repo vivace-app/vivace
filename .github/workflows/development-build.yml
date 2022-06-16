@@ -35,11 +35,6 @@ jobs:
           GOOGLE_SERVICE_INFO: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
         run: echo $GOOGLE_SERVICE_INFO | base64 --decode --ignore-garbage > ./Assets/GoogleService-Info.plist
 
-      - name: Add EnvDataStore.cs
-        env:
-          DATA_STORE: ${{ secrets.ENV_DATA_STORE }}
-        run: echo $DATA_STORE | base64 --decode --ignore-garbage > ./Assets/Scripts/EnvDataStore.cs
-      
       - name: Build
         uses: game-ci/unity-builder@v2
         env:
