@@ -7,6 +7,13 @@
 
 `Version Config` と `Firebase Config` を適切なものに設定します。
 
+---
+
+その後、ファイルが git 検知されないように、差分検知を無効にします。
+```shell
+git update-index --assume-unchanged Assets/Resources/ApplicationConfigs.asset
+```
+
 ## 2. Firebaseの設定ファイルを読み込む
 配布された `google-services.json` と `GoogleService-Info.plist` を
 `Assets` フォルダ内にドラッグ&ドロップします。
