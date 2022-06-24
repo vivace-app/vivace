@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 namespace ResultScene
 {
-    public class ResultScreenProcessManager : MonoBehaviour
+    public class ProcessManager : MonoBehaviour
     {
         private void Start()
         {
