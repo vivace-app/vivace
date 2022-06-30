@@ -1,5 +1,19 @@
 # 環境構築
 
+## 0. Git LFS のインストール
+#### Windows
+```shell
+$ git lfs install
+> Git LFS initialized.
+```
+
+#### Mac
+```shell
+$ brew install git-lfs
+$ git lfs install
+> Git LFS initialized.
+```
+
 ## 1. CONFIG値を設定する
 `Assets/Resources/ApplicationConfigs` を Unity で開きます。
 
