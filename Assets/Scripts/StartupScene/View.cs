@@ -1,6 +1,6 @@
 ﻿using System;
+using CriWare;
 using DG.Tweening;
-using Project.Scripts;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
