@@ -113,7 +113,7 @@ namespace StartupScene
             ie = db.GetMusicListCoroutine();
             yield return StartCoroutine(ie);
             var musicList = (Music[])ie.Current;
-
+            
             // Cache Setting
             var cachePath = Path.Combine(Application.persistentDataPath, "cache");
             Directory.CreateDirectory(cachePath);
