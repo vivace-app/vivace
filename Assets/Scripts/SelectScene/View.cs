@@ -26,7 +26,7 @@ namespace SelectScene
             {
                 // 横長スクリーンの場合 
                 Debug.Log("横長");
-                var setBackgroundHeight = -1000f * (Screen.height / 2048f) + 968f;
+                var setBackgroundHeight = -900f * (Screen.height / 2048f) + 920f;
                 artworkBackgroundSvgImage.sizeDelta =
                     new Vector2(artworkBackgroundSvgImage.sizeDelta.x, setBackgroundHeight);
 
@@ -34,11 +34,12 @@ namespace SelectScene
                 backgroundPosition.y = -107f - setBackgroundHeight / 2f;
                 artworkBackgroundSvgImage.anchoredPosition = backgroundPosition;
 
+                var setBackgroundBottomHeight = setBackgroundHeight * 0.45f;
                 artworkBackgroundBottomSvgImage.sizeDelta =
-                    new Vector2(setBackgroundHeight + 400f, artworkBackgroundBottomSvgImage.sizeDelta.y);
+                    new Vector2(setBackgroundBottomHeight * 5f, setBackgroundBottomHeight);
 
                 var backgroundBottomPosition = artworkBackgroundBottomSvgImage.anchoredPosition;
-                backgroundBottomPosition.y = -107f - setBackgroundHeight - 89.5f;
+                backgroundBottomPosition.y = -107f - setBackgroundHeight - setBackgroundBottomHeight / 2f;
                 artworkBackgroundBottomSvgImage.anchoredPosition = backgroundBottomPosition;
             }
             else
