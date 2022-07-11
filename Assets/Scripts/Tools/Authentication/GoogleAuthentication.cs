@@ -1,6 +1,7 @@
+using CandyCoded.env;
 using Firebase.Auth;
 using Google;
-using Tools.Config;
+using UnityEngine;
 
 namespace Tools.Authentication
 {
@@ -8,11 +9,18 @@ namespace Tools.Authentication
     {
         private static void InitializeSignInWithGoogle()
         {
-            GoogleSignIn.Configuration = new GoogleSignInConfiguration
+            if (env.TryParseEnvironmentVariable("CLIENT_ID", out string clientId))
             {
-                RequestIdToken = true,
-                WebClientId = ConfigProvider.Firebase.clientId
-            };
+                GoogleSignIn.Configuration = new GoogleSignInConfiguration
+                {
+                    RequestIdToken = true,
+                    WebClientId = clientId
+                };
+            }
+            else
+            {
+                Debug.LogError(".env ファイル内の 'CLIENT_ID' が設定されていません");
+            }
         }
 
         private void _SignInWithGoogle()

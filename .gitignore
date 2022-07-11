@@ -72,6 +72,8 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # Custom
+/CriData
 google-services.*
 google-services-desktop.*
 GoogleService-Info.*
+.env*
