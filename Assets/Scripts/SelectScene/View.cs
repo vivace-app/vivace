@@ -16,7 +16,6 @@ namespace SelectScene
         [SerializeField] private Scrollbar scrollbar;
 
         private float _artworkBackgroundHeight;
-        private float _artworkHeight;
 
         private void Awake()
         {
@@ -47,19 +46,20 @@ namespace SelectScene
 
         private void InitializeArtworkSize()
         {
-            _artworkHeight = _artworkBackgroundHeight * 0.5f;
+            ArtworkHeight = _artworkBackgroundHeight * 0.5f;
         }
 
         private void InitializeArtworkBothEndsPadding()
         {
-            var padding = (int)canvasRectTransform.sizeDelta.x / 2 - (int)_artworkHeight / 2;
+            var padding = (int)canvasRectTransform.sizeDelta.x / 2 - (int)ArtworkHeight * 3 / 4;
             artworkContentHorizontalLayoutGroup.padding.left = padding;
             artworkContentHorizontalLayoutGroup.padding.right = padding;
         }
 
         public GameObject ArtworkContentGameObject => artworkContentGameObject;
         public GameObject ArtworkTemplateGameObject => artworkTemplateGameObject;
-        public float ArtworkHeight => _artworkHeight;
+        public float ArtworkHeight { get; private set; }
+
         public float Scrollbar
         {
             get => scrollbar.value;

@@ -47,28 +47,13 @@ namespace SelectScene
                     !(_scrolledPosition > _artworkPositions[i] - _artworkDistance / 2)) continue;
 
                 // カードを拡大する
-                // View.Instance.ArtworkContentGameObject.transform.GetChild(i).localScale =
-                //     Vector2.Lerp(View.Instance.ArtworkContentGameObject.transform.GetChild(i).localScale,
-                //         new Vector2(1.6f, 1.6f), 0.1f);
                 View.Instance.ArtworkContentGameObject.transform.GetChild(i).GetComponent<RectTransform>()
                     .sizeDelta = new Vector2(View.Instance.ArtworkHeight * 1.5f, View.Instance.ArtworkHeight * 1.5f);
-
-                // var position = artworkBackgroundBottomRectTransform.anchoredPosition;
-                // position.y -= _artworkBackgroundHeight * 0.7f - (497f - 106.8f);
-                // artworkBackgroundBottomRectTransform.anchoredPosition = position;
-
-                // View.Instance.ArtworkContentGameObject.transform.GetChild(i).
-
-                // SelectedMusic(i); //　楽曲再生の実行と停止を行う（1フレーム毎）
-                // GetScoresController(i);
 
                 // カードを縮小する
                 for (var cnt = 0; cnt < _artworkPositions.Length; cnt++)
                 {
                     if (i == cnt) continue;
-                    // View.Instance.ArtworkContentGameObject.transform.GetChild(cnt).localScale = Vector2.Lerp(
-                    //     View.Instance.ArtworkContentGameObject.transform.GetChild(cnt).localScale,
-                    //     new Vector2(1f, 1f), 0.1f);
                     View.Instance.ArtworkContentGameObject.transform.GetChild(cnt).GetComponent<RectTransform>()
                         .sizeDelta = new Vector2(View.Instance.ArtworkHeight, View.Instance.ArtworkHeight);
                 }
