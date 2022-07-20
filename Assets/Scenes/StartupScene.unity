@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44407046, g: 0.49331486, b: 0.57238823, a: 1}
+  m_IndirectSpecularColor: {r: 0.4439403, g: 0.4931519, b: 0.5722083, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1065,8 +1065,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playOnStart: 1
-  _cueName: vivace_theme
-  _cueSheet: startup_scene
   _regionOnStart: {fileID: 0}
   _listenerOnStart: {fileID: 0}
   _use3dPositioning: 1
@@ -1085,6 +1083,8 @@ MonoBehaviour:
     - 0
     - 0
     - 0
+  _cueName: vivace_theme
+  _cueSheet: startup_scene
 --- !u!1 &568355986
 GameObject:
   m_ObjectHideFlags: 0
@@ -6746,8 +6746,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playOnStart: 0
-  _cueName: tap
-  _cueSheet: startup_scene
   _regionOnStart: {fileID: 0}
   _listenerOnStart: {fileID: 0}
   _use3dPositioning: 1
@@ -6766,6 +6764,8 @@ MonoBehaviour:
     - 0
     - 0
     - 0
+  _cueName: tap
+  _cueSheet: startup_scene
 --- !u!1 &1154700067
 GameObject:
   m_ObjectHideFlags: 0
@@ -7333,6 +7333,8 @@ MonoBehaviour:
     maxVirtualVoices: 32
     maxVoiceLimitGroups: 32
     maxCategories: 32
+    maxAisacs: 8
+    maxBusSends: 8
     maxSequenceEventsPerFrame: 2
     maxBeatSyncCallbacksPerFrame: 1
     maxCueLinkCallbacksPerFrame: 1
@@ -7353,10 +7355,14 @@ MonoBehaviour:
     asrOutputChannels: 0
     useRandomSeedWithTime: 0
     categoriesPerPlayback: 4
+    maxFaders: 4
     maxBuses: 8
     maxParameterBlocks: 1024
     vrMode: 0
     keepPlayingSoundOnPause: 1
+    editorPcmOutputConfig:
+      enable: 0
+      bufferLength: 4096
     pcBufferingTime: 0
     iosEnableSonicSync: 1
     iosBufferingTime: 50
@@ -8179,8 +8185,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playOnStart: 0
-  _cueName: start
-  _cueSheet: startup_scene
   _regionOnStart: {fileID: 0}
   _listenerOnStart: {fileID: 0}
   _use3dPositioning: 1
@@ -8199,6 +8203,8 @@ MonoBehaviour:
     - 0
     - 0
     - 0
+  _cueName: start
+  _cueSheet: startup_scene
 --- !u!1 &1633078219
 GameObject:
   m_ObjectHideFlags: 0

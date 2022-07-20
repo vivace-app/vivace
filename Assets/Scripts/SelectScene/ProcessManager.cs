@@ -1,19 +1,23 @@
 ﻿using Tools.AssetBundle;
 using Tools.Firestore.Model;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace SelectScene
 {
     public class ProcessManager : MonoBehaviour
     {
         private AssetBundle[] _assetBundles;
+
         private AudioClip[] _previewAudioClips;
-        private AudioSource[] _previewAudioSources;
+
+        // private AudioSource[] _previewAudioSources;
         private Music[] _musics;
 
         private float _artworkDistance;
         private float[] _artworkPositions;
         private float _scrolledPosition;
+        private int _selectedMusic;
 
 
         private void Start()
@@ -25,11 +29,13 @@ namespace SelectScene
             _artworkDistance = 1f / (_artworkPositions.Length - 1f);
             for (var i = 0; i < _artworkPositions.Length; i++)
             {
-                _artworkPositions[i] = _artworkDistance * i; //TODO: リファクタ
+                _artworkPositions[i] = _artworkDistance * i; // TODO: リファクタ
             }
 
             ArtworkCloner();
-            AttachPreviewMusic();
+            AttachArtworks();
+            AttachPreviewMusics();
+            // View.Instance.Musics.GetComponents<AudioSource>()[1].Play();
         }
 
         private void Update()
@@ -49,6 +55,9 @@ namespace SelectScene
                 // カードを拡大する
                 View.Instance.ArtworkContentGameObject.transform.GetChild(i).GetComponent<RectTransform>()
                     .sizeDelta = new Vector2(View.Instance.ArtworkHeight * 1.5f, View.Instance.ArtworkHeight * 1.5f);
+
+                PlaySelectedMusic(i);
+                DisplayMusicData(i);
 
                 // カードを縮小する
                 for (var cnt = 0; cnt < _artworkPositions.Length; cnt++)
@@ -70,6 +79,7 @@ namespace SelectScene
                 clone.transform.localPosition = View.Instance.ArtworkTemplateGameObject.transform.localPosition;
                 clone.transform.localScale = View.Instance.ArtworkTemplateGameObject.transform.localScale;
             }
+
             for (var i = 0; i < _artworkPositions.Length; i++)
             {
                 View.Instance.ArtworkContentGameObject.transform.GetChild(i).GetComponent<RectTransform>()
@@ -77,16 +87,51 @@ namespace SelectScene
             }
         }
 
-        private void AttachPreviewMusic()
+        private void AttachArtworks()
         {
+            foreach (var music in _musics)
+            {
+                var artworkSprite =
+                    _assetBundles[music.Id - 1].LoadAsset<Sprite>(music.Name + "_artwork");
+                View.Instance.ArtworkContentGameObject.transform.GetChild(music.Id - 1).GetComponent<Image>().sprite =
+                    artworkSprite;
+            }
+        }
+
+        private void AttachPreviewMusics()
+        {
+            for (var i = 0; i < _musics.Length; i++) View.Instance.Musics.AddComponent<AudioSource>();
+
             _previewAudioClips = new AudioClip[_musics.Length];
-            _previewAudioSources = new AudioSource[_musics.Length];
             foreach (var music in _musics)
             {
                 _previewAudioClips[music.Id - 1] =
                     _assetBundles[music.Id - 1].LoadAsset<AudioClip>(music.Name + "_pre");
-                // _previewAudioSources[music.Id - 1].clip = _previewAudioClips[music.Id - 1];
+                View.Instance.Musics.GetComponents<AudioSource>()[music.Id - 1].clip = _previewAudioClips[music.Id - 1];
             }
+        }
+
+        private void PlaySelectedMusic(int num) // numは現在選択中の楽曲通し番号
+        {
+            for (var i = 0; i < _artworkPositions.Length; i++)
+            {
+                if (i == num)
+                {
+                    if (!View.Instance.Musics.GetComponents<AudioSource>()[i].isPlaying)
+                        View.Instance.Musics.GetComponents<AudioSource>()[i].Play();
+                }
+                else
+                {
+                    if (View.Instance.Musics.GetComponents<AudioSource>()[i].isPlaying)
+                        View.Instance.Musics.GetComponents<AudioSource>()[i].Stop();
+                }
+            }
+        }
+        
+        private void DisplayMusicData(int num) // numは現在選択中の楽曲通し番号
+        {
+            View.Instance.ArtistText = _musics[num].Artist;
+            View.Instance.MusicTitleText = _musics[num].Title;
         }
     }
 }

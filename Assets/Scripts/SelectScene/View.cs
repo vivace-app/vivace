@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace SelectScene
@@ -9,11 +10,15 @@ namespace SelectScene
 
         [SerializeField] private GameObject artworkContentGameObject;
         [SerializeField] private GameObject artworkTemplateGameObject;
+        [SerializeField] private GameObject musics;
         [SerializeField] private HorizontalLayoutGroup artworkContentHorizontalLayoutGroup;
         [SerializeField] private RectTransform artworkBackgroundRectTransform;
         [SerializeField] private RectTransform artworkBackgroundBottomRectTransform;
-        [SerializeField] private RectTransform canvasRectTransform;
+        [SerializeField] private RectTransform parentCanvasRectTransform;
         [SerializeField] private Scrollbar scrollbar;
+        [SerializeField] private TextMeshProUGUI artistText;
+        [SerializeField] private TextMeshProUGUI musicTitleText;
+        [SerializeField] private ToggleGroup toggleGroup;
 
         private float _artworkBackgroundHeight;
 
@@ -32,7 +37,7 @@ namespace SelectScene
         private void InitializeArtworkBackground()
         {
             // アートワーク背景の上半分のサイズ指定
-            _artworkBackgroundHeight = canvasRectTransform.sizeDelta.y - 700;
+            _artworkBackgroundHeight = parentCanvasRectTransform.sizeDelta.y - 700;
             artworkBackgroundRectTransform.sizeDelta = new Vector2(artworkBackgroundRectTransform.sizeDelta.x,
                 _artworkBackgroundHeight * 0.7f);
             artworkBackgroundBottomRectTransform.sizeDelta =
@@ -51,19 +56,30 @@ namespace SelectScene
 
         private void InitializeArtworkBothEndsPadding()
         {
-            var padding = (int)canvasRectTransform.sizeDelta.x / 2 - (int)ArtworkHeight * 3 / 4;
+            var padding = (int)parentCanvasRectTransform.sizeDelta.x / 2 - (int)ArtworkHeight * 3 / 4;
             artworkContentHorizontalLayoutGroup.padding.left = padding;
             artworkContentHorizontalLayoutGroup.padding.right = padding;
         }
 
         public GameObject ArtworkContentGameObject => artworkContentGameObject;
         public GameObject ArtworkTemplateGameObject => artworkTemplateGameObject;
+        public GameObject Musics => musics;
         public float ArtworkHeight { get; private set; }
 
         public float Scrollbar
         {
             get => scrollbar.value;
             set => scrollbar.value = value;
+        }
+        
+        public string ArtistText
+        {
+            set => artistText.text = value;
+        }
+        
+        public string MusicTitleText
+        {
+            set => musicTitleText.text = value;
         }
     }
 }

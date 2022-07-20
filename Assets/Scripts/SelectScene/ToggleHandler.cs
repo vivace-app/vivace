@@ -1,13 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-// 難易度のToggleの非アクティブ時の画像を切り替えます
-namespace Project.Scripts
+namespace SelectScene
 {
     [RequireComponent(typeof(Toggle))]
-    public class ToggleImage : MonoBehaviour
+    public class ToggleHandler : MonoBehaviour
     {
-        public Graphic offGraphic;
+        [SerializeField] private Graphic offGraphic;
 
         private void Start()
         {
@@ -16,7 +15,7 @@ namespace Project.Scripts
             offGraphic.enabled = !toggle.isOn;
         }
 
-        public void OnValueChanged(bool value)
+        private void OnValueChanged(bool value)
         {
             if (offGraphic != null) offGraphic.enabled = !value;
         }
