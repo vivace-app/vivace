@@ -35,7 +35,7 @@ namespace SelectScene
             ArtworkCloner();
             AttachArtworks();
             AttachPreviewMusics();
-            // View.Instance.Musics.GetComponents<AudioSource>()[1].Play();
+            View.Instance.Achievement = new[] { 3, 2, 1, 1 };
         }
 
         private void Update()

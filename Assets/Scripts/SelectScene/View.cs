@@ -1,5 +1,7 @@
-﻿using TMPro;
+﻿using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace SelectScene
@@ -12,10 +14,18 @@ namespace SelectScene
         [SerializeField] private GameObject artworkTemplateGameObject;
         [SerializeField] private GameObject musics;
         [SerializeField] private HorizontalLayoutGroup artworkContentHorizontalLayoutGroup;
+        [SerializeField] private Image easyAchievementImage;
+        [SerializeField] private Image normalAchievementImage;
+        [SerializeField] private Image hardAchievementImage;
+        [SerializeField] private Image masterAchievementImage;
         [SerializeField] private RectTransform artworkBackgroundRectTransform;
         [SerializeField] private RectTransform artworkBackgroundBottomRectTransform;
         [SerializeField] private RectTransform parentCanvasRectTransform;
         [SerializeField] private Scrollbar scrollbar;
+        [SerializeField] private Sprite allPerfectSprite;
+        [SerializeField] private Sprite fullComboSprite;
+        [SerializeField] private Sprite clearSprite;
+        [SerializeField] private Sprite unPlayedSprite;
         [SerializeField] private TextMeshProUGUI artistText;
         [SerializeField] private TextMeshProUGUI musicTitleText;
         [SerializeField] private ToggleGroup toggleGroup;
@@ -72,6 +82,25 @@ namespace SelectScene
             set => scrollbar.value = value;
         }
         
+        public int[] Achievement
+        {
+            set
+            {
+                Image[] images = {easyAchievementImage, normalAchievementImage, hardAchievementImage, masterAchievementImage};
+                foreach (var image in images.Select((image, index) => new { Value = image, Index = index }))
+                {
+                    image.Value.sprite = value[image.Index] switch
+                    {
+                        3 => allPerfectSprite,
+                        2 => fullComboSprite,
+                        1 => clearSprite,
+                        0 => unPlayedSprite,
+                        _ => image.Value.sprite
+                    };
+                }
+            }
+        }
+
         public string ArtistText
         {
             set => artistText.text = value;

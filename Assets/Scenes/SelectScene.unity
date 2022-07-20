@@ -1459,7 +1459,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 54439825d0e244c85b067a68afb229a8, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 783ba082cc2ea4664ae254a452c1fe99, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3142,7 +3142,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6608f3429d4744e62bc32ecc5b826443, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 13367715a3fea439090069a6abd1699d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3218,7 +3218,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d77d29f0ac8fb438682a7b709b953b4a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: de0ab22059af64c32994850da66605e2, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4085,10 +4085,18 @@ MonoBehaviour:
   artworkTemplateGameObject: {fileID: 1217018819}
   musics: {fileID: 2034980394}
   artworkContentHorizontalLayoutGroup: {fileID: 901220292}
+  easyAchievementImage: {fileID: 929228743}
+  normalAchievementImage: {fileID: 944207914}
+  hardAchievementImage: {fileID: 1852383998}
+  masterAchievementImage: {fileID: 656541178}
   artworkBackgroundRectTransform: {fileID: 2103519167}
   artworkBackgroundBottomRectTransform: {fileID: 1786178913}
   parentCanvasRectTransform: {fileID: 587909532}
   scrollbar: {fileID: 514620819}
+  allPerfectSprite: {fileID: 21300000, guid: 13367715a3fea439090069a6abd1699d, type: 3}
+  fullComboSprite: {fileID: 21300000, guid: 783ba082cc2ea4664ae254a452c1fe99, type: 3}
+  clearSprite: {fileID: 21300000, guid: 72e5cd0fbba234edd87440eaf70f4260, type: 3}
+  unPlayedSprite: {fileID: 21300000, guid: de0ab22059af64c32994850da66605e2, type: 3}
   artistText: {fileID: 5781782}
   musicTitleText: {fileID: 1077459160}
   toggleGroup: {fileID: 1045464373}
@@ -4608,7 +4616,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d77d29f0ac8fb438682a7b709b953b4a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 72e5cd0fbba234edd87440eaf70f4260, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
