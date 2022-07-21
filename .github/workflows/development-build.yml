@@ -15,16 +15,36 @@ jobs:
           - Android
 
     steps:
+      # Checkout
       - name: Checkout repository
         uses: actions/checkout@v2
+      
+      # Git LFS
+      - name: Create LFS file list
+        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
 
+      - name: Restore LFS cache
+        uses: actions/cache@v2
+        id: lfs-cache
+        with:
+          path: .git/lfs
+          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
+
+      - name: Git LFS Pull
+        run: |
+          git lfs pull
+          git add .
+          git reset --hard
+
+      # Cache
       - uses: actions/cache@v2
         with:
           path: Unity/Library
-          key: Library-${{ matrix.targetPlatform }}
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
 
+      # Secrets
       - name: Add google-services.json
         env:
           GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES_JSON }}
@@ -35,6 +55,7 @@ jobs:
           GOOGLE_SERVICE_INFO: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
         run: echo $GOOGLE_SERVICE_INFO | base64 --decode --ignore-garbage > ./Assets/GoogleService-Info.plist
 
+      # Build
       - name: Build
         uses: game-ci/unity-builder@v2
         env:
@@ -49,6 +70,7 @@ jobs:
           androidKeyaliasName: ${{ secrets.ANDROID_KEYALIAS_NAME }}
           androidKeyaliasPass: ${{ secrets.ANDROID_KEYALIAS_PASS }}
 
+      # Output
       - uses: actions/upload-artifact@v2
         with:
           name: Build-${{ matrix.targetPlatform }}
