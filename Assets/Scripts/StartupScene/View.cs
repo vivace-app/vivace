@@ -15,6 +15,7 @@ namespace StartupScene
         [SerializeField] private GameObject nicknameRegistrationModal;
         [SerializeField] private GameObject communicationErrorModal;
         [SerializeField] private GameObject needsUpdateModal;
+        [SerializeField] private GameObject sliderGameObject;
 
         [SerializeField] private CustomButton signInWithAppleCustomButton;
         [SerializeField] private CustomButton signInWithGoogleCustomButton;
@@ -22,16 +23,19 @@ namespace StartupScene
         [SerializeField] private CustomButton nicknameRegistrationSaveCustomButton;
         [SerializeField] private CustomButton communicationErrorReloadCustomButton;
         [SerializeField] private CustomButton needsUpdateReloadCustomButton;
-        
+
         [SerializeField] private CriAtomSource startAudioSource;
 
+        [SerializeField] private Slider slider;
+
         [SerializeField] private TMP_InputField displayNameInputField;
-        
+
         [SerializeField] private TextMeshProUGUI displayNameErrorText;
         [SerializeField] private TextMeshProUGUI uidText;
         [SerializeField] private TextMeshProUGUI versionText;
-        
-        [SerializeField] private Text completionRateText;
+
+        private const float SliderFillSpeed = 0.5f;
+        private float _sliderTargetProgress;
 
         private void Awake()
         {
@@ -42,7 +46,13 @@ namespace StartupScene
         {
             InitializeVersion();
         }
-        
+
+        private void Update()
+        {
+            if (slider.value < _sliderTargetProgress)
+                slider.value += SliderFillSpeed * Time.deltaTime;
+        }
+
         private void InitializeVersion() => versionText.text = $"ver.{Application.version}";
 
         public bool setAccountLinkageModalVisible
@@ -67,7 +77,7 @@ namespace StartupScene
         {
             set => communicationErrorModal.SetActive(value);
         }
-        
+
         public bool setNeedsUpdateModalVisible
         {
             set => needsUpdateModal.SetActive(value);
@@ -110,10 +120,14 @@ namespace StartupScene
         {
             set => uidText.text = value;
         }
-        
-        public string CompletionRateText
+
+        public float ProgressBar
         {
-            set => completionRateText.text = value;
+            set
+            {
+                _sliderTargetProgress = Mathf.Pow(value, 1 / 2f);
+                if (_sliderTargetProgress > 0) sliderGameObject.SetActive(true);
+            }
         }
     }
 }

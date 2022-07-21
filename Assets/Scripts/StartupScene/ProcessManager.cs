@@ -122,7 +122,7 @@ namespace StartupScene
 
             // Download Asset Bundles
             var assetBundleHandler = new AssetBundleHandler(musicList);
-            assetBundleHandler.OnCompletionRateChanged += rate => View.Instance.CompletionRateText = $"DL: {rate}%";
+            assetBundleHandler.OnCompletionRateChanged += rate => View.Instance.ProgressBar = rate;
             assetBundleHandler.OnDownloadCompleted += () => SceneManager.LoadScene("SelectScene");
             assetBundleHandler.OnErrorOccured += error =>
             {
