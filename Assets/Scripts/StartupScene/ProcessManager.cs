@@ -121,7 +121,7 @@ namespace StartupScene
 
             // Download Asset Bundles
             var assetBundleHandler = new AssetBundleHandler(musicList);
-            assetBundleHandler.OnCompletionRateChanged += rate => View.Instance.ProgressBar = rate;
+            assetBundleHandler.OnCompletionRateChanged += rate => View.Instance.ProgressBar = rate / 100f;
             assetBundleHandler.OnDownloadCompleted += () => SceneManager.LoadScene("SelectScene");
             assetBundleHandler.OnErrorOccured += error => View.Instance.setCommunicationErrorModalVisible = true;
             var downloadEnumerator = assetBundleHandler.DownloadCoroutine();
