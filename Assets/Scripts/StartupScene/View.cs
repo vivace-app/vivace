@@ -3,6 +3,7 @@ using CriWare;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace StartupScene
@@ -23,6 +24,7 @@ namespace StartupScene
         [SerializeField] private CustomButton nicknameRegistrationSaveCustomButton;
         [SerializeField] private CustomButton communicationErrorReloadCustomButton;
         [SerializeField] private CustomButton needsUpdateReloadCustomButton;
+        [SerializeField] private CustomButton criwareCustomButton;
 
         [SerializeField] private CriAtomSource startAudioSource;
 
@@ -45,6 +47,10 @@ namespace StartupScene
         private void Start()
         {
             InitializeVersion();
+            criwareCustomButton.onClickCallback = () => Application.OpenURL("https://www.cri-mw.co.jp");
+            communicationErrorReloadCustomButton.onClickCallback =
+                () => SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            needsUpdateReloadCustomButton.onClickCallback = () => Application.OpenURL("https://coalabo.net/vivace-web");
         }
 
         private void Update()
@@ -69,18 +75,26 @@ namespace StartupScene
             set
             {
                 nicknameRegistrationModal.SetActive(value);
-                accountLinkageModal.transform.DOScale(1.2f, 0.2f).SetEase(Ease.OutCubic);
+                nicknameRegistrationModal.transform.DOScale(1.2f, 0.2f).SetEase(Ease.OutCubic);
             }
         }
 
         public bool setCommunicationErrorModalVisible
         {
-            set => communicationErrorModal.SetActive(value);
+            set
+            {
+                communicationErrorModal.SetActive(value);
+                communicationErrorModal.transform.DOScale(1.2f, 0.2f).SetEase(Ease.OutCubic);
+            }
         }
 
         public bool setNeedsUpdateModalVisible
         {
-            set => needsUpdateModal.SetActive(value);
+            set
+            {
+                needsUpdateModal.SetActive(value);
+                needsUpdateModal.transform.DOScale(1.2f, 0.2f).SetEase(Ease.OutCubic);
+            }
         }
 
         public Action setOnClickSignInWithAppleCustomButtonAction

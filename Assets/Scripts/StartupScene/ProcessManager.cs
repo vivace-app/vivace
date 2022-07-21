@@ -15,6 +15,7 @@ namespace StartupScene
         private readonly AuthenticationHandler _auth = new();
 
         private bool _hasPressedStartButton;
+        private bool _isFirstRegistration;
 
         private void Start()
         {
@@ -28,7 +29,7 @@ namespace StartupScene
                 () =>
                 {
                     if (View.Instance.DisplayNameInputField.Length is 0 or > 10)
-                        View.Instance.DisplayNameErrorText = "10文字以内で入力してください";
+                        View.Instance.DisplayNameErrorText = "0文字以上10文字以内で入力してください";
                     else
                     {
                         _auth.UpdateDisplayName(View.Instance.DisplayNameInputField);
@@ -69,12 +70,13 @@ namespace StartupScene
                 Debug.Log("user.DisplayName == null");
                 Debug.Log(user.DisplayName == null);
                 Debug.Log(user.ProviderData);
-                if (user.DisplayName == "")
+                if (_isFirstRegistration)
                 {
                     _hasPressedStartButton = true;
                     View.Instance.setNicknameRegistrationModalVisible = true;
                     View.Instance.DisplayNameInputField = user.DisplayName;
-                } else if (_hasPressedStartButton)
+                }
+                else if (_hasPressedStartButton)
                 {
                     StartCoroutine(_TransitionToSelectScene());
                 }
@@ -90,6 +92,7 @@ namespace StartupScene
             else
             {
                 View.Instance.setAccountLinkageModalVisible = true;
+                _isFirstRegistration = true;
             }
         }
 
@@ -103,17 +106,13 @@ namespace StartupScene
             var isValidLicense = ie.Current != null && (bool)ie.Current;
 
             if (!isValidLicense)
-            {
-                // TODO: 最新のバージョンを使用するようにポップアップ
-                Debug.LogError("最新のバージョンをご使用ください");
-                Application.Quit(); // TMP
-            }
+                View.Instance.setNeedsUpdateModalVisible = true;
 
             // Get Music List
             ie = db.GetMusicListCoroutine();
             yield return StartCoroutine(ie);
             var musicList = (Music[])ie.Current;
-            
+
             // Cache Setting
             var cachePath = Path.Combine(Application.persistentDataPath, "cache");
             Directory.CreateDirectory(cachePath);
@@ -124,11 +123,7 @@ namespace StartupScene
             var assetBundleHandler = new AssetBundleHandler(musicList);
             assetBundleHandler.OnCompletionRateChanged += rate => View.Instance.ProgressBar = rate;
             assetBundleHandler.OnDownloadCompleted += () => SceneManager.LoadScene("SelectScene");
-            assetBundleHandler.OnErrorOccured += error =>
-            {
-                // TODO: エラーを出力する
-                SceneManager.LoadScene("StartupScene");
-            };
+            assetBundleHandler.OnErrorOccured += error => View.Instance.setCommunicationErrorModalVisible = true;
             var downloadEnumerator = assetBundleHandler.DownloadCoroutine();
             yield return StartCoroutine(downloadEnumerator);
         }
