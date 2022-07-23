@@ -47,6 +47,8 @@ namespace StartupScene
         private void Start()
         {
             InitializeVersion();
+            
+            // Custom Buttons
             criwareCustomButton.onClickCallback = () => Application.OpenURL("https://www.cri-mw.co.jp");
             communicationErrorReloadCustomButton.onClickCallback =
                 () => SceneManager.LoadScene(SceneManager.GetActiveScene().name);

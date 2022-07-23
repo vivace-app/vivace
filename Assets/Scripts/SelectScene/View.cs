@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
@@ -10,24 +12,44 @@ namespace SelectScene
     {
         public static View Instance;
 
+        [SerializeField] private CustomButton menuOpenCustomButton;
+        [SerializeField] private CustomButton menuCloseCustomButton;
+        [SerializeField] private CustomButton profileCustomButton;
+        [SerializeField] private CustomButton rankingCustomButton;
+        [SerializeField] private CustomButton settingCustomButton;
+        [SerializeField] private CustomButton staffCustomButton;
+        [SerializeField] private CustomButton licenseCustomButton;
+        [SerializeField] private CustomButton accountLinkageCustomButton;
+        [SerializeField] private CustomButton betaCustomButton;
+        [SerializeField] private CustomButton supportCustomButton;
+        [SerializeField] private CustomButton titleCustomButton;
+
         [SerializeField] private GameObject artworkContentGameObject;
         [SerializeField] private GameObject artworkTemplateGameObject;
+        [SerializeField] private GameObject menuModal;
         [SerializeField] private GameObject musics;
+
         [SerializeField] private HorizontalLayoutGroup artworkContentHorizontalLayoutGroup;
+
         [SerializeField] private Image easyAchievementImage;
         [SerializeField] private Image normalAchievementImage;
         [SerializeField] private Image hardAchievementImage;
         [SerializeField] private Image masterAchievementImage;
+
         [SerializeField] private RectTransform artworkBackgroundRectTransform;
         [SerializeField] private RectTransform artworkBackgroundBottomRectTransform;
         [SerializeField] private RectTransform parentCanvasRectTransform;
+
         [SerializeField] private Scrollbar scrollbar;
+
         [SerializeField] private Sprite allPerfectSprite;
         [SerializeField] private Sprite fullComboSprite;
         [SerializeField] private Sprite clearSprite;
         [SerializeField] private Sprite unPlayedSprite;
+
         [SerializeField] private TextMeshProUGUI artistText;
         [SerializeField] private TextMeshProUGUI musicTitleText;
+
         [SerializeField] private ToggleGroup toggleGroup;
 
         private float _artworkBackgroundHeight;
@@ -42,6 +64,11 @@ namespace SelectScene
             InitializeArtworkBackground();
             InitializeArtworkSize();
             InitializeArtworkBothEndsPadding();
+
+            // Custom Buttons
+            menuOpenCustomButton.onClickCallback = () => setNeedsUpdateModalVisible = true;
+            menuCloseCustomButton.onClickCallback = () => setNeedsUpdateModalVisible = false;
+            titleCustomButton.onClickCallback = () => SceneManager.LoadScene("StartupScene");
         }
 
         private void InitializeArtworkBackground()
@@ -76,17 +103,27 @@ namespace SelectScene
         public GameObject Musics => musics;
         public float ArtworkHeight { get; private set; }
 
+        private bool setNeedsUpdateModalVisible
+        {
+            set
+            {
+                menuModal.SetActive(value);
+                menuModal.transform.DOScale(1.2f, 0.2f).SetEase(Ease.OutCubic);
+            }
+        }
+
         public float Scrollbar
         {
             get => scrollbar.value;
             set => scrollbar.value = value;
         }
-        
+
         public int[] Achievement
         {
             set
             {
-                Image[] images = {easyAchievementImage, normalAchievementImage, hardAchievementImage, masterAchievementImage};
+                Image[] images =
+                    { easyAchievementImage, normalAchievementImage, hardAchievementImage, masterAchievementImage };
                 foreach (var image in images.Select((image, index) => new { Value = image, Index = index }))
                 {
                     image.Value.sprite = value[image.Index] switch
@@ -105,7 +142,7 @@ namespace SelectScene
         {
             set => artistText.text = value;
         }
-        
+
         public string MusicTitleText
         {
             set => musicTitleText.text = value;
