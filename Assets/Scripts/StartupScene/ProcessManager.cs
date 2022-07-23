@@ -19,6 +19,8 @@ namespace StartupScene
 
         private void Start()
         {
+            if (Application.isEditor) LocaleSetting.ChangeSelectedLocale("ja");
+
             _auth.Start(_setUserData);
             _setUserData(this, null);
             View.Instance.UidText = _auth.GetUser()?.UserId;

@@ -22,6 +22,8 @@ namespace SelectScene
 
         private void Start()
         {
+            if (Application.isEditor) LocaleSetting.ChangeSelectedLocale("ja");
+
             _assetBundles = AssetBundleHandler.GetAssetBundles();
             _musics = AssetBundleHandler.GetMusics();
 
