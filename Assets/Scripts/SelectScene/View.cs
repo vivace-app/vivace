@@ -17,7 +17,7 @@ namespace SelectScene
         [SerializeField] private CustomButton profileCustomButton;
         [SerializeField] private CustomButton rankingCustomButton;
         [SerializeField] private CustomButton settingCustomButton;
-        [SerializeField] private CustomButton staffCustomButton;
+        [SerializeField] private CustomButton translateCustomButton;
         [SerializeField] private CustomButton licenseCustomButton;
         [SerializeField] private CustomButton accountLinkageCustomButton;
         [SerializeField] private CustomButton betaCustomButton;

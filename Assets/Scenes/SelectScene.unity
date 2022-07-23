@@ -2266,7 +2266,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u30B9\u30BF\u30C3\u30D5\u4E00\u89A7"
+  m_text: "\u7FFB\u8A33\u306B\u53C2\u52A0"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 692865caef98243a0b67efdd20a88368, type: 2}
   m_sharedMaterial: {fileID: -8793070836779093500, guid: 692865caef98243a0b67efdd20a88368,
@@ -5773,7 +5773,7 @@ MonoBehaviour:
   profileCustomButton: {fileID: 2118702631}
   rankingCustomButton: {fileID: 172537541}
   settingCustomButton: {fileID: 543238882}
-  staffCustomButton: {fileID: 1848142202}
+  translateCustomButton: {fileID: 1848142202}
   licenseCustomButton: {fileID: 1894403065}
   accountLinkageCustomButton: {fileID: 2010572879}
   betaCustomButton: {fileID: 333227240}
@@ -6505,7 +6505,7 @@ GameObject:
   - component: {fileID: 1848142200}
   - component: {fileID: 1848142199}
   m_Layer: 5
-  m_Name: Staff Button
+  m_Name: Translate Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
