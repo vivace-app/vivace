@@ -16,11 +16,11 @@
       "dependencies": {}
     },
     "com.unity.addressables": {
-      "version": "1.20.0",
+      "version": "1.20.3",
       "depth": 2,
       "source": "registry",
       "dependencies": {
-        "com.unity.scriptablebuildpipeline": "1.19.6",
+        "com.unity.scriptablebuildpipeline": "1.20.2",
         "com.unity.modules.assetbundle": "1.0.0",
         "com.unity.modules.imageconversion": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0",
@@ -87,11 +87,11 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.localization": {
-      "version": "1.2.1",
+      "version": "1.3.1",
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.unity.addressables": "1.19.17",
+        "com.unity.addressables": "1.19.19",
         "com.unity.nuget.newtonsoft-json": "2.0.0"
       },
       "url": "https://packages.unity.com"
@@ -111,7 +111,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.scriptablebuildpipeline": {
-      "version": "1.20.1",
+      "version": "1.20.2",
       "depth": 3,
       "source": "registry",
       "dependencies": {},
@@ -352,17 +352,6 @@
     "com.unity.modules.uielements": {
       "version": "1.0.0",
       "depth": 0,
-      "source": "builtin",
-      "dependencies": {
-        "com.unity.modules.ui": "1.0.0",
-        "com.unity.modules.imgui": "1.0.0",
-        "com.unity.modules.jsonserialize": "1.0.0",
-        "com.unity.modules.uielementsnative": "1.0.0"
-      }
-    },
-    "com.unity.modules.uielementsnative": {
-      "version": "1.0.0",
-      "depth": 1,
       "source": "builtin",
       "dependencies": {
         "com.unity.modules.ui": "1.0.0",
