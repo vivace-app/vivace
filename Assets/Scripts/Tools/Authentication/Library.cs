@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Firebase;
 using Firebase.Auth;
 using UnityEngine;
@@ -51,6 +52,16 @@ namespace Tools.Authentication
             // Sign in
             if (!signedIn) return;
             Debug.Log("Signed in: " + _user.UserId);
+        }
+
+        private IEnumerator _GenerateCustomToken()
+        {
+            var task = _auth.CurrentUser.TokenAsync(true);
+            yield return new WaitForTaskCompletion(task);
+            if (task.IsFaulted || task.IsCanceled)
+                OnErrorOccured.Invoke("通信に失敗しました\nインターネットの接続状況を確認してください");
+            else
+                yield return task.Result;
         }
 
         private void _UpdateDisplayName(string displayName)

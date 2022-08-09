@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Firebase.Auth;
 
 namespace Tools.Authentication
@@ -18,12 +19,14 @@ namespace Tools.Authentication
 
         public void SignInWithAnonymously() => _SignInWithAnonymously();
 
+        public IEnumerator GenerateCustomToken() => _GenerateCustomToken();
+
         public void UpdateDisplayName(string displayName) => _UpdateDisplayName(displayName);
 
         public void SignOut() => _SignOut();
 
         public FirebaseUser GetUser() => _user;
-        
+
         public event Action<string> OnErrorOccured;
     }
 }

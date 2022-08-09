@@ -1,9 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace SelectScene
@@ -49,6 +49,7 @@ namespace SelectScene
 
         [SerializeField] private TextMeshProUGUI artistText;
         [SerializeField] private TextMeshProUGUI musicTitleText;
+        [SerializeField] private TextMeshProUGUI nicknameText;
 
         [SerializeField] private ToggleGroup toggleGroup;
 
@@ -146,6 +147,16 @@ namespace SelectScene
         public string MusicTitleText
         {
             set => musicTitleText.text = value;
+        }
+
+        public string NicknameText
+        {
+            set => nicknameText.text = value + " さん";
+        }
+
+        public Action ProfileCustomButton
+        {
+            set => profileCustomButton.onClickCallback = value;
         }
     }
 }

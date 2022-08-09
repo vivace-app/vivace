@@ -1,4 +1,8 @@
-﻿using Tools.AssetBundle;
+﻿using System;
+using System.Collections;
+using Firebase.Auth;
+using Tools.AssetBundle;
+using Tools.Authentication;
 using Tools.Firestore.Model;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +11,8 @@ namespace SelectScene
 {
     public class ProcessManager : MonoBehaviour
     {
+        private readonly AuthenticationHandler _auth = new();
+
         private AssetBundle[] _assetBundles;
 
         private AudioClip[] _previewAudioClips;
@@ -23,6 +29,9 @@ namespace SelectScene
         private void Start()
         {
             if (Application.isEditor) LocaleSetting.ChangeSelectedLocale("ja");
+
+            _auth.Start(_setUserData);
+            _setUserData(this, null);
 
             _assetBundles = AssetBundleHandler.GetAssetBundles();
             _musics = AssetBundleHandler.GetMusics();
@@ -69,6 +78,19 @@ namespace SelectScene
                         .sizeDelta = new Vector2(View.Instance.ArtworkHeight, View.Instance.ArtworkHeight);
                 }
             }
+        }
+
+        private void _setUserData(object sender, EventArgs eventArgs) => StartCoroutine(nameof(GetAuth));
+
+        private IEnumerator GetAuth()
+        {
+            var user = _auth.GetUser();
+            var iEnumerator = _auth.GenerateCustomToken();
+            yield return iEnumerator;
+
+            View.Instance.NicknameText = user?.DisplayName;
+            View.Instance.ProfileCustomButton = () =>
+                Application.OpenURL("http://localhost:3000/api/redirect/profile/" + iEnumerator.Current);
         }
 
         private void ArtworkCloner()
@@ -129,7 +151,7 @@ namespace SelectScene
                 }
             }
         }
-        
+
         private void DisplayMusicData(int num) // numは現在選択中の楽曲通し番号
         {
             View.Instance.ArtistText = _musics[num].Artist;
