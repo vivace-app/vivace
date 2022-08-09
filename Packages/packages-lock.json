@@ -214,6 +214,13 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.xjine.text_file_read_writer": {
+      "version": "https://github.com/XJINE/Unity_TextFileReadWriter.git?path=Assets/Packages/TextFileReadWriter",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "57e19562493f9726ff0ff5f5728cffcff023b4b2"
+    },
     "xyz.candycoded.env": {
       "version": "https://github.com/CandyCoded/env.git",
       "depth": 0,
