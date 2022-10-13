@@ -30,8 +30,8 @@ namespace StartupScene
             View.Instance.setOnClickNicknameRegistrationSaveCustomButtonCustomButtonAction =
                 () =>
                 {
-                    if (View.Instance.DisplayNameInputField.Length is 0 or > 10)
-                        View.Instance.DisplayNameErrorText = "0文字以上10文字以内で入力してください";
+                    if (View.Instance.DisplayNameInputField.Length is 3 or > 10)
+                        View.Instance.DisplayNameErrorText = "3文字以上10文字以内で入力してください";
                     else
                     {
                         _auth.UpdateDisplayName(View.Instance.DisplayNameInputField);
