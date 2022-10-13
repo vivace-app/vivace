@@ -9,6 +9,52 @@
       },
       "url": "https://registry.npmjs.org"
     },
+    "com.google.external-dependency-manager": {
+      "version": "file:../Assets/Library/GooglePackages/com.google.external-dependency-manager-1.2.172.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {}
+    },
+    "com.google.firebase.analytics": {
+      "version": "file:../Assets/Library/GooglePackages/com.google.firebase.analytics-9.6.0.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.google.firebase.app": "9.6.0"
+      }
+    },
+    "com.google.firebase.app": {
+      "version": "file:../Assets/Library/GooglePackages/com.google.firebase.app-9.6.0.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.google.external-dependency-manager": "1.2.172"
+      }
+    },
+    "com.google.firebase.auth": {
+      "version": "file:../Assets/Library/GooglePackages/com.google.firebase.auth-9.6.0.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.google.firebase.app": "9.6.0"
+      }
+    },
+    "com.google.firebase.firestore": {
+      "version": "file:../Assets/Library/GooglePackages/com.google.firebase.firestore-9.6.0.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.google.firebase.app": "9.6.0"
+      }
+    },
+    "com.google.firebase.storage": {
+      "version": "file:../Assets/Library/GooglePackages/com.google.firebase.storage-9.6.0.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.google.firebase.auth": "9.6.0"
+      }
+    },
     "com.lupidan.apple-signin-unity": {
       "version": "https://github.com/lupidan/apple-signin-unity.git",
       "depth": 0,
