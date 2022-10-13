@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Firebase.Auth;
 using Firebase.Firestore;
 using Tools.Firestore.Model;
+using UnityEngine;
 
 namespace Tools.Firestore
 {
@@ -20,9 +22,27 @@ namespace Tools.Firestore
                 yield return task.Result;
         }
 
+        private IEnumerator _ReadDoc(DocumentReference query)
+        {
+            var task = query.GetSnapshotAsync();
+            yield return new WaitForTaskCompletion(task);
+            if (task.IsFaulted || task.IsCanceled)
+                OnErrorOccured.Invoke("通信に失敗しました\nインターネットの接続状況を確認してください");
+            else
+                yield return task.Result;
+        }
+
         private IEnumerator _WriteDoc(DocumentReference doc, IDictionary<string, object> data)
         {
             var task = doc.SetAsync(data);
+            yield return new WaitForTaskCompletion(task);
+            if (task.IsFaulted || task.IsCanceled)
+                OnErrorOccured.Invoke("通信に失敗しました\nインターネットの接続状況を確認してください");
+        }
+
+        private IEnumerator _UpdateDoc(DocumentReference doc, IDictionary<string, object> data)
+        {
+            var task = doc.UpdateAsync(data);
             yield return new WaitForTaskCompletion(task);
             if (task.IsFaulted || task.IsCanceled)
                 OnErrorOccured.Invoke("通信に失敗しました\nインターネットの接続状況を確認してください");
@@ -44,7 +64,7 @@ namespace Tools.Firestore
                 yield break;
             }
 
-            var isSupportedVersion = ((QuerySnapshot)iEnumerator.Current).Documents.Any(documentSnapshot =>
+            var isSupportedVersion = ((QuerySnapshot) iEnumerator.Current).Documents.Any(documentSnapshot =>
                 documentSnapshot.Id == version);
             yield return isSupportedVersion;
         }
@@ -56,7 +76,7 @@ namespace Tools.Firestore
             var iEnumerator = _ReadDoc(capitalQuery);
             yield return iEnumerator;
 
-            var querySnapshot = (QuerySnapshot)iEnumerator.Current;
+            var querySnapshot = (QuerySnapshot) iEnumerator.Current;
             if (querySnapshot == null)
             {
                 OnErrorOccured.Invoke("通信に失敗しました\nインターネットの接続状況を確認してください");
@@ -65,11 +85,43 @@ namespace Tools.Firestore
 
             var musicList = new Music[querySnapshot.Count];
 
-            foreach (var documentSnapshot in querySnapshot.Documents.Select((v, i) => new { Value = v, Index = i }))
+            foreach (var documentSnapshot in querySnapshot.Documents.Select((v, i) => new {Value = v, Index = i}))
                 musicList[documentSnapshot.Index] =
                     documentSnapshot.Value.ConvertTo<Music>(ServerTimestampBehavior.Estimate);
 
             yield return musicList;
+        }
+
+        private IEnumerator _UpdateLastLoggedIn(FirebaseUser user)
+        {
+            var documentReference = _fs.Collection("users").Document(user.UserId);
+
+            var iEnumerator = _ReadDoc(documentReference);
+            yield return iEnumerator;
+
+            var documentSnapshot = (DocumentSnapshot) iEnumerator.Current;
+            if (documentSnapshot == null)
+            {
+                OnErrorOccured.Invoke("通信に失敗しました\nインターネットの接続状況を確認してください");
+                yield break;
+            }
+            
+            var userMeta = documentSnapshot.ConvertTo<User>();
+            var playDays = userMeta.PlayDays;
+            
+            // 前回のログインから、日本時間午前4時を跨いでいるか
+            if (Timestamp.GetCurrentTimestamp().ToDateTime().AddHours(5).Day >
+                userMeta.LastLoggedIn.ToDateTime().AddHours(5).Day)
+                playDays += 1;
+
+            var updates = new Dictionary<string, object>
+            {
+                {"last_logged_in", FieldValue.ServerTimestamp},
+                {"play_days", playDays}
+            };
+
+             iEnumerator = _UpdateDoc(documentReference, updates);
+            yield return iEnumerator;
         }
     }
 }

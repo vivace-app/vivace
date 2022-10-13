@@ -102,10 +102,17 @@ namespace StartupScene
         {
             var db = new FirestoreHandler();
 
+            // // エラー発生時に実行する処理を登録
+            // fs.OnErrorOccured += error =>
+            // {
+            //     // TODO: エラーをユーザに伝える
+            //     Debug.Log(error);
+            // };
+
             // Check License
             var ie = db.GetIsSupportedVersionCoroutine(Application.version);
             yield return ie;
-            var isValidLicense = ie.Current != null && (bool)ie.Current;
+            var isValidLicense = ie.Current != null && (bool) ie.Current;
 
             if (!isValidLicense)
                 View.Instance.setNeedsUpdateModalVisible = true;
@@ -113,7 +120,11 @@ namespace StartupScene
             // Get Music List
             ie = db.GetMusicListCoroutine();
             yield return StartCoroutine(ie);
-            var musicList = (Music[])ie.Current;
+            var musicList = (Music[]) ie.Current;
+
+            // Update Last Logged In
+            ie = db.UpdateLastLoggedIn(_auth.GetUser());
+            yield return ie;
 
             // Cache Setting
             var cachePath = Path.Combine(Application.persistentDataPath, "cache");
