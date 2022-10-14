@@ -8,6 +8,10 @@ namespace Tools.Firestore.Model
     {
         [FirestoreDocumentId] [UsedImplicitly] public DocumentReference Document { get; set; }
 
+        [FirestoreProperty(Name = "display_name")]
+        [UsedImplicitly]
+        public string DisplayName { get; set; }
+
         [FirestoreProperty(Name = "is_admin")]
         [UsedImplicitly]
         public bool IsAdmin { get; set; }

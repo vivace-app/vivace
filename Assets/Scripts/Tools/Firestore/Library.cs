@@ -105,10 +105,10 @@ namespace Tools.Firestore
                 OnErrorOccured.Invoke("通信に失敗しました\nインターネットの接続状況を確認してください");
                 yield break;
             }
-            
+
             var userMeta = documentSnapshot.ConvertTo<User>();
             var playDays = userMeta.PlayDays;
-            
+
             // 前回のログインから、日本時間午前4時を跨いでいるか
             if (Timestamp.GetCurrentTimestamp().ToDateTime().AddHours(5).Day >
                 userMeta.LastLoggedIn.ToDateTime().AddHours(5).Day)
@@ -120,8 +120,51 @@ namespace Tools.Firestore
                 {"play_days", playDays}
             };
 
-             iEnumerator = _UpdateDoc(documentReference, updates);
+            iEnumerator = _UpdateDoc(documentReference, updates);
             yield return iEnumerator;
+        }
+
+        private IEnumerator _GetRankingList(string musicId, string level)
+        {
+            var capitalQuery = _fs.CollectionGroup("scores")
+                .WhereEqualTo("music_id", _fs.Collection("musics").Document(musicId))
+                .WhereEqualTo("level", level)
+                .WhereEqualTo("active", true)
+                .OrderByDescending("total_score")
+                .Limit(10);
+
+            var iEnumerator = _ReadDoc(capitalQuery);
+            yield return iEnumerator;
+
+            var querySnapshot = (QuerySnapshot) iEnumerator.Current;
+            if (querySnapshot == null)
+            {
+                OnErrorOccured.Invoke("通信に失敗しました\nインターネットの接続状況を確認してください");
+                yield break;
+            }
+
+            var scoreList = new Score[querySnapshot.Count];
+
+            foreach (var documentSnapshot in querySnapshot.Documents.Select((v, i) => new {Value = v, Index = i}))
+                scoreList[documentSnapshot.Index] =
+                    documentSnapshot.Value.ConvertTo<Score>(ServerTimestampBehavior.Estimate);
+
+            yield return scoreList;
+        }
+
+        private IEnumerator _GetUserFromRef(DocumentReference documentReference)
+        {
+            var iEnumerator = _ReadDoc(documentReference);
+            yield return iEnumerator;
+
+            var documentSnapshot = (DocumentSnapshot) iEnumerator.Current;
+            if (documentSnapshot == null)
+            {
+                OnErrorOccured.Invoke("通信に失敗しました\nインターネットの接続状況を確認してください");
+                yield break;
+            }
+
+            yield return documentSnapshot.ConvertTo<User>();
         }
     }
 }
