@@ -35,6 +35,7 @@ namespace StartupScene
                     else
                     {
                         _auth.UpdateDisplayName(View.Instance.DisplayNameInputField);
+                        StartCoroutine(UpdateDisplayName());
                         View.Instance.setNicknameRegistrationModalVisible = false;
                         StartCoroutine(_TransitionToSelectScene());
                     }
@@ -96,6 +97,21 @@ namespace StartupScene
                 View.Instance.setAccountLinkageModalVisible = true;
                 _isFirstRegistration = true;
             }
+        }
+
+        private IEnumerator UpdateDisplayName()
+        {
+            var fs = new FirestoreHandler();
+
+            // // エラー発生時に実行する処理を登録
+            // fs.OnErrorOccured += error =>
+            // {
+            //     // TODO: エラーをユーザに伝える
+            //     Debug.Log(error);
+            // };
+            
+            var ie = fs.UpdateDisplayName(_auth.GetUser(), View.Instance.DisplayNameInputField);
+            yield return ie;
         }
 
         private IEnumerator _TransitionToSelectScene()

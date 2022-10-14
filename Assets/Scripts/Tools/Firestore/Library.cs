@@ -124,6 +124,19 @@ namespace Tools.Firestore
             yield return iEnumerator;
         }
 
+        private IEnumerator _UpdateDisplayName(FirebaseUser user, string displayName)
+        {
+            var documentReference = _fs.Collection("users").Document(user.UserId);
+
+            var updates = new Dictionary<string, object>
+            {
+                {"display_name", displayName},
+            };
+
+            var iEnumerator = _UpdateDoc(documentReference, updates);
+            yield return iEnumerator;
+        }
+
         private IEnumerator _GetRankingList(string musicId, string level)
         {
             var capitalQuery = _fs.CollectionGroup("scores")

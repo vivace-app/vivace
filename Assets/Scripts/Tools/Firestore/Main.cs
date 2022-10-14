@@ -13,8 +13,11 @@ namespace Tools.Firestore
 
         public IEnumerator UpdateLastLoggedIn(FirebaseUser user) => _UpdateLastLoggedIn(user);
 
+        public IEnumerator UpdateDisplayName(FirebaseUser user, string displayName) =>
+            _UpdateDisplayName(user, displayName);
+
         public IEnumerator GetRankingList(string musicId, string level) => _GetRankingList(musicId, level);
-        
+
         public IEnumerator GetUserFromRef(DocumentReference documentReference) => _GetUserFromRef(documentReference);
 
         public event Action<string> OnErrorOccured;
