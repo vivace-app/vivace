@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections;
-using Firebase.Auth;
 using Tools.AssetBundle;
 using Tools.Authentication;
 using Tools.Firestore.Model;
+using Tools.PlayStatus;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace SelectScene
@@ -46,7 +47,8 @@ namespace SelectScene
             ArtworkCloner();
             AttachArtworks();
             AttachPreviewMusics();
-            View.Instance.Achievement = new[] { 3, 2, 1, 1 };
+            View.Instance.Achievement = new[] {3, 2, 1, 1};
+            View.Instance.PlayCustomButton = () => SceneManager.LoadScene("PlayScene");
         }
 
         private void Update()
@@ -67,6 +69,8 @@ namespace SelectScene
                 View.Instance.ArtworkContentGameObject.transform.GetChild(i).GetComponent<RectTransform>()
                     .sizeDelta = new Vector2(View.Instance.ArtworkHeight * 1.5f, View.Instance.ArtworkHeight * 1.5f);
 
+                var playStatusHandler = new PlayStatusHandler();
+                PlayStatusHandler.SetSelectedMusic(i);
                 PlaySelectedMusic(i);
                 DisplayMusicData(i);
 

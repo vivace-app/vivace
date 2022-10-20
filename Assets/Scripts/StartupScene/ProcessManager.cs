@@ -16,6 +16,8 @@ namespace StartupScene
 
         private bool _hasPressedStartButton;
         private bool _isFirstRegistration;
+        
+        // TODO: Firestore displayName == null の時, Modal表示
 
         private void Start()
         {

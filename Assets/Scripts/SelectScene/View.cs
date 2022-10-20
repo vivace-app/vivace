@@ -23,6 +23,7 @@ namespace SelectScene
         [SerializeField] private CustomButton betaCustomButton;
         [SerializeField] private CustomButton supportCustomButton;
         [SerializeField] private CustomButton titleCustomButton;
+        [SerializeField] private CustomButton playCustomButton;
 
         [SerializeField] private GameObject artworkContentGameObject;
         [SerializeField] private GameObject artworkTemplateGameObject;
@@ -157,6 +158,11 @@ namespace SelectScene
         public Action ProfileCustomButton
         {
             set => profileCustomButton.onClickCallback = value;
+        }
+
+        public Action PlayCustomButton
+        {
+            set => playCustomButton.onClickCallback = value;
         }
     }
 }

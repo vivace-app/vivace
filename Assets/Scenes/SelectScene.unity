@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4439403, g: 0.4931519, b: 0.5722083, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657815, g: 0.49641192, b: 0.57481617, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3913,6 +3913,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offGraphic: {fileID: 299330868}
+  level: 1
 --- !u!114 &901507035
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4056,6 +4057,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offGraphic: {fileID: 498019455}
+  level: 3
 --- !u!114 &927776644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4565,6 +4567,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offGraphic: {fileID: 1541245338}
+  level: 0
 --- !u!114 &1045464375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5158,6 +5161,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offGraphic: {fileID: 630854116}
+  level: 2
 --- !u!114 &1135960693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5782,6 +5786,7 @@ MonoBehaviour:
   betaCustomButton: {fileID: 333227240}
   supportCustomButton: {fileID: 187170003}
   titleCustomButton: {fileID: 1443973329}
+  playCustomButton: {fileID: 1258595157}
   artworkContentGameObject: {fileID: 901220278}
   artworkTemplateGameObject: {fileID: 1217018819}
   menuModal: {fileID: 706907101}
