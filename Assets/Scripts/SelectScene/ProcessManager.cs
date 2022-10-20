@@ -26,6 +26,7 @@ namespace SelectScene
         private float _scrolledPosition;
         private int _selectedMusic;
 
+        private void Awake() => Application.targetFrameRate = 60;
 
         private void Start()
         {

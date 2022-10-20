@@ -19,6 +19,8 @@ namespace StartupScene
         
         // TODO: Firestore displayName == null の時, Modal表示
 
+        private void Awake() => Application.targetFrameRate = 60;
+        
         private void Start()
         {
             if (Application.isEditor) LocaleSetting.ChangeSelectedLocale("ja");

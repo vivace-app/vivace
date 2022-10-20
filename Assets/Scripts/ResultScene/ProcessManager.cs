@@ -9,6 +9,8 @@ namespace ResultScene
 {
     public class ProcessManager : MonoBehaviour
     {
+        private void Awake() => Application.targetFrameRate = 60;
+
         private void Start()
         {
             if (Application.isEditor) LocaleSetting.ChangeSelectedLocale("ja");
