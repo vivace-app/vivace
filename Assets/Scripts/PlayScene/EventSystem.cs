@@ -1,4 +1,3 @@
-using Project.Scripts.PlayScene;
 using UnityEngine;
 using UnityEngine.EventSystems;
 

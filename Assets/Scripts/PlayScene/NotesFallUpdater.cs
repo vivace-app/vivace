@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Project.Scripts.PlayScene
+namespace PlayScene
 {
     public class NotesFallUpdater : MonoBehaviour
     {

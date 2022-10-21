@@ -15,6 +15,12 @@ namespace Tools.AssetBundle
         public static UnityEngine.AssetBundle[] GetAssetBundles() => _assetBundles;
 
         /// <summary>
+        ///   ダウンロードした AssetBundle の Index 番目を返します.
+        ///   AssetBundle のダウンロード完了後に アクセスする必要があります.
+        /// </summary>
+        public static UnityEngine.AssetBundle GetAssetBundle(int index) => _assetBundles[index];
+
+        /// <summary>
         ///   AssetBundle に対応する Musicリスト を返します.
         /// </summary>
         public static Music[] GetMusics() => _musics;

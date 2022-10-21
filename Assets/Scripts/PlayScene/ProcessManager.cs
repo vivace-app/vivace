@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using PlayScene;
 using Project.Scripts.Model;
+using SelectScreen;
+using Tools.AssetBundle;
+using Tools.PlayStatus;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace Project.Scripts.PlayScene
+namespace PlayScene
 {
     public class PlaySceneProcessManager : MonoBehaviour
     {
@@ -27,6 +27,14 @@ namespace Project.Scripts.PlayScene
 
         private void Start()
         {
+            Debug.Log(PlayStatusHandler.GetSelectedLevel());
+            Debug.Log(PlayStatusHandler.GetSelectedMusic());
+
+            var index = PlayStatusHandler.GetSelectedMusic();
+            var assetBundle = AssetBundleHandler.GetAssetBundle(index);
+            var musicName = assetBundle.name;
+            View.Instance.BgmAudioClip = assetBundle.LoadAsset<AudioClip>(musicName);
+
             var jsonFile = Resources.Load("burning_heart_hard") as TextAsset;
             if (!jsonFile) throw new Exception("譜面データが無効です");
             var inputString = jsonFile.ToString();
@@ -93,6 +101,8 @@ namespace Project.Scripts.PlayScene
             //InvokeRepeating("Metro", 1, 60f / MusicData.BPM);
             Invoke(nameof(BGMStart), 2); // ノーツ再生から3秒待たなければならない
         }
+        
+        private void BGMStart() => View.Instance.BgmAudioSource.Play();
 
         [SerializeField] private GameObject noteObject;
         [SerializeField] private GameObject preNoteObject;
@@ -255,119 +265,29 @@ namespace Project.Scripts.PlayScene
                 }
             }
         }
-
-        // static void Metro()
-        // {
-        // }
-
-        static void Success(int type)
-        {
-            // metro.Stop();
-            //success.Stop();
-            SoundManager.instance.PlaySuccess();
-            // else SoundManager.instance.PlayFlick();
-        }
-
-        void Bad()
-        {
-            //metro.Stop();
-            SoundManager.instance.PlayBad();
-        }
-
-        // void LoadNotes(MusicJson music)
-        // {
-        //     Object preNoteObject = Resources.Load("Notes");
-        //     Object noteObjectF = Resources.Load("FrickNotes");
-        //
-        //     for (int i = 0; i < music.maxBlock; i++)
-        //     {
-        //         _notes.Add(new List<Note>());
-        //     }
-        //
-        //     for (int i = 0; i < music.notes.Length; i++)
-        //     {
-        //         Note firstNote = new Note();
-        //         Note nextNote = new Note();
-        //         firstNote.lpb = music.notes[i].LPB;
-        //         firstNote.num = music.notes[i].num;
-        //         firstNote.block = music.notes[i].block;
-        //         firstNote.type = music.notes[i].type;
-        //         //Debug.Log(firstNote.num);
-        //         float a = 60f * firstNote.num;
-        //         float b = Music.bpm * firstNote.lpb;
-        //         firstNote.timing = a / b;
-        //         //Debug.Log(i + " " + a);
-        //         //Debug.Log(i + " " + b);
-        //         //Debug.Log(i + " " + firstNote.block + " " + firstNote.timing);
-        //         firstNote.noteObjects = new List<GameObject>();
-        //         _notes[firstNote.block].Add(firstNote);
-        //         if (music.notes[i].notes.Length == 1)
-        //         {
-        //             nextNote.lpb = music.notes[i].notes[0].LPB;
-        //             nextNote.num = music.notes[i].notes[0].num;
-        //             nextNote.block = music.notes[i].notes[0].block;
-        //             nextNote.type = music.notes[i].notes[0].type;
-        //             a = 60f * nextNote.num;
-        //             b = Music.bpm * nextNote.lpb;
-        //             nextNote.timing = a / b;
-        //             _notes[nextNote.block].Add(nextNote);
-        //         }
-        //
-        //         if (firstNote.type == 1) // 生成は別のところで
-        //         {
-        //             firstNote.noteObjects.Add((GameObject) Instantiate(preNoteObject,
-        //                 new Vector3(-0.9f + laneWidth * firstNote.block,
-        //                     NotesFallUpdater.speed * firstNote.timing + _offset, -0.005f), new Quaternion(0, 0, 0, 0)));
-        //         }
-        //         else if (firstNote.type == 2)
-        //         {
-        //             firstNote.noteObjects = lng.Create(firstNote.block, nextNote.block, firstNote.timing, nextNote.timing);
-        //         }
-        //         else if (firstNote.type == 5)
-        //         {
-        //             firstNote.noteObjects.Add((GameObject) Instantiate(noteObjectF,
-        //                 new Vector3(-0.9f + laneWidth * firstNote.block,
-        //                     NotesFallUpdater.speed * firstNote.timing + _offset, -0.005f), new Quaternion(0, 0, 0, 0)));
-        //         }
-        //     }
-        //
-        //     for (int i = 0; i < _notes.Count; i++)
-        //         _notes[i].OrderBy(item => item.timing);
-        //
-        //     //Debug.Log(_notes[0][0].block + _notes[0][0].timing);
-        //     //Debug.Log(_notes[0][1].block + _notes[0][1].timing);
-        // }
-
-        void BGMStart()
-        {
-            bgm.Play();
-            //isPose = false;
-        }
-
+        
         public static void JudgeTiming(int lineNum, int type)
         {
-            // Debug.Log("LANE: " + lineNum);
-            var note = _generatedNotes[lineNum].Find(n => Mathf.Abs(n.timing - musicTime) <= 0.5f && n.type == type);
+            var note = _generatedNotes[lineNum].Find(n => Mathf.Abs(n.timing - musicTime) <= 0.3f && n.type == type);
             if (note != null)
             {
-                //Debug.Log("OK!: " + musicTime + " " + lineNum);
-                Success(note.type);
-                // if (note.noteObjects != null && note.noteObjects[0] != null && note.type != 2) Destroy(note.noteObjects[0]);
+                SoundManager.instance.PlayPerfect();
                 _generatedNotes[lineNum].Remove(note);
                 return;
             }
-            else
+            
+            note = _generatedNotes[lineNum].Find(n => Mathf.Abs(n.timing - musicTime) <= 0.4f && n.type == type);
+            if (note != null)
             {
-                //Debug.Log("Failed.: " + musicTime + " " + lineNum);
-                //Bad();
+                SoundManager.instance.PlayGreat();
+                _generatedNotes[lineNum].Remove(note);
+                return;
             }
-
-            if (type == 5)
-                JudgeTiming(lineNum, 2);
-
-            if (type == 1)
-                JudgeTiming(lineNum, 2);
-            // 5のときは判定して見つからなければ2を考える
+            
+            note = _generatedNotes[lineNum].Find(n => Mathf.Abs(n.timing - musicTime) <= 0.5f && n.type == type);
+            if (note == null) return;
+            SoundManager.instance.PlayGood();
+            _generatedNotes[lineNum].Remove(note);
         }
     }
 }

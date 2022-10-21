@@ -7,14 +7,14 @@ namespace PlayScene
     {
         public static SoundManager instance;
     
-        [SerializeField] private CriAtomSource criAtomSourceBad;
+        [SerializeField] private CriAtomSource criAtomSourceGood;
         [SerializeField] private CriAtomSource criAtomSourceGreat;
         [SerializeField] private CriAtomSource criAtomSourcePerfect;
 
         public void Awake() => instance ??= this;
 
-        public void PlayBad() => criAtomSourceBad.Play();
+        public void PlayGood() => criAtomSourceGood.Play();
         public void PlayGreat() => criAtomSourceGreat.Play();
-        public void PlaySuccess() => criAtomSourcePerfect.Play();
+        public void PlayPerfect() => criAtomSourcePerfect.Play();
     }
 }
