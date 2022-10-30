@@ -11,11 +11,11 @@ namespace PlayScene
         private void FixedUpdate()
         {
             if (gameObject.activeSelf) transform.position += _fallSpeed * Time.deltaTime;
-            if (transform.position.y <= -2f)
-            {
-                gameObject.SetActive(false);
-                ProcessManager.AddScore(3);
-            }
+            // if (transform.position.y <= -2f)
+            // {
+            //     gameObject.SetActive(false);
+            //     ProcessManager.AddScore(3);
+            // }
         }
     }
 }

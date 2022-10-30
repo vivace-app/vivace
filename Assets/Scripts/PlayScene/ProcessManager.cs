@@ -34,11 +34,14 @@ namespace PlayScene
             Debug.Log(PlayStatusHandler.GetSelectedMusic());
 
             var index = PlayStatusHandler.GetSelectedMusic();
+            var level = PlayStatusHandler.GetSelectedLevel();
             var assetBundle = AssetBundleHandler.GetAssetBundle(index);
             var musicName = assetBundle.name;
             View.Instance.BgmAudioClip = assetBundle.LoadAsset<AudioClip>(musicName);
 
-            var jsonFile = Resources.Load("burning_heart_hard") as TextAsset;
+            // Debug.Log(musicName + "_" + level.ToString().ToLower());
+            // var jsonFile = assetBundle.LoadAsset<TextAsset>(musicName + "_" + level.ToString().ToLower());
+            var jsonFile = Resources.Load("maiden_voyage") as TextAsset;
             if (!jsonFile) throw new Exception("譜面データが無効です");
             var inputString = jsonFile.ToString();
             music = JsonUtility.FromJson<Music>(inputString);
@@ -163,16 +166,19 @@ namespace PlayScene
 
                         /* ロングノーツ */
                         case 2:
-                            // if (generateNote.tailNote != null)
-                            // {
-                            //     lng.Create(generateNote.block, generateNote.tailNote.block,
-                            //         generateNote.timing,
-                            //         generateNote.tailNote.timing);
-                            // }
+                            if (generateNote.tailNote != null)
+                            {
+                                LongNotesGenerator.instance.Create(generateNote.block, generateNote.tailNote.block,
+                                    generateNote.timing,
+                                    generateNote.tailNote.timing);
+                            }
                             break;
 
                         /* フリックノーツ */
                         case 3:
+                        case 4:
+                        case 5:
+                        case 6:
                             NoteGenerator(generateNote.block, 3, generateNote);
                             // Instantiate(noteObjectF,
                             //     new Vector3(-0.9f + laneWidth * generateNote.block,
@@ -245,7 +251,7 @@ namespace PlayScene
                                 new Vector3(-0.9f + laneWidth * lane, 6.4f, -0.005f);
                             _normalNotesGameObjects[lane][i].SetActive(true);
                             convertedNote.LinkGameObject(_normalNotesGameObjects[lane][i]);
-                            
+
                             return;
                         }
 
@@ -275,7 +281,8 @@ namespace PlayScene
 
         public static void JudgeTiming(int lineNum, int type, bool second = false)
         {
-            var note1 = _generatedNotes[lineNum].Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.07f && n.type == type);
+            var note1 = _generatedNotes[lineNum]
+                .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.07f && n.type == type);
             if (note1 != null)
             {
                 SoundManager.instance.PlayPerfect();
@@ -284,8 +291,9 @@ namespace PlayScene
                 AddScore(0);
                 return;
             }
-            
-            var note2 = _generatedNotes[lineNum].Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.12f && n.type == type);
+
+            var note2 = _generatedNotes[lineNum]
+                .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.12f && n.type == type);
             if (note2 != null)
             {
                 SoundManager.instance.PlayGreat();
@@ -295,7 +303,8 @@ namespace PlayScene
                 return;
             }
 
-            var note3 = _generatedNotes[lineNum].Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.15f && n.type == type);
+            var note3 = _generatedNotes[lineNum]
+                .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.15f && n.type == type);
             if (note3 == null) return;
             SoundManager.instance.PlayGood();
             note3.Destroy();
@@ -315,7 +324,7 @@ namespace PlayScene
         private static int _miss;
         private static float _baseScore;
         private static float[] _logSq;
-        
+
         private const int SepPoint = 50;
 
 
@@ -426,8 +435,8 @@ namespace PlayScene
             // }
             // else
             // {
-                _score += scoreTemp;
-                View.Instance.ScoreText = _score;
+            _score += scoreTemp;
+            View.Instance.ScoreText = _score;
             // }
 
             //  ↓なんで!=じゃないんだっけ
