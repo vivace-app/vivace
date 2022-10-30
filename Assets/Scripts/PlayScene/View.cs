@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -10,17 +9,10 @@ namespace PlayScene
         public static View Instance;
 
         [SerializeField] private AudioSource bgmAudioSource;
-        
-        [SerializeField] private CustomButton retryButton;
-        [SerializeField] private CustomButton exitButton;
 
-        [SerializeField] private TextMeshProUGUI[] nicknameText;
-        [SerializeField] private TextMeshProUGUI[] scoreText;
-        [SerializeField] private TextMeshProUGUI perfectScoreText;
-        [SerializeField] private TextMeshProUGUI greatScoreText;
-        [SerializeField] private TextMeshProUGUI goodScoreText;
-        [SerializeField] private TextMeshProUGUI missScoreText;
-        [SerializeField] private TextMeshProUGUI totalScoreText;
+        [SerializeField] private TextMeshProUGUI comboText;
+        [SerializeField] private TextMeshProUGUI scoreText;
+
 
         private void Awake()
         {
@@ -34,57 +26,14 @@ namespace PlayScene
             set => bgmAudioSource.clip = value;
         }
 
-        public Action RetryButtonAction
+        public int ComboText
         {
-            set => retryButton.onClickCallback = value;
+            set => comboText.text = value.ToString("D");
         }
 
-        public Action ExitButtonAction
+        public float ScoreText
         {
-            set => exitButton.onClickCallback = value;
-        }
-
-        public string[] NameText
-        {
-            set
-            {
-                foreach (var (item, index) in nicknameText.Select((item, index) => (item, index)))
-                    item.text = value[index];
-            }
-        }
-
-        public string[] ScoreText
-        {
-            set
-            {
-                foreach (var (item, index) in scoreText.Select((item, index) => (item, index)))
-                    item.text = value[index];
-            }
-        }
-
-        public string PerfectScoreText
-        {
-            set => perfectScoreText.text = value;
-        }
-
-        public string GreatScoreText
-        {
-            set => greatScoreText.text = value;
-        }
-
-        public string GoodScoreText
-        {
-            set => goodScoreText.text = value;
-        }
-
-        public string MissScoreText
-        {
-            set => missScoreText.text = value;
-        }
-
-        public string TotalScoreText
-        {
-            set => totalScoreText.text = value;
+            set => scoreText.text = ((int) Math.Round(value, 0, MidpointRounding.AwayFromZero)).ToString("D7");
         }
     }
 }

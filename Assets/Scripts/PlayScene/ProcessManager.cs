@@ -2,20 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using Project.Scripts.Model;
-using SelectScreen;
 using Tools.AssetBundle;
 using Tools.PlayStatus;
 using UnityEngine;
 
 namespace PlayScene
 {
-    public class PlaySceneProcessManager : MonoBehaviour
+    public class ProcessManager : MonoBehaviour
     {
         // static List<List<Note>> _notes = new List<List<Note>>(); // 2次元リスト
         static float laneWidth = 0.3f; //レーンの太さ( = ノーツの太さ )
         float _offset = 1.5f * NotesFallUpdater.Speed;
         public static bool isPose { get; private set; } = true;
+
         static float musicTime;
+
+        private static Music music;
+
         // [SerializeField] LongNotesGenerator lng;
         [SerializeField] AudioSource bgm;
 
@@ -38,7 +41,7 @@ namespace PlayScene
             var jsonFile = Resources.Load("burning_heart_hard") as TextAsset;
             if (!jsonFile) throw new Exception("譜面データが無効です");
             var inputString = jsonFile.ToString();
-            var music = JsonUtility.FromJson<Music>(inputString);
+            music = JsonUtility.FromJson<Music>(inputString);
 
             /*
              * _queueNotes[0] には、0番目のレーンのノーツ生成情報が リスト（ConvertedNotes）型 で格納されている。
@@ -93,6 +96,7 @@ namespace PlayScene
                 _queueNotes[i] = _queueNotes[i].OrderBy(item => item.timing).ToList();
 
             NoteObjectInitializer();
+            BaseScoreCalculation();
 
             musicTime = -2f;
             isPose = false;
@@ -101,7 +105,7 @@ namespace PlayScene
             //InvokeRepeating("Metro", 1, 60f / MusicData.BPM);
             Invoke(nameof(BGMStart), 2); // ノーツ再生から3秒待たなければならない
         }
-        
+
         private void BGMStart() => View.Instance.BgmAudioSource.Play();
 
         [SerializeField] private GameObject noteObject;
@@ -133,7 +137,7 @@ namespace PlayScene
                 /* ${2} 秒以内に判定ラインに到達させるべきノーツを抽出する */
                 // TODO: LinQ -> for / foreach に変更
                 var generateNotes = _queueNotes[i]
-                    .Where(generateNote => generateNote.timing <= musicTime + 0.95)
+                    .Where(generateNote => generateNote.timing <= musicTime + 1.25)
                     .ToList();
 
                 // _generatedNotes[i] = _generatedNotes[i].Union(generateNotes).ToList(); 間違い
@@ -149,7 +153,7 @@ namespace PlayScene
                     {
                         /* 通常ノーツ */
                         case 1:
-                            NoteGenerator(generateNote.block, 1);
+                            NoteGenerator(generateNote.block, 1, generateNote);
                             // Instantiate(preNoteObject,
                             //     new Vector3(-0.9f + laneWidth * filteredGenerateNote.block,
                             //         // NotesFallUpdater.speed * generateNote.timing + _offset, -0.005f), // TODO
@@ -169,7 +173,7 @@ namespace PlayScene
 
                         /* フリックノーツ */
                         case 3:
-                            NoteGenerator(generateNote.block, 3);
+                            NoteGenerator(generateNote.block, 3, generateNote);
                             // Instantiate(noteObjectF,
                             //     new Vector3(-0.9f + laneWidth * generateNote.block,
                             //         // NotesFallUpdater.speed * generateNote.timing + _offset, -0.005f), // TODO
@@ -228,7 +232,7 @@ namespace PlayScene
             //         new Quaternion(0, 0, 0, 0));
         }
 
-        private void NoteGenerator(int lane, int type)
+        private void NoteGenerator(int lane, int type, ConvertedNotes convertedNote)
         {
             switch (type)
             {
@@ -240,6 +244,8 @@ namespace PlayScene
                             _normalNotesGameObjects[lane][i].transform.position =
                                 new Vector3(-0.9f + laneWidth * lane, 6.4f, -0.005f);
                             _normalNotesGameObjects[lane][i].SetActive(true);
+                            convertedNote.LinkGameObject(_normalNotesGameObjects[lane][i]);
+                            
                             return;
                         }
 
@@ -255,6 +261,7 @@ namespace PlayScene
                             _flickNotesGameObjects[lane][i].transform.position =
                                 new Vector3(-0.9f + laneWidth * lane, 6.4f, -0.005f);
                             _flickNotesGameObjects[lane][i].SetActive(true);
+                            convertedNote.LinkGameObject(_flickNotesGameObjects[lane][i]);
                         }
                         else
                         {
@@ -265,29 +272,172 @@ namespace PlayScene
                 }
             }
         }
-        
-        public static void JudgeTiming(int lineNum, int type)
+
+        public static void JudgeTiming(int lineNum, int type, bool second = false)
         {
-            var note = _generatedNotes[lineNum].Find(n => Mathf.Abs(n.timing - musicTime) <= 0.3f && n.type == type);
-            if (note != null)
+            var note1 = _generatedNotes[lineNum].Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.07f && n.type == type);
+            if (note1 != null)
             {
                 SoundManager.instance.PlayPerfect();
-                _generatedNotes[lineNum].Remove(note);
+                note1.Destroy();
+                _generatedNotes[lineNum].Remove(note1);
+                AddScore(0);
                 return;
             }
             
-            note = _generatedNotes[lineNum].Find(n => Mathf.Abs(n.timing - musicTime) <= 0.4f && n.type == type);
-            if (note != null)
+            var note2 = _generatedNotes[lineNum].Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.12f && n.type == type);
+            if (note2 != null)
             {
                 SoundManager.instance.PlayGreat();
-                _generatedNotes[lineNum].Remove(note);
+                note2.Destroy();
+                _generatedNotes[lineNum].Remove(note2);
+                AddScore(1);
                 return;
             }
-            
-            note = _generatedNotes[lineNum].Find(n => Mathf.Abs(n.timing - musicTime) <= 0.5f && n.type == type);
-            if (note == null) return;
+
+            var note3 = _generatedNotes[lineNum].Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.15f && n.type == type);
+            if (note3 == null) return;
             SoundManager.instance.PlayGood();
-            _generatedNotes[lineNum].Remove(note);
+            note3.Destroy();
+            _generatedNotes[lineNum].Remove(note3);
+            AddScore(2);
+
+            if (second) return;
+            if (lineNum - 1 >= 0) JudgeTiming(lineNum - 1, type, true);
+            if (lineNum + 1 <= 6) JudgeTiming(lineNum + 1, type, true);
+        }
+
+        private static int _combo;
+        private static float _score;
+        private static int _perfect;
+        private static int _great;
+        private static int _good;
+        private static int _miss;
+        private static float _baseScore;
+        private static float[] _logSq;
+        
+        private const int SepPoint = 50;
+
+
+        /// <summary>
+        /// 区分求積法によるスコア計算の値を用意しておきます．
+        /// </summary>
+        private void BaseScoreCalculation()
+        {
+            _logSq = new float[SepPoint];
+
+            var logSqSum = 0f;
+
+            var denominator = music.notes.Length >= SepPoint ? SepPoint : music.notes.Length;
+
+            for (var i = 0; i < denominator; i++)
+            {
+                _logSq[i] = (float) Math.Log10(1 + (9 * ((float) i + 1) / denominator));
+                logSqSum += _logSq[i];
+            }
+
+            _baseScore = 1000000 / (logSqSum + music.notes.Length - denominator);
+        }
+
+        /// <summary>
+        /// スコアを加算します．
+        /// </summary>
+        public static async void AddScore(int num) // 0：Perfect，1：Great，2：Good，3：Miss
+        {
+            float magni = 0, scoreTemp = 0;
+            // float jTextTemp = ++_jTextCounter;
+            var vl = new Vector3(1.5f, 1.5f, 1.5f);
+            var vo = Vector3.one;
+
+            // アニメーションの初期化
+            // _jTextFade?.Kill();
+            // _jTextReduce?.Kill();
+            // _aTextFade?.Kill();
+            // _aTextReduce?.Kill();
+
+            switch (num)
+            {
+                case 0:
+                    magni = 1;
+                    _combo++;
+                    _perfect++;
+                    // judgeText.transform.localScale = vl;
+                    // _jTextReduce = judgeText.transform.DOScale(vo, 0.2f);
+                    // judgeText.color = _perfectC;
+                    // judgeText.text = "Perfect!";
+                    break;
+                case 1:
+                    magni = 0.75f;
+                    _combo++;
+                    _great++;
+                    // judgeText.transform.localScale = vl;
+                    // _jTextReduce = judgeText.transform.DOScale(vo, 0.2f);
+                    // judgeText.color = _greatC;
+                    // judgeText.text = "Great!";
+                    break;
+                case 2:
+                    magni = 0.25f;
+                    _combo = 0;
+                    _good++;
+                    // judgeText.transform.localScale = vo;
+                    // judgeText.color = _goodC;
+                    // judgeText.text = "Good!";
+                    break;
+                case 3:
+                    magni = 0;
+                    _combo = 0;
+                    _miss++;
+                    // judgeText.transform.localScale = vo;
+                    // judgeText.color = _goodC;
+                    // judgeText.text = "Good!";
+                    break;
+            }
+
+            // コンボ数を更新
+            View.Instance.ComboText = _combo;
+
+            // 区分求積法による加算スコアの計算
+            scoreTemp = (_combo <= SepPoint) switch
+            {
+                true when _combo > 0 => _baseScore * _logSq[_combo - 1] * magni,
+                true => _baseScore * _logSq[0] * magni,
+                _ => _baseScore * magni
+            };
+
+            if (_perfect == music.notes.Length) scoreTemp = 1000000 - _score; // floatへの変更でAP時に100万点にならないので強制代入
+
+            // 加算スコア表示の文字色を変更
+            // addText.color = _scoreC;
+            // 加算スコア表示の値を更新
+            // addText.text = "+" + ((int) Math.Round(scoreTemp, 0, MidpointRounding.AwayFromZero)).ToString("D");
+            // アニメーション
+            // addText.transform.localScale = vl;
+            // _aTextReduce = addText.transform.DOScale(vo, 0.2f);
+
+            // 軽量化設定によってはスコアのパラパラ表示を省略
+            // if (!_isLowGraphicsMode)
+            // {
+            //     for (var i = 0; i < 15; i++)
+            //     {
+            //         _score += scoreTemp / 15;
+            //         scoreText.text = ((int) Math.Round(_score, 0, MidpointRounding.AwayFromZero)).ToString("D7");
+            //         await Task.Delay(33);
+            //     }
+            // }
+            // else
+            // {
+                _score += scoreTemp;
+                View.Instance.ScoreText = _score;
+            // }
+
+            //  ↓なんで!=じゃないんだっけ
+            // if (_jTextCounter == jTextTemp) return;
+
+            // 250ms経過しても次のAddScoreが発生していなければフェードアウト処理
+            // await Task.Delay(250);
+            // if (_jTextCounter != jTextTemp) return;
+            // _jTextFade = DOTween.ToAlpha(() => judgeText.color, cchanger => judgeText.color = cchanger, 0.0f, 0.2f);
+            // _aTextFade = DOTween.ToAlpha(() => addText.color, cchanger => addText.color = cchanger, 0.0f, 0.2f);
         }
     }
 }

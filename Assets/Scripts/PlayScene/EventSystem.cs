@@ -7,6 +7,6 @@ namespace PlayScene
     {
         [SerializeField] private int lineNum;
 
-        public void PointerDown(BaseEventData _) => PlaySceneProcessManager.JudgeTiming(lineNum, 1);
+        public void PointerDown(BaseEventData _) => ProcessManager.JudgeTiming(lineNum, 1);
     }
 }

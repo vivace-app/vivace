@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311915, g: 0.3807396, b: 0.35872662, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3494,15 +3494,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bgmAudioSource: {fileID: 408659292}
-  retryButton: {fileID: 0}
-  exitButton: {fileID: 0}
-  nicknameText: []
-  scoreText: []
-  perfectScoreText: {fileID: 0}
-  greatScoreText: {fileID: 0}
-  goodScoreText: {fileID: 0}
-  missScoreText: {fileID: 0}
-  totalScoreText: {fileID: 0}
+  comboText: {fileID: 1423110262}
+  scoreText: {fileID: 496446413}
 --- !u!4 &1602511405
 Transform:
   m_ObjectHideFlags: 0

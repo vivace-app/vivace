@@ -1,6 +1,7 @@
 using System;
 using JetBrains.Annotations;
 using Project.Scripts.Tools;
+using UnityEngine;
 
 // ReSharper disable InconsistentNaming
 
@@ -31,8 +32,14 @@ namespace Project.Scripts.Model
          */
         public int type { get; }
 
+        private GameObject gameObject;
+
         /* 末尾ノーツ（ロングノーツの場合） */
         [CanBeNull] public ConvertedNotes tailNote { get; }
+
+        public void LinkGameObject(GameObject gameObject) => this.gameObject = gameObject;
+
+        public void Destroy() => gameObject.SetActive(false);
 
         public override string ToString() => this.ToStringReflection();
     }
