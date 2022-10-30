@@ -295,6 +295,19 @@ namespace PlayScene
                     return;
                 }
             }
+            else if (type == 2)
+            {
+                var lnote = _generatedNotes[lineNum]
+                    .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.12f && n.type == type);
+                if (lnote != null)
+                {
+                    SoundManager.instance.PlayPerfect();
+                    lnote.Destroy();
+                    _generatedNotes[lineNum].Remove(lnote);
+                    AddScore(1);
+                    return;
+                }
+            }
             else
             {
                 var note1 = _generatedNotes[lineNum]

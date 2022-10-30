@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 namespace PlayScene
@@ -27,8 +28,13 @@ namespace PlayScene
         //     isTouched = false;
         // }
         public void PointerDown(BaseEventData _) => ProcessManager.JudgeTiming(lineNum, 1);
+        
+        public void PointerExit(BaseEventData _) => ProcessManager.JudgeTiming(lineNum, 2);
 
         public void OnSwipe(Vector2 vector2) => ProcessManager.JudgeTiming(lineNum, 3);
+        
+        public void OnLongClickStart() => ProcessManager.JudgeTiming(lineNum, 2);
+        public void OnLongClickCancel() => ProcessManager.JudgeTiming(lineNum, 2);
 
         // public void PointerUp(BaseEventData baseEventData)
         // {
