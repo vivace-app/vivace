@@ -172,6 +172,7 @@ namespace PlayScene
                                     generateNote.timing,
                                     generateNote.tailNote.timing);
                             }
+
                             break;
 
                         /* フリックノーツ */
@@ -281,35 +282,51 @@ namespace PlayScene
 
         public static void JudgeTiming(int lineNum, int type, bool second = false)
         {
-            var note1 = _generatedNotes[lineNum]
-                .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.07f && n.type == type);
-            if (note1 != null)
+            if (type == 3)
             {
-                SoundManager.instance.PlayPerfect();
-                note1.Destroy();
-                _generatedNotes[lineNum].Remove(note1);
-                AddScore(0);
-                return;
+                var fnote = _generatedNotes[lineNum]
+                    .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.12f && n.type == type);
+                if (fnote != null)
+                {
+                    SoundManager.instance.PlayFlick();
+                    fnote.Destroy();
+                    _generatedNotes[lineNum].Remove(fnote);
+                    AddScore(1);
+                    return;
+                }
             }
-
-            var note2 = _generatedNotes[lineNum]
-                .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.12f && n.type == type);
-            if (note2 != null)
+            else
             {
-                SoundManager.instance.PlayGreat();
-                note2.Destroy();
-                _generatedNotes[lineNum].Remove(note2);
-                AddScore(1);
-                return;
-            }
+                var note1 = _generatedNotes[lineNum]
+                    .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.07f && n.type == type);
+                if (note1 != null)
+                {
+                    SoundManager.instance.PlayPerfect();
+                    note1.Destroy();
+                    _generatedNotes[lineNum].Remove(note1);
+                    AddScore(0);
+                    return;
+                }
 
-            var note3 = _generatedNotes[lineNum]
-                .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.15f && n.type == type);
-            if (note3 == null) return;
-            SoundManager.instance.PlayGood();
-            note3.Destroy();
-            _generatedNotes[lineNum].Remove(note3);
-            AddScore(2);
+                var note2 = _generatedNotes[lineNum]
+                    .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.12f && n.type == type);
+                if (note2 != null)
+                {
+                    SoundManager.instance.PlayGreat();
+                    note2.Destroy();
+                    _generatedNotes[lineNum].Remove(note2);
+                    AddScore(1);
+                    return;
+                }
+
+                var note3 = _generatedNotes[lineNum]
+                    .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.15f && n.type == type);
+                if (note3 == null) return;
+                SoundManager.instance.PlayGood();
+                note3.Destroy();
+                _generatedNotes[lineNum].Remove(note3);
+                AddScore(2);
+            }
 
             if (second) return;
             if (lineNum - 1 >= 0) JudgeTiming(lineNum - 1, type, true);
