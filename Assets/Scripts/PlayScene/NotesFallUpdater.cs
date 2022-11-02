@@ -9,6 +9,7 @@ namespace PlayScene
 
         private void FixedUpdate()
         {
+            if (ProcessManager.isPose) return;
             if (gameObject.activeSelf) transform.position += _fallSpeed * Time.deltaTime;
 
             if (!(transform.position.y <= -2f)) return;

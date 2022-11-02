@@ -7,6 +7,7 @@ using Tools.AssetBundle;
 using Tools.PlayStatus;
 using Tools.Score;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace PlayScene
 {
@@ -15,12 +16,12 @@ namespace PlayScene
         private const int LaneCount = 7; // レーンの数
         public const float LaneWidth = 0.3f; // レーンの太さ( = ノーツの太さ )
         public const float Speed = 5f;
-
-        private static bool _isPose = true;
+        
+        public static bool isPose = true;
         private static float _currentTime;
 
         private static Music _music;
-        
+
         [SerializeField] private GameObject normalNoteGameObject;
         [SerializeField] private GameObject flickNoteGameObject;
 
@@ -42,6 +43,17 @@ namespace PlayScene
             var assetBundle = AssetBundleHandler.GetAssetBundle(index);
             var musicName = assetBundle.name;
             View.instance.BgmAudioClip = assetBundle.LoadAsset<AudioClip>(musicName);
+            View.instance.setOnClickPauseCustomButtonAction = () =>
+            {
+                Pause();
+                View.instance.setPauseModalVisible = true;
+            };
+            View.instance.setOnClickCancelCustomButtonAction = () =>
+            {
+                Play();
+                View.instance.setPauseModalVisible = false;
+            };
+            View.instance.setOnClickGiveUpCustomButtonAction = () => SceneManager.LoadScene("SelectScene");
 
             // TODO: var jsonFile = assetBundle.LoadAsset<TextAsset>(musicName + "_" + level.ToString().ToLower());
             var jsonFile = Resources.Load("maiden_voyage_master_proto") as TextAsset;
@@ -67,30 +79,30 @@ namespace PlayScene
             _generatedNotes = new List<QueuedNote>[_music.maxBlock];
             for (var i = 0; i < _generatedNotes.Length; i++) _generatedNotes[i] = new List<QueuedNote>();
 
-            for (var i = 0; i < _music.notes.Length; i++)
+            foreach (var note in _music.notes)
             {
                 /*
                  * 1. ロングノーツの場合、tailNote に 最後尾ノーツを代入。
                  *    そうでない場合は、tailNote に null を代入。
                  */
-                var childNotesLength = _music.notes[i].notes.Length;
+                var childNotesLength = note.notes.Length;
 
                 var tailNote = childNotesLength > 0
-                    ? new QueuedNote(_music.notes[i].notes[childNotesLength - 1], _music.BPM)
+                    ? new QueuedNote(note.notes[childNotesLength - 1], _music.BPM)
                     : null;
 
                 /* （リストに追加） */
                 if (tailNote != null)
                 {
-                    var lane = _music.notes[i].notes[childNotesLength - 1].block;
+                    var lane = note.notes[childNotesLength - 1].block;
                     _queueNotes[lane].Add(tailNote);
                 }
 
                 /* 2. headNote に、先頭ノーツを代入（通常・フリックノーツ単体、またはロングノーツの始点） */
-                var headNote = new QueuedNote(_music.notes[i], _music.BPM, tailNote);
+                var headNote = new QueuedNote(note, _music.BPM, tailNote);
 
                 /* （リストに追加） */
-                _queueNotes[_music.notes[i].block].Add(headNote);
+                _queueNotes[note.block].Add(headNote);
             }
 
             for (var i = 0; i < _queueNotes.Length; i++)
@@ -99,13 +111,13 @@ namespace PlayScene
             PreGenerateNotes();
 
             _currentTime = -2f;
-            _isPose = false;
-            Invoke(nameof(BGMStart), 2);
+            isPose = false;
+            Invoke(nameof(Play), 2);
         }
 
         private void Update()
         {
-            if (!_isPose) _currentTime += Time.deltaTime;
+            if (!isPose) _currentTime += Time.deltaTime;
 
             for (var i = 0; i < _queueNotes.Length; i++)
             {
@@ -152,7 +164,17 @@ namespace PlayScene
             }
         }
 
-        private void BGMStart() => View.instance.BgmAudioSource.Play();
+        private void Play()
+        {
+            isPose = false;
+            View.instance.BgmAudioSource.Play();
+        }
+
+        private void Pause()
+        {
+            isPose = true;
+            View.instance.BgmAudioSource.Pause();
+        }
 
         /// <summary>
         /// 各レーンごとのGameObjectインスタンスをあらかじめ生成しておきます
