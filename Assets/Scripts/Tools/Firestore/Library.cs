@@ -156,11 +156,11 @@ namespace Tools.Firestore
                 yield break;
             }
 
-            var scoreList = new Score[querySnapshot.Count];
+            var scoreList = new Model.Score[querySnapshot.Count];
 
             foreach (var documentSnapshot in querySnapshot.Documents.Select((v, i) => new {Value = v, Index = i}))
                 scoreList[documentSnapshot.Index] =
-                    documentSnapshot.Value.ConvertTo<Score>(ServerTimestampBehavior.Estimate);
+                    documentSnapshot.Value.ConvertTo<Model.Score>(ServerTimestampBehavior.Estimate);
 
             yield return scoreList;
         }

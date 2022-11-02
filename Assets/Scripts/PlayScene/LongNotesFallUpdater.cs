@@ -1,28 +1,26 @@
+using Tools.Score;
 using UnityEngine;
 
 namespace PlayScene
 {
     public class LongNotesFallUpdater : MonoBehaviour
     {
-        public const float Speed = 5f;
-
-        private float height;
-
-        private readonly Vector3 _fallSpeed = new(0, -Speed, 0);
+        private readonly Vector3 _fallSpeed = new(0, -ProcessManager.Speed, 0);
+        private float _height;
 
         private void Start()
         {
-            var varticles = gameObject.GetComponent<MeshFilter>().mesh.vertices;
-            height = (varticles[2] - varticles[0]).y;
+            var vertices = gameObject.GetComponent<MeshFilter>().mesh.vertices;
+            _height = (vertices[2] - vertices[0]).y;
         }
 
         private void FixedUpdate()
         {
             if (gameObject.activeSelf) transform.position += _fallSpeed * Time.deltaTime;
 
-            if (!(transform.position.y <= -9f - height * 10)) return;
+            if (!(transform.position.y <= -9f - _height * 10)) return;
             Destroy(gameObject);
-            ProcessManager.AddScore(3);
+            ScoreHandler.AddScore(ScoreHandler.Judge.Miss);
         }
     }
 }
