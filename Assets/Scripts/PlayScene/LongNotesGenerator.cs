@@ -52,7 +52,7 @@ public class LongNotesGenerator : MonoBehaviour
             longNotesPart.AddComponent<MeshFilter>();
             longNotesPart.AddComponent<MeshRenderer>().material = longNotesFiller;
             longNotesPart.AddComponent<Rigidbody>().useGravity = false;
-            longNotesPart.AddComponent<NotesFallUpdater>();
+            longNotesPart.AddComponent<LongNotesFallUpdater>();
             longNotesPart.SetActive(true);
 
             Generate(curve[i], curve[i + 1], longNotesPart);

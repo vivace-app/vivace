@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using Project.Scripts.Tools;
 using UnityEngine;
@@ -32,14 +33,18 @@ namespace Project.Scripts.Model
          */
         public int type { get; }
 
-        private GameObject gameObject;
+        public List<GameObject> gameObjects { get; private set; }
 
         /* 末尾ノーツ（ロングノーツの場合） */
         [CanBeNull] public ConvertedNotes tailNote { get; }
 
-        public void LinkGameObject(GameObject gameObject) => this.gameObject = gameObject;
+        public void LinkGameObject(List<GameObject> gameObjects) => this.gameObjects = gameObjects;
 
-        public void Destroy() => gameObject.SetActive(false);
+        public void Destroy()
+        {
+            foreach (var gameObject in gameObjects)
+                gameObject.SetActive(false);
+        }
 
         public override string ToString() => this.ToStringReflection();
     }

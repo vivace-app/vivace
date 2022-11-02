@@ -41,7 +41,7 @@ namespace PlayScene
 
             // Debug.Log(musicName + "_" + level.ToString().ToLower());
             // var jsonFile = assetBundle.LoadAsset<TextAsset>(musicName + "_" + level.ToString().ToLower());
-            var jsonFile = Resources.Load("maiden_voyage") as TextAsset;
+            var jsonFile = Resources.Load("maiden_voyage_master_proto") as TextAsset;
             if (!jsonFile) throw new Exception("譜面データが無効です");
             var inputString = jsonFile.ToString();
             music = JsonUtility.FromJson<Music>(inputString);
@@ -168,9 +168,11 @@ namespace PlayScene
                         case 2:
                             if (generateNote.tailNote != null)
                             {
-                                LongNotesGenerator.instance.Create(generateNote.block, generateNote.tailNote.block,
+                                var notes = LongNotesGenerator.instance.Create(generateNote.block,
+                                    generateNote.tailNote.block,
                                     generateNote.timing,
                                     generateNote.tailNote.timing);
+                                generateNote.tailNote.LinkGameObject(notes);
                             }
 
                             break;
@@ -197,8 +199,8 @@ namespace PlayScene
         private List<List<GameObject>> _flickNotesGameObjects = new();
         // private GameObject[][] _flickNotesGameObjects;
 
-        private const int PreGenerateNormalNotesPerLane = 6;
-        private const int PreGenerateFlickNotesPerLane = 4;
+        private const int PreGenerateNormalNotesPerLane = 10;
+        private const int PreGenerateFlickNotesPerLane = 6;
 
         private void NoteObjectInitializer()
         {
@@ -251,7 +253,7 @@ namespace PlayScene
                             _normalNotesGameObjects[lane][i].transform.position =
                                 new Vector3(-0.9f + laneWidth * lane, 6.4f, -0.005f);
                             _normalNotesGameObjects[lane][i].SetActive(true);
-                            convertedNote.LinkGameObject(_normalNotesGameObjects[lane][i]);
+                            convertedNote.LinkGameObject(new List<GameObject> {_normalNotesGameObjects[lane][i]});
 
                             return;
                         }
@@ -268,19 +270,19 @@ namespace PlayScene
                             _flickNotesGameObjects[lane][i].transform.position =
                                 new Vector3(-0.9f + laneWidth * lane, 6.4f, -0.005f);
                             _flickNotesGameObjects[lane][i].SetActive(true);
-                            convertedNote.LinkGameObject(_flickNotesGameObjects[lane][i]);
+                            convertedNote.LinkGameObject(new List<GameObject> {_flickNotesGameObjects[lane][i]});
+
+                            return;
                         }
-                        else
-                        {
-                            Debug.LogError("メモリ不足");
-                        }
+
+                    Debug.LogError("メモリ不足");
 
                     break;
                 }
             }
         }
 
-        public static void JudgeTiming(int lineNum, int type, bool second = false)
+        public static bool JudgeTiming(int lineNum, int type, bool second = false)
         {
             if (type == 3)
             {
@@ -292,7 +294,7 @@ namespace PlayScene
                     fnote.Destroy();
                     _generatedNotes[lineNum].Remove(fnote);
                     AddScore(1);
-                    return;
+                    return true;
                 }
             }
             else if (type == 2)
@@ -305,7 +307,7 @@ namespace PlayScene
                     lnote.Destroy();
                     _generatedNotes[lineNum].Remove(lnote);
                     AddScore(1);
-                    return;
+                    return true;
                 }
             }
             else
@@ -318,7 +320,7 @@ namespace PlayScene
                     note1.Destroy();
                     _generatedNotes[lineNum].Remove(note1);
                     AddScore(0);
-                    return;
+                    return true;
                 }
 
                 var note2 = _generatedNotes[lineNum]
@@ -326,24 +328,28 @@ namespace PlayScene
                 if (note2 != null)
                 {
                     SoundManager.instance.PlayGreat();
-                    note2.Destroy();
+                    foreach (var gameObject in note2.gameObjects) Destroy(gameObject);
                     _generatedNotes[lineNum].Remove(note2);
                     AddScore(1);
-                    return;
+                    return true;
                 }
 
                 var note3 = _generatedNotes[lineNum]
                     .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.15f && n.type == type);
-                if (note3 == null) return;
-                SoundManager.instance.PlayGood();
-                note3.Destroy();
-                _generatedNotes[lineNum].Remove(note3);
-                AddScore(2);
+                if (note3 != null)
+                {
+                    SoundManager.instance.PlayGreat();
+                    note3.Destroy();
+                    _generatedNotes[lineNum].Remove(note3);
+                    AddScore(2);
+                    return true;
+                }
             }
 
-            if (second) return;
-            if (lineNum - 1 >= 0) JudgeTiming(lineNum - 1, type, true);
-            if (lineNum + 1 <= 6) JudgeTiming(lineNum + 1, type, true);
+            if (second) return false;
+            if (lineNum - 1 >= 0) return JudgeTiming(lineNum - 1, type, true);
+            if (lineNum + 1 <= 6) return JudgeTiming(lineNum + 1, type, true);
+            return false;
         }
 
         private static int _combo;
