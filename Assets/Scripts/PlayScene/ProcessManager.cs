@@ -13,7 +13,7 @@ namespace PlayScene
     public class ProcessManager : MonoBehaviour
     {
         private const int LaneCount = 7; // レーンの数
-        private const float LaneWidth = 0.3f; // レーンの太さ( = ノーツの太さ )
+        public const float LaneWidth = 0.3f; // レーンの太さ( = ノーツの太さ )
         public const float Speed = 5f;
 
         private static bool _isPose = true;
