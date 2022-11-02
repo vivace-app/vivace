@@ -20,7 +20,7 @@ namespace PlayScene
         {
             if (gameObject.activeSelf) transform.position += _fallSpeed * Time.deltaTime;
 
-            if (!(transform.position.y <= -8f - height * 10)) return;
+            if (!(transform.position.y <= -9f - height * 10)) return;
             Destroy(gameObject);
             ProcessManager.AddScore(3);
         }

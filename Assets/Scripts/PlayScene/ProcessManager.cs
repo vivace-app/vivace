@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Project.Scripts.Model;
 using Tools.AssetBundle;
 using Tools.PlayStatus;
@@ -304,7 +305,7 @@ namespace PlayScene
                 if (lnote != null)
                 {
                     SoundManager.instance.PlayPerfect();
-                    lnote.Destroy();
+                    foreach (var gameObject in lnote.gameObjects) Destroy(gameObject);
                     _generatedNotes[lineNum].Remove(lnote);
                     AddScore(1);
                     return true;
@@ -328,7 +329,7 @@ namespace PlayScene
                 if (note2 != null)
                 {
                     SoundManager.instance.PlayGreat();
-                    foreach (var gameObject in note2.gameObjects) Destroy(gameObject);
+                    note2.Destroy();
                     _generatedNotes[lineNum].Remove(note2);
                     AddScore(1);
                     return true;
