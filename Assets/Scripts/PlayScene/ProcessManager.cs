@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
+using Model;
 using Project.Scripts.Model;
 using Tools.AssetBundle;
 using Tools.PlayStatus;
@@ -12,351 +12,311 @@ namespace PlayScene
 {
     public class ProcessManager : MonoBehaviour
     {
+        private const int LaneCount = 7; // レーンの数
+        private const float LaneWidth = 0.3f; // レーンの太さ( = ノーツの太さ )
         public const float Speed = 5f;
 
-        // static List<List<Note>> _notes = new List<List<Note>>(); // 2次元リスト
-        static float laneWidth = 0.3f; //レーンの太さ( = ノーツの太さ )
-        float _offset = 1.5f * Speed;
-        public static bool isPose { get; private set; } = true;
+        private static bool _isPose = true;
+        private static float _currentTime;
 
-        static float musicTime;
+        private static Music _music;
+        
+        [SerializeField] private GameObject normalNoteGameObject;
+        [SerializeField] private GameObject flickNoteGameObject;
 
-        private static Music music;
+        private static List<QueuedNote>[] _queueNotes;
+        private static List<QueuedNote>[] _generatedNotes;
 
-        // [SerializeField] LongNotesGenerator lng;
-        [SerializeField] AudioSource bgm;
+        private readonly List<List<GameObject>> _preGenerateNormalNotes = new();
+        private readonly List<List<GameObject>> _preGenerateFlickNotes = new();
 
-        // private Music _notes = new();
-        private static List<ConvertedNotes>[] _queueNotes;
-        private static List<ConvertedNotes>[] _generatedNotes;
+        private const int PreGenerateNormalNotesPerLane = 10;
+        private const int PreGenerateFlickNotesPerLane = 6;
 
         private void Awake() => Application.targetFrameRate = 60;
 
         private void Start()
         {
-            Debug.Log(PlayStatusHandler.GetSelectedLevel());
-            Debug.Log(PlayStatusHandler.GetSelectedMusic());
-
             var index = PlayStatusHandler.GetSelectedMusic();
             var level = PlayStatusHandler.GetSelectedLevel();
             var assetBundle = AssetBundleHandler.GetAssetBundle(index);
             var musicName = assetBundle.name;
-            View.Instance.BgmAudioClip = assetBundle.LoadAsset<AudioClip>(musicName);
+            View.instance.BgmAudioClip = assetBundle.LoadAsset<AudioClip>(musicName);
 
-            // Debug.Log(musicName + "_" + level.ToString().ToLower());
-            // var jsonFile = assetBundle.LoadAsset<TextAsset>(musicName + "_" + level.ToString().ToLower());
+            // TODO: var jsonFile = assetBundle.LoadAsset<TextAsset>(musicName + "_" + level.ToString().ToLower());
             var jsonFile = Resources.Load("maiden_voyage_master_proto") as TextAsset;
             if (!jsonFile) throw new Exception("譜面データが無効です");
             var inputString = jsonFile.ToString();
-            music = JsonUtility.FromJson<Music>(inputString);
+            _music = JsonUtility.FromJson<Music>(inputString);
 
-            ScoreHandler.Initialize(music.notes.Length);
-            ScoreHandler.OnComboChanged += combo => View.Instance.ComboText = combo;
-            ScoreHandler.OnScoreChanged += score => View.Instance.ScoreText = score;
+            ScoreHandler.Initialize(_music.notes.Length);
+            ScoreHandler.OnComboChanged += combo => View.instance.ComboText = combo;
+            ScoreHandler.OnScoreChanged += score => View.instance.ScoreText = score;
 
             /*
-             * _queueNotes[0] には、0番目のレーンのノーツ生成情報が リスト（ConvertedNotes）型 で格納されている。
+             * _queueNotes[0] には、0番目のレーンのノーツ生成情報が リスト（QueuedNote）型 で格納されている。
              * _queueNotes[0] 〜 _queueNotes[(レーン数)] まで存在する。
              */
-            _queueNotes = new List<ConvertedNotes>[music.maxBlock];
-            for (var i = 0; i < _queueNotes.Length; i++) _queueNotes[i] = new List<ConvertedNotes>();
-            _generatedNotes = new List<ConvertedNotes>[music.maxBlock];
-            for (var i = 0; i < _generatedNotes.Length; i++) _generatedNotes[i] = new List<ConvertedNotes>();
+            _queueNotes = new List<QueuedNote>[_music.maxBlock];
+            for (var i = 0; i < _queueNotes.Length; i++) _queueNotes[i] = new List<QueuedNote>();
 
-            for (var i = 0; i < music.notes.Length; i++)
+            /*
+             * _generatedNotes[0] には、0番目のレーンに生成済みのノーツ情報が リスト（QueuedNote）型 で格納されている。
+             * _generatedNotes[0] 〜 _generatedNotes[(レーン数)] まで存在する。
+             */
+            _generatedNotes = new List<QueuedNote>[_music.maxBlock];
+            for (var i = 0; i < _generatedNotes.Length; i++) _generatedNotes[i] = new List<QueuedNote>();
+
+            for (var i = 0; i < _music.notes.Length; i++)
             {
-                /* ==================================================== */
-
-                /* 通常・フリックノーツ単体、またはロングノーツの始点 */
-                /* ReSharper disable once JoinDeclarationAndInitializer */
-                ConvertedNotes headNote;
-
-                /* ロングノーツの場合の、最後尾ノーツ */
-                /* ReSharper disable once JoinDeclarationAndInitializer */
-                ConvertedNotes tailNote;
-
-                /* ==================================================== */
-
-
                 /*
                  * 1. ロングノーツの場合、tailNote に 最後尾ノーツを代入。
                  *    そうでない場合は、tailNote に null を代入。
                  */
-                var childNotesLength = music.notes[i].notes.Length;
-                tailNote = childNotesLength > 0
-                    ? new ConvertedNotes(music.notes[i].notes[childNotesLength - 1], music.BPM)
+                var childNotesLength = _music.notes[i].notes.Length;
+
+                var tailNote = childNotesLength > 0
+                    ? new QueuedNote(_music.notes[i].notes[childNotesLength - 1], _music.BPM)
                     : null;
 
                 /* （リストに追加） */
                 if (tailNote != null)
                 {
-                    var tailLaneNumber = music.notes[i].notes[childNotesLength - 1].block;
-                    _queueNotes[tailLaneNumber].Add(tailNote);
+                    var lane = _music.notes[i].notes[childNotesLength - 1].block;
+                    _queueNotes[lane].Add(tailNote);
                 }
 
-
-                /* 2. headNote に、先頭ノーツを代入 */
-                headNote = new ConvertedNotes(music.notes[i], music.BPM, tailNote);
+                /* 2. headNote に、先頭ノーツを代入（通常・フリックノーツ単体、またはロングノーツの始点） */
+                var headNote = new QueuedNote(_music.notes[i], _music.BPM, tailNote);
 
                 /* （リストに追加） */
-                var laneNumber = music.notes[i].block;
-                _queueNotes[laneNumber].Add(headNote);
+                _queueNotes[_music.notes[i].block].Add(headNote);
             }
 
             for (var i = 0; i < _queueNotes.Length; i++)
                 _queueNotes[i] = _queueNotes[i].OrderBy(item => item.timing).ToList();
 
-            NoteObjectInitializer();
+            PreGenerateNotes();
 
-            musicTime = -2f;
-            isPose = false;
-            // LoadNotes(music);
-            //Invoke("NotesStart", 1);
-            //InvokeRepeating("Metro", 1, 60f / MusicData.BPM);
-            Invoke(nameof(BGMStart), 2); // ノーツ再生から3秒待たなければならない
+            _currentTime = -2f;
+            _isPose = false;
+            Invoke(nameof(BGMStart), 2);
         }
-
-        private void BGMStart() => View.Instance.BgmAudioSource.Play();
-
-        [SerializeField] private GameObject noteObject;
-        [SerializeField] private GameObject preNoteObject;
-        [SerializeField] private GameObject noteObjectF;
 
         private void Update()
         {
-            if (!isPose)
-                musicTime += Time.deltaTime;
-
-            // foreach (var generateNote in _notes)
-            // {
-            //     var filteredConvertedNotes = generateNote
-            //     .Where(filteredGenerateNote => filteredGenerateNote.timing <= musicTime)
-            //     .ToList();
-            //     
-            //     foreach (var filteredGenerateNote in filteredConvertedNotes.Where(filteredGenerateNote =>
-            //                  !filteredGenerateNote.isGenerated))
-            //     {
-            //         SoundManager.instance.PlaySuccess();
-            //         filteredGenerateNote.setIsGenerated();
-            //     }
-            // }
+            if (!_isPose) _currentTime += Time.deltaTime;
 
             for (var i = 0; i < _queueNotes.Length; i++)
-                // foreach (var queueNote in _queueNotes)
             {
-                /* ${2} 秒以内に判定ラインに到達させるべきノーツを抽出する */
-                // TODO: LinQ -> for / foreach に変更
-                var generateNotes = _queueNotes[i]
-                    .Where(generateNote => generateNote.timing <= musicTime + 1.25)
+                /* 1.25秒以内に判定ラインに到達させるべきノーツを抽出する */
+                var queuedNotes = _queueNotes[i]
+                    .Where(generateNote => generateNote.timing <= _currentTime + 1.25)
                     .ToList();
 
-                // _generatedNotes[i] = _generatedNotes[i].Union(generateNotes).ToList(); 間違い
-                _generatedNotes[i].AddRange(generateNotes);
+                _generatedNotes[i].AddRange(queuedNotes);
 
-                foreach (var generateNote in generateNotes) _queueNotes[i].Remove(generateNote);
-
-                // foreach (var generateNote in generateNotes.Where(filteredGenerateNote =>
-                //              !filteredGenerateNote.isGenerated))
-                foreach (var generateNote in generateNotes)
+                foreach (var queuedNote in queuedNotes)
                 {
-                    switch (generateNote.type)
+                    _queueNotes[i].Remove(queuedNote);
+
+                    switch (queuedNote.noteType)
                     {
                         /* 通常ノーツ */
-                        case 1:
-                            NoteGenerator(generateNote.block, 1, generateNote);
-                            // Instantiate(preNoteObject,
-                            //     new Vector3(-0.9f + laneWidth * filteredGenerateNote.block,
-                            //         // NotesFallUpdater.speed * generateNote.timing + _offset, -0.005f), // TODO
-                            //         6.4f, -0.005f),
-                            //     new Quaternion(0, 0, 0, 0));
+                        case QueuedNote.NoteType.Normal:
+                            GenerateNote(queuedNote);
                             break;
 
                         /* ロングノーツ */
-                        case 2:
-                            if (generateNote.tailNote != null)
+                        case QueuedNote.NoteType.Long:
+                            if (queuedNote.TailNote != null)
                             {
-                                var notes = LongNotesGenerator.instance.Create(generateNote.block,
-                                    generateNote.tailNote.block,
-                                    generateNote.timing,
-                                    generateNote.tailNote.timing);
-                                generateNote.tailNote.LinkGameObject(notes);
+                                var notes = LongNotesGenerator.instance.Create(queuedNote.lane,
+                                    queuedNote.TailNote.lane,
+                                    queuedNote.timing,
+                                    queuedNote.TailNote.timing);
+                                queuedNote.TailNote.LinkGameObject(notes);
                             }
 
                             break;
 
                         /* フリックノーツ */
-                        case 3:
-                        case 4:
-                        case 5:
-                        case 6:
-                            NoteGenerator(generateNote.block, 3, generateNote);
-                            // Instantiate(noteObjectF,
-                            //     new Vector3(-0.9f + laneWidth * generateNote.block,
-                            //         // NotesFallUpdater.speed * generateNote.timing + _offset, -0.005f), // TODO
-                            //         generateNote.timing + 2f * 6f, -0.005f),
-                            //     new Quaternion(0, 0, 0, 0));
+                        case QueuedNote.NoteType.Flick:
+                            GenerateNote(queuedNote);
                             break;
+
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
                 }
             }
         }
 
-        private List<List<GameObject>> _normalNotesGameObjects = new();
+        private void BGMStart() => View.instance.BgmAudioSource.Play();
 
-        private List<List<GameObject>> _flickNotesGameObjects = new();
-        // private GameObject[][] _flickNotesGameObjects;
-
-        private const int PreGenerateNormalNotesPerLane = 10;
-        private const int PreGenerateFlickNotesPerLane = 6;
-
-        private void NoteObjectInitializer()
+        /// <summary>
+        /// 各レーンごとのGameObjectインスタンスをあらかじめ生成しておきます
+        /// </summary>
+        private void PreGenerateNotes()
         {
-            for (var i = 0; i < 7; i++)
+            for (var i = 0; i < LaneCount; i++)
             {
                 var tmp = new List<GameObject>();
                 for (var j = 0; j < PreGenerateNormalNotesPerLane; j++)
-                {
-                    tmp.Add(Instantiate(preNoteObject,
-                        new Vector3(-0.9f + laneWidth * i, 6.4f, -0.005f),
+                    tmp.Add(Instantiate(normalNoteGameObject,
+                        new Vector3(-0.9f + LaneWidth * i, 6.4f, -0.005f),
                         new Quaternion(0, 0, 0, 0)));
-                }
 
-                _normalNotesGameObjects.Add(tmp);
+                _preGenerateNormalNotes.Add(tmp);
             }
 
-            Debug.Log(_normalNotesGameObjects);
-
-            for (var i = 0; i < 7; i++)
+            for (var i = 0; i < LaneCount; i++)
             {
                 var tmp = new List<GameObject>();
                 for (var j = 0; j < PreGenerateFlickNotesPerLane; j++)
-                {
-                    tmp.Add(Instantiate(noteObjectF,
-                        new Vector3(-0.9f + laneWidth * i, 6.4f, -0.005f),
+                    tmp.Add(Instantiate(flickNoteGameObject,
+                        new Vector3(-0.9f + LaneWidth * i, 6.4f, -0.005f),
                         new Quaternion(0, 0, 0, 0)));
-                }
 
-                _flickNotesGameObjects.Add(tmp);
+                _preGenerateFlickNotes.Add(tmp);
             }
-
-            Debug.Log(_flickNotesGameObjects);
-
-            // for (var i = 0; i < 5; i++)
-            // for (var j = 0; j < 2; j++)
-            //     _flickNotesGameObjects[i][j] = Instantiate(noteObjectF,
-            //         new Vector3(-0.9f + laneWidth * i, 6.4f, -0.005f),
-            //         new Quaternion(0, 0, 0, 0));
         }
 
-        private void NoteGenerator(int lane, int type, ConvertedNotes convertedNote)
+        /// <summary>
+        /// 生成済みのノーツから非アクティブのものを使用してノーツを生成します
+        /// </summary>
+        private void GenerateNote(QueuedNote queuedNote)
         {
-            switch (type)
+            switch (queuedNote.noteType)
             {
-                case 1:
+                case QueuedNote.NoteType.Normal:
                 {
                     for (var i = 0; i < PreGenerateNormalNotesPerLane; i++)
-                        if (!_normalNotesGameObjects[lane][i].activeSelf)
+                        if (!_preGenerateNormalNotes[queuedNote.lane][i].activeSelf)
                         {
-                            _normalNotesGameObjects[lane][i].transform.position =
-                                new Vector3(-0.9f + laneWidth * lane, 6.4f, -0.005f);
-                            _normalNotesGameObjects[lane][i].SetActive(true);
-                            convertedNote.LinkGameObject(new List<GameObject> {_normalNotesGameObjects[lane][i]});
+                            _preGenerateNormalNotes[queuedNote.lane][i].transform.position =
+                                new Vector3(-0.9f + LaneWidth * queuedNote.lane, 6.4f, -0.005f);
+                            _preGenerateNormalNotes[queuedNote.lane][i].SetActive(true);
+                            queuedNote.LinkGameObject(
+                                new List<GameObject> {_preGenerateNormalNotes[queuedNote.lane][i]});
 
                             return;
                         }
 
-                    Debug.LogError("メモリ不足");
+                    Debug.LogError("Normal: メモリ不足");
 
                     break;
                 }
-                case 3:
+                case QueuedNote.NoteType.Flick:
                 {
                     for (var i = 0; i < PreGenerateFlickNotesPerLane; i++)
-                        if (!_flickNotesGameObjects[lane][i].activeSelf)
+                        if (!_preGenerateFlickNotes[queuedNote.lane][i].activeSelf)
                         {
-                            _flickNotesGameObjects[lane][i].transform.position =
-                                new Vector3(-0.9f + laneWidth * lane, 6.4f, -0.005f);
-                            _flickNotesGameObjects[lane][i].SetActive(true);
-                            convertedNote.LinkGameObject(new List<GameObject> {_flickNotesGameObjects[lane][i]});
+                            _preGenerateFlickNotes[queuedNote.lane][i].transform.position =
+                                new Vector3(-0.9f + LaneWidth * queuedNote.lane, 6.4f, -0.005f);
+                            _preGenerateFlickNotes[queuedNote.lane][i].SetActive(true);
+                            queuedNote.LinkGameObject(new List<GameObject>
+                                {_preGenerateFlickNotes[queuedNote.lane][i]});
 
                             return;
                         }
 
-                    Debug.LogError("メモリ不足");
+                    Debug.LogError("Flick: メモリ不足");
 
                     break;
                 }
+                case QueuedNote.NoteType.Long:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(queuedNote.noteType), queuedNote.noteType, null);
             }
         }
 
-        public static bool JudgeTiming(int lineNum, int type, bool second = false)
+        /// <summary>
+        /// タッチした際の判定を行います
+        /// </summary>
+        public static bool JudgeTiming(int lane, QueuedNote.NoteType noteType, bool isAdjacentLane = false)
         {
-            if (type == 3)
+            switch (noteType)
             {
-                var fnote = _generatedNotes[lineNum]
-                    .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.12f && n.type == type);
-                if (fnote != null)
+                case QueuedNote.NoteType.Normal:
                 {
-                    SoundManager.instance.PlayFlick();
-                    fnote.Destroy();
-                    _generatedNotes[lineNum].Remove(fnote);
-                    ScoreHandler.AddScore(ScoreHandler.Judge.Perfect);
-                    return true;
-                }
-            }
-            else if (type == 2)
-            {
-                var lnote = _generatedNotes[lineNum]
-                    .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.12f && n.type == type);
-                if (lnote != null)
-                {
-                    SoundManager.instance.PlayPerfect();
-                    foreach (var gameObject in lnote.gameObjects)
-                        Destroy(gameObject);
-                    _generatedNotes[lineNum].Remove(lnote);
-                    ScoreHandler.AddScore(ScoreHandler.Judge.Perfect);
-                    return true;
-                }
-            }
-            else
-            {
-                var note1 = _generatedNotes[lineNum]
-                    .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.07f && n.type == type);
-                if (note1 != null)
-                {
-                    SoundManager.instance.PlayPerfect();
-                    note1.Destroy();
-                    _generatedNotes[lineNum].Remove(note1);
-                    ScoreHandler.AddScore(ScoreHandler.Judge.Perfect);
-                    return true;
-                }
+                    var perfectNote = _generatedNotes[lane]
+                        .Find(n => Math.Abs(n.timing - (_currentTime - 0.015f)) <= 0.06f && n.noteType == noteType);
+                    if (perfectNote != null)
+                    {
+                        SoundManager.instance.PlayPerfect();
+                        perfectNote.Destroy();
+                        _generatedNotes[lane].Remove(perfectNote);
+                        ScoreHandler.AddScore(ScoreHandler.Judge.Perfect);
+                        return true;
+                    }
 
-                var note2 = _generatedNotes[lineNum]
-                    .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.12f && n.type == type);
-                if (note2 != null)
-                {
-                    SoundManager.instance.PlayGreat();
-                    note2.Destroy();
-                    _generatedNotes[lineNum].Remove(note2);
-                    ScoreHandler.AddScore(ScoreHandler.Judge.Great);
-                    return true;
-                }
+                    var greatNote = _generatedNotes[lane]
+                        .Find(n => Math.Abs(n.timing - (_currentTime - 0.015f)) <= 0.1f && n.noteType == noteType);
+                    if (greatNote != null)
+                    {
+                        SoundManager.instance.PlayGreat();
+                        greatNote.Destroy();
+                        _generatedNotes[lane].Remove(greatNote);
+                        ScoreHandler.AddScore(ScoreHandler.Judge.Great);
+                        return true;
+                    }
 
-                var note3 = _generatedNotes[lineNum]
-                    .Find(n => Mathf.Abs(n.timing - (musicTime - 0.015f)) <= 0.15f && n.type == type);
-                if (note3 != null)
-                {
-                    SoundManager.instance.PlayGood();
-                    note3.Destroy();
-                    _generatedNotes[lineNum].Remove(note3);
-                    ScoreHandler.AddScore(ScoreHandler.Judge.Good);
-                    return true;
+                    var goodNote = _generatedNotes[lane]
+                        .Find(n => Math.Abs(n.timing - (_currentTime - 0.015f)) <= 0.12f && n.noteType == noteType);
+                    if (goodNote != null)
+                    {
+                        SoundManager.instance.PlayGood();
+                        goodNote.Destroy();
+                        _generatedNotes[lane].Remove(goodNote);
+                        ScoreHandler.AddScore(ScoreHandler.Judge.Good);
+                        return true;
+                    }
+
+                    break;
                 }
+                case QueuedNote.NoteType.Long:
+                {
+                    var longNote = _generatedNotes[lane]
+                        .Find(n => Math.Abs(n.timing - (_currentTime - 0.015f)) <= 0.12f && n.noteType == noteType);
+                    if (longNote != null)
+                    {
+                        SoundManager.instance.PlayPerfect();
+                        if (longNote.gameObjects != null)
+                            foreach (var gameObject in longNote.gameObjects)
+                                Destroy(gameObject);
+                        _generatedNotes[lane].Remove(longNote);
+                        ScoreHandler.AddScore(ScoreHandler.Judge.Perfect);
+                        return true;
+                    }
+
+                    break;
+                }
+                case QueuedNote.NoteType.Flick:
+                {
+                    var flickNote = _generatedNotes[lane]
+                        .Find(n => Math.Abs(n.timing - (_currentTime - 0.02f)) <= 0.12f && n.noteType == noteType);
+                    if (flickNote != null)
+                    {
+                        SoundManager.instance.PlayFlick();
+                        flickNote.Destroy();
+                        _generatedNotes[lane].Remove(flickNote);
+                        ScoreHandler.AddScore(ScoreHandler.Judge.Perfect);
+                        return true;
+                    }
+
+                    break;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(noteType), noteType, null);
             }
 
-            if (second) return false;
-            if (lineNum - 1 >= 0) return JudgeTiming(lineNum - 1, type, true);
-            if (lineNum + 1 <= 6) return JudgeTiming(lineNum + 1, type, true);
+            /* 隣接レーンの確認 */
+            if (isAdjacentLane) return false;
+            if (lane - 1 >= 0) return JudgeTiming(lane - 1, noteType, true);
+            if (lane + 1 <= 6) return JudgeTiming(lane + 1, noteType, true);
+
             return false;
         }
     }

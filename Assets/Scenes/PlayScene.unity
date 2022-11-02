@@ -1164,7 +1164,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1,000,000
+  m_text: 0000000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 692865caef98243a0b67efdd20a88368, type: 2}
   m_sharedMaterial: {fileID: -8793070836779093500, guid: 692865caef98243a0b67efdd20a88368,
@@ -3079,11 +3079,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bgm: {fileID: 408659292}
-  noteObject: {fileID: 1741870702249229382, guid: 82234428c1e7f4495bb31bb88eec10e4,
+  normalNoteGameObject: {fileID: 1741870702249229382, guid: 82234428c1e7f4495bb31bb88eec10e4,
     type: 3}
-  preNoteObject: {fileID: 1741870702249229382, guid: 82234428c1e7f4495bb31bb88eec10e4,
-    type: 3}
-  noteObjectF: {fileID: 1741870702249229382, guid: d9f3dc23630164b69b610e64bca85c82,
+  flickNoteGameObject: {fileID: 1741870702249229382, guid: d9f3dc23630164b69b610e64bca85c82,
     type: 3}
 --- !u!4 &1358648951
 Transform:
@@ -3158,7 +3156,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 692865caef98243a0b67efdd20a88368, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: e69befc41068a4d3b8654976aafbbe24, type: 2}

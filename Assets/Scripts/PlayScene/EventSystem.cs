@@ -1,3 +1,4 @@
+using Model;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -14,9 +15,9 @@ namespace PlayScene
         {
             if (baseEventData is not PointerEventData pointerEventData) return;
 
-            var isSucceed = ProcessManager.JudgeTiming(lineNum, 1);
+            var isSucceed = ProcessManager.JudgeTiming(lineNum, QueuedNote.NoteType.Normal);
             /* 通常ノーツが見当たらなかった場合、ロングノーツを疑う */
-            if (!isSucceed) ProcessManager.JudgeTiming(lineNum, 2);
+            if (!isSucceed) ProcessManager.JudgeTiming(lineNum, QueuedNote.NoteType.Long);
             CoordYPreserver.AddCoordY(pointerEventData.position.y, lineNum);
         }
 
@@ -36,13 +37,13 @@ namespace PlayScene
             var isFlick = CoordYPreserver.IsFlick(pointerEventData.position.y, lineNum);
             if (isFlick) // 長押ししてフリック
             {
-                var isSucceed = ProcessManager.JudgeTiming(lineNum, 3);
+                var isSucceed = ProcessManager.JudgeTiming(lineNum, QueuedNote.NoteType.Flick);
                 /* フリックノーツが見当たらなかった場合、ロングノーツを疑う */
-                if (!isSucceed) ProcessManager.JudgeTiming(lineNum, 2);
+                if (!isSucceed) ProcessManager.JudgeTiming(lineNum, QueuedNote.NoteType.Long);
             }
             else // 長押しして離す
             {
-                ProcessManager.JudgeTiming(lineNum, 2);
+                ProcessManager.JudgeTiming(lineNum, QueuedNote.NoteType.Long);
             }
         }
 

@@ -6,18 +6,14 @@ namespace PlayScene
 {
     public class View : MonoBehaviour
     {
-        public static View Instance;
+        public static View instance;
 
         [SerializeField] private AudioSource bgmAudioSource;
 
         [SerializeField] private TextMeshProUGUI comboText;
         [SerializeField] private TextMeshProUGUI scoreText;
-
-
-        private void Awake()
-        {
-            if (Instance == null) Instance = this;
-        }
+        
+        public void Awake() => instance ??= this;
 
         public AudioSource BgmAudioSource => bgmAudioSource;
 
