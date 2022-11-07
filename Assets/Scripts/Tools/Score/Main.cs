@@ -22,6 +22,36 @@ namespace Tools.Score
         /// </summary>
         public static void AddScore(Judge judge) => _AddScore(judge);
 
+        /// <summary>
+        ///   ダウンロードした AssetBundle を返します.
+        ///   AssetBundle のダウンロード完了後に アクセスする必要があります.
+        /// </summary>
+        public static int GetPerfect() => _perfect;
+
+        /// <summary>
+        ///   ダウンロードした AssetBundle を返します.
+        ///   AssetBundle のダウンロード完了後に アクセスする必要があります.
+        /// </summary>
+        public static int GetGreat() => _great;
+
+        /// <summary>
+        ///   ダウンロードした AssetBundle を返します.
+        ///   AssetBundle のダウンロード完了後に アクセスする必要があります.
+        /// </summary>
+        public static int GetGood() => _good;
+
+        /// <summary>
+        ///   ダウンロードした AssetBundle を返します.
+        ///   AssetBundle のダウンロード完了後に アクセスする必要があります.
+        /// </summary>
+        public static int GetMiss() => _miss;
+
+        /// <summary>
+        ///   ダウンロードした AssetBundle を返します.
+        ///   AssetBundle のダウンロード完了後に アクセスする必要があります.
+        /// </summary>
+        public static int GetScore() => (int) _score;
+
 
         /// <summary>
         ///   AssetBundle のダウンロード完了率が 変更された際に呼び出されます.
