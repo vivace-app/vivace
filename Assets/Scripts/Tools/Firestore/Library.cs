@@ -4,6 +4,7 @@ using System.Linq;
 using Firebase.Auth;
 using Firebase.Firestore;
 using Tools.Firestore.Model;
+using Tools.PlayStatus;
 using UnityEngine;
 
 namespace Tools.Firestore
@@ -43,6 +44,14 @@ namespace Tools.Firestore
         private IEnumerator _UpdateDoc(DocumentReference doc, IDictionary<string, object> data)
         {
             var task = doc.UpdateAsync(data);
+            yield return new WaitForTaskCompletion(task);
+            if (task.IsFaulted || task.IsCanceled)
+                OnErrorOccured.Invoke("通信に失敗しました\nインターネットの接続状況を確認してください");
+        }
+
+        private IEnumerator _AddDoc(CollectionReference collectionReference, IDictionary<string, object> data)
+        {
+            var task = collectionReference.AddAsync(data);
             yield return new WaitForTaskCompletion(task);
             if (task.IsFaulted || task.IsCanceled)
                 OnErrorOccured.Invoke("通信に失敗しました\nインターネットの接続状況を確認してください");
@@ -134,6 +143,39 @@ namespace Tools.Firestore
             };
 
             var iEnumerator = _UpdateDoc(documentReference, updates);
+            yield return iEnumerator;
+        }
+
+        private IEnumerator _AddScore(FirebaseUser user, string musicName, int totalScore, Level level)
+        {
+            var collectionReference = _fs.Collection("users").Document(user.UserId).Collection("scores");
+
+            var addData = new Dictionary<string, object>
+            {
+                {"active", true},
+                {"created_at", FieldValue.ServerTimestamp},
+                {"level", level.ToString().ToUpper()},
+                {"music_id", _fs.Collection("musics").Document(musicName)},
+                {"total_score", totalScore},
+                {"updated_at", FieldValue.ServerTimestamp},
+                {"user_id", _fs.Collection("users").Document(user.UserId)},
+            };
+
+            var iEnumerator = _AddDoc(collectionReference, addData);
+            yield return iEnumerator;
+        }
+
+        private IEnumerator _AddArchive(FirebaseUser user, string musicName, Level level, Archive archive)
+        {
+            var documentReference =
+                _fs.Collection("users").Document(user.UserId).Collection("archives").Document(musicName);
+
+            var updates = new Dictionary<string, object>
+            {
+                {level.ToString().ToLower(), (int) archive},
+            };
+
+            var iEnumerator = _WriteDoc(documentReference, updates);
             yield return iEnumerator;
         }
 

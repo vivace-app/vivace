@@ -7,6 +7,12 @@ namespace Tools.PlayStatus
         Hard,
         Master
     }
+    public enum Archive
+    {
+        AllPerfect = 2,
+        FullCombo = 1,
+        Clear = 0
+    }
     
     public partial class PlayStatusHandler
     {

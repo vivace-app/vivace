@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Model;
 using Project.Scripts.Model;
 using Tools.AssetBundle;
+using Tools.Authentication;
+using Tools.Firestore;
 using Tools.PlayStatus;
 using Tools.Score;
 using UnityEngine;
@@ -13,6 +16,8 @@ namespace PlayScene
 {
     public class ProcessManager : MonoBehaviour
     {
+        private readonly AuthenticationHandler _auth = new();
+
         private const int LaneCount = 7; // レーンの数
         public const float LaneWidth = 0.3f; // レーンの太さ( = ノーツの太さ )
         public const float Speed = 5f;
@@ -24,6 +29,8 @@ namespace PlayScene
         private bool _hasStarted;
 
         private static Music _music;
+        private Level _level;
+        private string _musicName;
 
         [SerializeField] private GameObject normalNoteGameObject;
         [SerializeField] private GameObject flickNoteGameObject;
@@ -41,11 +48,15 @@ namespace PlayScene
 
         private void Start()
         {
+            if (Application.isEditor) LocaleSetting.ChangeSelectedLocale("ja");
+
+            _auth.Start(null);
+
             var index = PlayStatusHandler.GetSelectedMusic();
-            var level = PlayStatusHandler.GetSelectedLevel();
+            _level = PlayStatusHandler.GetSelectedLevel();
             var assetBundle = AssetBundleHandler.GetAssetBundle(index);
-            var musicName = assetBundle.name;
-            View.instance.BgmAudioClip = assetBundle.LoadAsset<AudioClip>(musicName);
+            _musicName = assetBundle.name;
+            View.instance.BgmAudioClip = assetBundle.LoadAsset<AudioClip>(_musicName);
             View.instance.setOnClickPauseCustomButtonAction = () =>
             {
                 Pause();
@@ -67,7 +78,7 @@ namespace PlayScene
             ScoreHandler.Initialize(_music.notes.Length);
             ScoreHandler.OnComboChanged += combo => View.instance.ComboText = combo;
             ScoreHandler.OnScoreChanged += score => View.instance.ScoreText = score;
-            
+
             /*
              * _queueNotes[0] には、0番目のレーンのノーツ生成情報が リスト（QueuedNote）型 で格納されている。
              * _queueNotes[0] 〜 _queueNotes[(レーン数)] まで存在する。
@@ -127,7 +138,7 @@ namespace PlayScene
         {
             if (!isPose) _currentTime += Time.deltaTime;
 
-            if (_hasStarted && _currentTime > _endTime + 5f) SceneManager.LoadScene("ResultScene");
+            if (_hasStarted && _currentTime > _endTime + 3f) StartCoroutine(nameof(SceneMove));
 
             for (var i = 0; i < _queueNotes.Length; i++)
             {
@@ -184,6 +195,40 @@ namespace PlayScene
         {
             isPose = true;
             View.instance.BgmAudioSource.Pause();
+        }
+
+        private IEnumerator SceneMove()
+        {
+            var fs = new FirestoreHandler();
+
+            fs.OnErrorOccured += error =>
+            {
+                // TODO: エラーをユーザに伝える
+                Debug.Log(error);
+            };
+
+            var user = _auth.GetUser();
+            var totalScore = ScoreHandler.GetTotalScore();
+            var iEnumerator = fs.AddScore(user, _musicName, totalScore, _level);
+            yield return iEnumerator;
+
+
+            Archive archive;
+            var good = ScoreHandler.GetGood();
+            var miss = ScoreHandler.GetMiss();
+
+            if (totalScore == 1000000)
+                archive = Archive.AllPerfect;
+            else if (good == 0 && miss == 0)
+                archive = Archive.FullCombo;
+            else
+                archive = Archive.Clear;
+
+            iEnumerator = fs.AddArchive(user, _musicName, _level, archive);
+            yield return iEnumerator;
+
+
+            SceneManager.LoadScene("ResultScene");
         }
 
         /// <summary>

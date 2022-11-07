@@ -7,11 +7,11 @@ namespace Tools.Score
         public static void Initialize(int totalNotes)
         {
             _combo = 0;
-            _score = 0;
             _perfect = 0;
             _great = 0;
             _good = 0;
             _miss = 0;
+            _totalScore = 0;
             _totalNotes = totalNotes;
             BaseScoreCalculation();
         }
@@ -50,7 +50,7 @@ namespace Tools.Score
         ///   ダウンロードした AssetBundle を返します.
         ///   AssetBundle のダウンロード完了後に アクセスする必要があります.
         /// </summary>
-        public static int GetScore() => (int) _score;
+        public static int GetTotalScore() => (int) _totalScore;
 
 
         /// <summary>

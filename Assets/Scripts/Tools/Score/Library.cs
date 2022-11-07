@@ -5,7 +5,7 @@ namespace Tools.Score
     public static partial class ScoreHandler
     {
         private static int _combo;
-        private static float _score;
+        private static float _totalScore;
         private static int _perfect;
         private static int _great;
         private static int _good;
@@ -89,10 +89,10 @@ namespace Tools.Score
             };
 
             /* floatへの変更でAP時に100万点にならないので強制代入 */
-            if (_perfect == _totalNotes) scoreTemp = 1000000 - _score;
+            if (_perfect == _totalNotes) scoreTemp = 1000000 - _totalScore;
 
-            _score += scoreTemp;
-            OnScoreChanged.Invoke(_score);
+            _totalScore += scoreTemp;
+            OnScoreChanged.Invoke(_totalScore);
         }
     }
 }

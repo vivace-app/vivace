@@ -64,7 +64,7 @@ namespace ResultScene
             View.Instance.GreatScoreText = ScoreHandler.GetGreat().ToString();
             View.Instance.GoodScoreText = ScoreHandler.GetGood().ToString();
             View.Instance.MissScoreText = ScoreHandler.GetMiss().ToString();
-            View.Instance.TotalScoreText = ScoreHandler.GetScore().ToString();
+            View.Instance.TotalScoreText = ScoreHandler.GetTotalScore().ToString();
         }
     }
 }
