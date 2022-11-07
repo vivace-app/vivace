@@ -6,6 +6,12 @@ namespace Tools.Score
     {
         public static void Initialize(int totalNotes)
         {
+            _combo = 0;
+            _score = 0;
+            _perfect = 0;
+            _great = 0;
+            _good = 0;
+            _miss = 0;
             _totalNotes = totalNotes;
             BaseScoreCalculation();
         }

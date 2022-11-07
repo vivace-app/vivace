@@ -67,7 +67,7 @@ namespace PlayScene
             ScoreHandler.Initialize(_music.notes.Length);
             ScoreHandler.OnComboChanged += combo => View.instance.ComboText = combo;
             ScoreHandler.OnScoreChanged += score => View.instance.ScoreText = score;
-
+            
             /*
              * _queueNotes[0] には、0番目のレーンのノーツ生成情報が リスト（QueuedNote）型 で格納されている。
              * _queueNotes[0] 〜 _queueNotes[(レーン数)] まで存在する。

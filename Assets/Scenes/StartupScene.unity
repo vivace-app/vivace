@@ -837,7 +837,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableDebugPrintOnTerminal: 0
   enableForceCrashOnError: 0
-  dontDestroyOnLoad: 0
+  dontDestroyOnLoad: 1
   messageBufferCounts: 8
 --- !u!4 &373723448
 Transform:
@@ -7717,7 +7717,7 @@ MonoBehaviour:
     numberOfDecoders: 8
     numberOfMaxEntries: 4
   dontInitializeOnAwake: 0
-  dontDestroyOnLoad: 0
+  dontDestroyOnLoad: 1
 --- !u!4 &1339672981
 Transform:
   m_ObjectHideFlags: 0
