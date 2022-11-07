@@ -9,7 +9,10 @@ namespace PlayScene
 
         [SerializeField] private Material longNotesFiller;
 
-        public void Awake() => instance ??= this;
+        private void Awake()
+        {
+            if (instance == null) instance = this;
+        }
 
         public List<GameObject> Create(int startLane, int endLane, float startTim, float endTim)
         {

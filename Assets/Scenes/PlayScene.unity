@@ -4030,7 +4030,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableDebugPrintOnTerminal: 0
   enableForceCrashOnError: 0
-  dontDestroyOnLoad: 1
+  dontDestroyOnLoad: 0
   messageBufferCounts: 8
 --- !u!4 &1599632373
 Transform:

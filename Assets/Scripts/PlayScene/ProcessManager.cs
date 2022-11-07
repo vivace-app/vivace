@@ -16,9 +16,12 @@ namespace PlayScene
         private const int LaneCount = 7; // レーンの数
         public const float LaneWidth = 0.3f; // レーンの太さ( = ノーツの太さ )
         public const float Speed = 5f;
-        
+
         public static bool isPose = true;
         private static float _currentTime;
+        private static float _endTime;
+
+        private bool _hasStarted;
 
         private static Music _music;
 
@@ -106,11 +109,16 @@ namespace PlayScene
             }
 
             for (var i = 0; i < _queueNotes.Length; i++)
+            {
                 _queueNotes[i] = _queueNotes[i].OrderBy(item => item.timing).ToList();
+                var endTime = _queueNotes[^1][^1].TailNote?.timing ?? _queueNotes[^1][^1].timing;
+                if (_endTime < endTime) _endTime = endTime;
+            }
 
             PreGenerateNotes();
 
             _currentTime = -2f;
+            _hasStarted = true;
             isPose = false;
             Invoke(nameof(Play), 2);
         }
@@ -118,6 +126,8 @@ namespace PlayScene
         private void Update()
         {
             if (!isPose) _currentTime += Time.deltaTime;
+
+            if (_hasStarted && _currentTime > _endTime + 5f) SceneManager.LoadScene("ResultScene");
 
             for (var i = 0; i < _queueNotes.Length; i++)
             {

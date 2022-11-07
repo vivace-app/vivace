@@ -11,8 +11,11 @@ namespace PlayScene
         [SerializeField] private CriAtomSource criAtomSourceGreat;
         [SerializeField] private CriAtomSource criAtomSourcePerfect;
         [SerializeField] private CriAtomSource criAtomSourceFlick;
-
-        public void Awake() => instance ??= this;
+        
+        private void Awake()
+        {
+            if (instance == null) instance = this;
+        }
 
         public void PlayGood() => criAtomSourceGood.Play();
         public void PlayGreat() => criAtomSourceGreat.Play();

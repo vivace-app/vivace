@@ -16,9 +16,12 @@ namespace PlayScene
         [SerializeField] private GameObject pauseModal;
         [SerializeField] private TextMeshProUGUI comboText;
         [SerializeField] private TextMeshProUGUI scoreText;
-        
-        public void Awake() => instance ??= this;
 
+        private void Awake()
+        {
+            if (instance == null) instance = this;
+        }
+        
         public AudioSource BgmAudioSource => bgmAudioSource;
 
         public AudioClip BgmAudioClip
