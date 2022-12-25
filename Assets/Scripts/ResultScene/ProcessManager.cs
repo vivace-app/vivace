@@ -40,7 +40,7 @@ namespace ResultScene
             //     Debug.Log(error);
             // };
 
-            var ie = fs.GetRankingList(musicName, level.ToString().ToUpper());
+            var ie = fs.GetRankingList(musicName, level);
             yield return StartCoroutine(ie);
             var score = (Score[]) ie.Current;
             if (score == null) yield break;

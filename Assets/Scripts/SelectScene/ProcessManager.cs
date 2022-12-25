@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using Firebase.Auth;
 using Tools.AssetBundle;
 using Tools.Authentication;
+using Tools.Firestore;
 using Tools.Firestore.Model;
 using Tools.PlayStatus;
+using Tools.Score;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -48,40 +52,57 @@ namespace SelectScene
             ArtworkCloner();
             AttachArtworks();
             AttachPreviewMusics();
-            View.Instance.Achievement = new[] {3, 2, 1, 1};
             View.Instance.PlayCustomButton = () => SceneManager.LoadScene("PlayScene");
         }
+
+        private bool _do = true;
+        private Dictionary<string, Dictionary<string, object>> _achieves;
 
         private void Update()
         {
             if (Input.GetMouseButton(0)) // スクロール中，そのスクロール量を格納する．
+            {
                 _scrolledPosition = View.Instance.Scrollbar;
+                _do = true;
+            }
             else // クリックを離したときに，_scrolledPosition の値を参考に，最も近いカードを中央に持ってくる．
+            {
                 foreach (var t in _artworkPositions)
                     if (_scrolledPosition < t + _artworkDistance / 2 && _scrolledPosition > t - _artworkDistance / 2)
                         View.Instance.Scrollbar = Mathf.Lerp(View.Instance.Scrollbar, t, 0.1f);
 
-            for (var i = 0; i < _artworkPositions.Length; i++)
-            {
-                if (!(_scrolledPosition < _artworkPositions[i] + _artworkDistance / 2) ||
-                    !(_scrolledPosition > _artworkPositions[i] - _artworkDistance / 2)) continue;
-
-                // カードを拡大する
-                View.Instance.ArtworkContentGameObject.transform.GetChild(i).GetComponent<RectTransform>()
-                    .sizeDelta = new Vector2(View.Instance.ArtworkHeight * 1.5f, View.Instance.ArtworkHeight * 1.5f);
-
-                var playStatusHandler = new PlayStatusHandler();
-                PlayStatusHandler.SetSelectedMusic(i);
-                PlaySelectedMusic(i);
-                DisplayMusicData(i);
-
-                // カードを縮小する
-                for (var cnt = 0; cnt < _artworkPositions.Length; cnt++)
+                for (var i = 0; i < _artworkPositions.Length; i++)
                 {
-                    if (i == cnt) continue;
-                    View.Instance.ArtworkContentGameObject.transform.GetChild(cnt).GetComponent<RectTransform>()
-                        .sizeDelta = new Vector2(View.Instance.ArtworkHeight, View.Instance.ArtworkHeight);
+                    if (!(_scrolledPosition < _artworkPositions[i] + _artworkDistance / 2) ||
+                        !(_scrolledPosition > _artworkPositions[i] - _artworkDistance / 2)) continue;
+
+                    // カードを拡大する
+                    View.Instance.ArtworkContentGameObject.transform.GetChild(i).GetComponent<RectTransform>()
+                            .sizeDelta =
+                        new Vector2(View.Instance.ArtworkHeight * 1.5f, View.Instance.ArtworkHeight * 1.5f);
+
+                    // カードを縮小する
+                    for (var cnt = 0; cnt < _artworkPositions.Length; cnt++)
+                    {
+                        if (i == cnt) continue;
+                        View.Instance.ArtworkContentGameObject.transform.GetChild(cnt).GetComponent<RectTransform>()
+                            .sizeDelta = new Vector2(View.Instance.ArtworkHeight, View.Instance.ArtworkHeight);
+                    }
                 }
+
+                if (_do)
+                    for (var i = 0; i < _artworkPositions.Length; i++)
+                    {
+                        if (!(_scrolledPosition < _artworkPositions[i] + _artworkDistance / 2) ||
+                            !(_scrolledPosition > _artworkPositions[i] - _artworkDistance / 2)) continue;
+
+                        var playStatusHandler = new PlayStatusHandler();
+                        PlayStatusHandler.SetSelectedMusic(i);
+                        PlaySelectedMusic(i);
+                        StartCoroutine(DisplayMusicData(i));
+                    }
+
+                _do = false;
             }
         }
 
@@ -90,12 +111,28 @@ namespace SelectScene
         private IEnumerator GetAuth()
         {
             var user = _auth.GetUser();
+            View.Instance.NicknameText = user?.DisplayName;
+
             var iEnumerator = _auth.GenerateCustomToken();
             yield return iEnumerator;
-
-            View.Instance.NicknameText = user?.DisplayName;
             View.Instance.ProfileCustomButton = () =>
                 Application.OpenURL("http://localhost:3000/api/redirect/profile/" + iEnumerator.Current);
+
+            var fs = new FirestoreHandler();
+
+            fs.OnErrorOccured += error =>
+            {
+                // TODO: エラーをユーザに伝える
+                Debug.Log(error);
+            };
+
+            iEnumerator = fs.GetAchieves(user);
+            yield return iEnumerator;
+
+            if (iEnumerator.Current == null) yield break;
+            if (iEnumerator.Current.GetType() != typeof(Dictionary<string, Dictionary<string, object>>)) yield break;
+
+            _achieves = (Dictionary<string, Dictionary<string, object>>) iEnumerator.Current;
         }
 
         private void ArtworkCloner()
@@ -157,10 +194,22 @@ namespace SelectScene
             }
         }
 
-        private void DisplayMusicData(int num) // numは現在選択中の楽曲通し番号
+        private IEnumerator DisplayMusicData(int num) // numは現在選択中の楽曲通し番号
         {
             View.Instance.ArtistText = _musics[num].Artist;
             View.Instance.MusicTitleText = _musics[num].Title;
+            View.Instance.Achievement = new[] {0, 0, 0, 0};
+
+            if (_achieves == null || !_achieves.ContainsKey(_musics[num].Name)) yield break;
+            var achieve = _achieves?[_musics[num].Name];
+
+            if (achieve == null) yield break;
+
+            var easy = achieve.ContainsKey("easy") ? (int)(long) achieve["easy"] : 0;
+            var normal = achieve.ContainsKey("normal") ? (int)(long) achieve["normal"] : 0;
+            var hard = achieve.ContainsKey("hard") ? (int)(long) achieve["hard"] : 0;
+            var master = achieve.ContainsKey("master") ? (int)(long) achieve["master"] : 0;
+            View.Instance.Achievement = new[] {easy, normal, hard, master};
         }
     }
 }

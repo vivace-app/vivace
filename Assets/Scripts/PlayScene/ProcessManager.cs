@@ -213,18 +213,18 @@ namespace PlayScene
             yield return iEnumerator;
 
 
-            Archive archive;
+            Achieve achieve;
             var good = ScoreHandler.GetGood();
             var miss = ScoreHandler.GetMiss();
 
             if (totalScore == 1000000)
-                archive = Archive.AllPerfect;
+                achieve = Achieve.AllPerfect;
             else if (good == 0 && miss == 0)
-                archive = Archive.FullCombo;
+                achieve = Achieve.FullCombo;
             else
-                archive = Archive.Clear;
+                achieve = Achieve.Clear;
 
-            iEnumerator = fs.AddArchive(user, _musicName, _level, archive);
+            iEnumerator = fs.AddAchieve(user, _musicName, _level, achieve);
             yield return iEnumerator;
 
 

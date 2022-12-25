@@ -7,11 +7,11 @@ namespace Tools.PlayStatus
         Hard,
         Master
     }
-    public enum Archive
+    public enum Achieve
     {
-        AllPerfect = 2,
-        FullCombo = 1,
-        Clear = 0
+        AllPerfect = 3,
+        FullCombo = 2,
+        Clear = 1
     }
     
     public partial class PlayStatusHandler

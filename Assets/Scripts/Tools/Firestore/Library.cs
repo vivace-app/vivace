@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -165,25 +166,54 @@ namespace Tools.Firestore
             yield return iEnumerator;
         }
 
-        private IEnumerator _AddArchive(FirebaseUser user, string musicName, Level level, Archive archive)
+        private IEnumerator
+            _AddAchieve(FirebaseUser user, string musicName, Level level, Achieve achieve) //TODO: achieves
         {
             var documentReference =
-                _fs.Collection("users").Document(user.UserId).Collection("archives").Document(musicName);
+                _fs.Collection("users").Document(user.UserId).Collection("achieves").Document(musicName);
 
             var updates = new Dictionary<string, object>
             {
-                {level.ToString().ToLower(), (int) archive},
+                {level.ToString().ToLower(), (int) achieve},
             };
 
             var iEnumerator = _WriteDoc(documentReference, updates);
             yield return iEnumerator;
         }
 
-        private IEnumerator _GetRankingList(string musicId, string level)
+        private IEnumerator _GetAchieves(FirebaseUser user)
+        {
+            var collectionReference = _fs.Collection("users").Document(user.UserId).Collection("achieves");
+
+            var iEnumerator = _ReadDoc(collectionReference);
+            yield return iEnumerator;
+
+            var querySnapshot = (QuerySnapshot) iEnumerator.Current;
+            if (querySnapshot == null)
+            {
+                OnErrorOccured.Invoke("通信に失敗しました\nインターネットの接続状況を確認してください");
+                yield break;
+            }
+            
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents) {
+                Debug.Log(String.Format("Document data for {0} document:", documentSnapshot.Id));
+                Dictionary<string, object> city = documentSnapshot.ToDictionary();
+                foreach (KeyValuePair<string, object> pair in city) {
+                    Debug.Log(String.Format("{0}: {1}", pair.Key, pair.Value));
+                }
+            }
+
+            var archives = querySnapshot.Documents.ToDictionary(
+                documentSnapshot => documentSnapshot.Id, documentSnapshot => documentSnapshot.ToDictionary());
+            
+            yield return archives;
+        }
+
+        private IEnumerator _GetRankingList(string musicId, Level level)
         {
             var capitalQuery = _fs.CollectionGroup("scores")
                 .WhereEqualTo("music_id", _fs.Collection("musics").Document(musicId))
-                .WhereEqualTo("level", level)
+                .WhereEqualTo("level", level.ToString().ToUpper())
                 .WhereEqualTo("active", true)
                 .OrderByDescending("total_score")
                 .Limit(10);

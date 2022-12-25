@@ -20,10 +20,12 @@ namespace Tools.Firestore
         public IEnumerator AddScore(FirebaseUser user, string musicName, int totalScore, Level level) =>
             _AddScore(user, musicName, totalScore, level);
 
-        public IEnumerator AddArchive(FirebaseUser user, string musicName, Level level, Archive archive) =>
-            _AddArchive(user, musicName, level, archive);
+        public IEnumerator AddAchieve(FirebaseUser user, string musicName, Level level, Achieve achieve) =>
+            _AddAchieve(user, musicName, level, achieve);
 
-        public IEnumerator GetRankingList(string musicId, string level) => _GetRankingList(musicId, level);
+        public IEnumerator GetAchieves(FirebaseUser user) => _GetAchieves(user);
+
+        public IEnumerator GetRankingList(string musicId, Level level) => _GetRankingList(musicId, level);
 
         public IEnumerator GetUserFromRef(DocumentReference documentReference) => _GetUserFromRef(documentReference);
 
