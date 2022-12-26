@@ -1,8 +1,8 @@
 # VIVACE
-![SCREENSHOT_1](DOCS/img/SCREENSHOT_1.webp)
-![SCREENSHOT_2](DOCS/img/SCREENSHOT_2.webp)
-![SCREENSHOT_3](DOCS/img/SCREENSHOT_3.webp)
-![SCREENSHOT_4](DOCS/img/SCREENSHOT_4.webp)
+![SCREENSHOT_1](Docs/img/SCREENSHOT_1.webp)
+![SCREENSHOT_2](Docs/img/SCREENSHOT_2.webp)
+![SCREENSHOT_3](Docs/img/SCREENSHOT_3.webp)
+![SCREENSHOT_4](Docs/img/SCREENSHOT_4.webp)
 
 # デモビデオ
 https://youtu.be/wwzEH9N9eUk
@@ -14,7 +14,7 @@ GooglePlayStore: https://bit.ly/vivace-app-android
 ```
 
 # 環境構築
-[こちらのドキュメント](DOCS/ENVIRONMENT.md) をお読みください
+[こちらのドキュメント](Docs/ENVIRONMENT.md) をお読みください
 
 # 製作者
 [smpny7](https://github.com/smpny7)<br />
