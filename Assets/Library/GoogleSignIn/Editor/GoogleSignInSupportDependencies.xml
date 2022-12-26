@@ -4,7 +4,7 @@
   <androidPackages>
     <androidPackage spec="com.google.signin:google-signin-support:1.0.4">
       <repositories>
-        <repository>Assets/GoogleSignIn/Editor/m2repository</repository>
+        <repository>Assets/Library/GoogleSignIn/Editor/m2repository</repository>
       </repositories>
     </androidPackage>
   </androidPackages>
