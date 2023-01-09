@@ -125,7 +125,6 @@ namespace PlayScene
             for (var i = 0; i < _queueNotes.Length; i++)
                 _queueNotes[i] = _queueNotes[i].OrderBy(item => item.timing).ToList();
 
-            Debug.Log(_queueNotes[0][0].timing);
             PreGenerateNotes();
 
             _currentTime = -2f;
@@ -136,7 +135,6 @@ namespace PlayScene
 
         private void Update()
         {
-            Debug.Log(_currentTime);
             if (!isPose) _currentTime += Time.deltaTime;
             if (_hasStarted && !_hasPosted && _currentTime > _endTime + 3f) StartCoroutine(nameof(SceneMove));
 
