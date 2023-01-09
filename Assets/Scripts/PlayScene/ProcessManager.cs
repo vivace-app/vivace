@@ -27,6 +27,7 @@ namespace PlayScene
         private static float _endTime;
 
         private bool _hasStarted;
+        private bool _hasPosted;
 
         private static Music _music;
         private Level _level;
@@ -134,7 +135,7 @@ namespace PlayScene
             if (isPose) return;
 
             _currentTime += Time.deltaTime;
-            if (_hasStarted && _currentTime > _endTime + 3f) StartCoroutine(nameof(SceneMove));
+            if (_hasStarted && !_hasPosted && _currentTime > _endTime + 3f) StartCoroutine(nameof(SceneMove));
 
             for (var i = 0; i < _queueNotes.Length; i++)
             {
@@ -195,8 +196,9 @@ namespace PlayScene
 
         private IEnumerator SceneMove()
         {
-            var fs = new FirestoreHandler();
+            _hasPosted = true;
 
+            var fs = new FirestoreHandler();
             fs.OnErrorOccured += error =>
             {
                 // TODO: エラーをユーザに伝える
