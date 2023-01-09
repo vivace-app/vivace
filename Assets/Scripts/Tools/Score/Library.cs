@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Tools.Score
 {
@@ -57,21 +58,29 @@ namespace Tools.Score
                     magnitude = 1f;
                     _combo++;
                     _perfect++;
+                    Debug.Log("Perfect");
+                    Debug.Log(_perfect);
                     break;
                 case Judge.Great:
                     magnitude = 0.75f;
                     _combo++;
                     _great++;
+                    Debug.Log("Great");
+                    Debug.Log(_great);
                     break;
                 case Judge.Good:
                     magnitude = 0.25f;
                     _combo = 0;
                     _good++;
+                    Debug.Log("Good");
+                    Debug.Log(_good);
                     break;
                 case Judge.Miss:
                     magnitude = 0f;
                     _combo = 0;
                     _miss++;
+                    Debug.Log("Miss");
+                    Debug.Log(_miss);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(judge), judge, null);

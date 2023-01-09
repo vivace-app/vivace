@@ -56,7 +56,9 @@ namespace PlayScene
             _level = PlayStatusHandler.GetSelectedLevel();
             var assetBundle = AssetBundleHandler.GetAssetBundle(index);
             _musicName = assetBundle.name;
-            View.instance.BgmAudioClip = assetBundle.LoadAsset<AudioClip>(_musicName);
+            var audioClip = assetBundle.LoadAsset<AudioClip>(_musicName);
+            View.instance.BgmAudioClip = audioClip;
+            _endTime = audioClip.length;
             View.instance.setOnClickPauseCustomButtonAction = () =>
             {
                 Pause();
@@ -69,8 +71,8 @@ namespace PlayScene
             };
             View.instance.setOnClickGiveUpCustomButtonAction = () => SceneManager.LoadScene("SelectScene");
 
-            // TODO: var jsonFile = assetBundle.LoadAsset<TextAsset>(musicName + "_" + level.ToString().ToLower());
-            var jsonFile = Resources.Load("maiden_voyage_master_proto") as TextAsset;
+            var jsonFile = assetBundle.LoadAsset<TextAsset>(_musicName + "_" + _level.ToString().ToLower());
+            // TODO: var jsonFile = Resources.Load("maiden_voyage_master_proto") as TextAsset;
             if (!jsonFile) throw new Exception("譜面データが無効です");
             var inputString = jsonFile.ToString();
             _music = JsonUtility.FromJson<Music>(inputString);
@@ -119,13 +121,6 @@ namespace PlayScene
                 _queueNotes[note.block].Add(headNote);
             }
 
-            for (var i = 0; i < _queueNotes.Length; i++)
-            {
-                _queueNotes[i] = _queueNotes[i].OrderBy(item => item.timing).ToList();
-                var endTime = _queueNotes[^1][^1].TailNote?.timing ?? _queueNotes[^1][^1].timing;
-                if (_endTime < endTime) _endTime = endTime;
-            }
-
             PreGenerateNotes();
 
             _currentTime = -2f;
@@ -136,15 +131,16 @@ namespace PlayScene
 
         private void Update()
         {
-            if (!isPose) _currentTime += Time.deltaTime;
+            if (isPose) return;
 
+            _currentTime += Time.deltaTime;
             if (_hasStarted && _currentTime > _endTime + 3f) StartCoroutine(nameof(SceneMove));
 
             for (var i = 0; i < _queueNotes.Length; i++)
             {
-                /* 1.25秒以内に判定ラインに到達させるべきノーツを抽出する */
+                /* 1秒以内に判定ラインに到達させるべきノーツを抽出する */
                 var queuedNotes = _queueNotes[i]
-                    .Where(generateNote => generateNote.timing <= _currentTime + 1.25)
+                    .Where(generateNote => generateNote.timing <= _currentTime + 1)
                     .ToList();
 
                 _generatedNotes[i].AddRange(queuedNotes);
