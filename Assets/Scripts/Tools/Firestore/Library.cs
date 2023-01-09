@@ -177,7 +177,7 @@ namespace Tools.Firestore
                 {level.ToString().ToLower(), (int) achieve},
             };
 
-            var iEnumerator = _WriteDoc(documentReference, updates);
+            var iEnumerator = _UpdateDoc(documentReference, updates);
             yield return iEnumerator;
         }
 
@@ -193,14 +193,6 @@ namespace Tools.Firestore
             {
                 OnErrorOccured.Invoke("通信に失敗しました\nインターネットの接続状況を確認してください");
                 yield break;
-            }
-            
-            foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents) {
-                Debug.Log(String.Format("Document data for {0} document:", documentSnapshot.Id));
-                Dictionary<string, object> city = documentSnapshot.ToDictionary();
-                foreach (KeyValuePair<string, object> pair in city) {
-                    Debug.Log(String.Format("{0}: {1}", pair.Key, pair.Value));
-                }
             }
 
             var archives = querySnapshot.Documents.ToDictionary(
