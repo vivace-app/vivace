@@ -122,26 +122,29 @@ namespace PlayScene
                 _queueNotes[note.block].Add(headNote);
             }
 
+            for (var i = 0; i < _queueNotes.Length; i++)
+                _queueNotes[i] = _queueNotes[i].OrderBy(item => item.timing).ToList();
+
+            Debug.Log(_queueNotes[0][0].timing);
             PreGenerateNotes();
 
             _currentTime = -2f;
             _hasStarted = true;
             isPose = false;
-            Invoke(nameof(Play), 2);
+            Invoke(nameof(Play), 1.75f);
         }
 
         private void Update()
         {
-            if (isPose) return;
-
-            _currentTime += Time.deltaTime;
+            Debug.Log(_currentTime);
+            if (!isPose) _currentTime += Time.deltaTime;
             if (_hasStarted && !_hasPosted && _currentTime > _endTime + 3f) StartCoroutine(nameof(SceneMove));
 
             for (var i = 0; i < _queueNotes.Length; i++)
             {
-                /* 1秒以内に判定ラインに到達させるべきノーツを抽出する */
+                /* 1.25秒以内に判定ラインに到達させるべきノーツを抽出する */
                 var queuedNotes = _queueNotes[i]
-                    .Where(generateNote => generateNote.timing <= _currentTime + 1)
+                    .Where(generateNote => generateNote.timing <= _currentTime + 1.25)
                     .ToList();
 
                 _generatedNotes[i].AddRange(queuedNotes);
