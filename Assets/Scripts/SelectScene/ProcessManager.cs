@@ -173,7 +173,9 @@ namespace SelectScene
             {
                 _previewAudioClips[music.Id - 1] =
                     _assetBundles[music.Id - 1].LoadAsset<AudioClip>(music.Name + "_pre");
-                View.Instance.Musics.GetComponents<AudioSource>()[music.Id - 1].clip = _previewAudioClips[music.Id - 1];
+                var audioSource = View.Instance.Musics.GetComponents<AudioSource>()[music.Id - 1];
+                audioSource.clip = _previewAudioClips[music.Id - 1];
+                audioSource.loop = true;
             }
         }
 
@@ -205,10 +207,10 @@ namespace SelectScene
 
             if (achieve == null) yield break;
 
-            var easy = achieve.ContainsKey("easy") ? (int)(long) achieve["easy"] : 0;
-            var normal = achieve.ContainsKey("normal") ? (int)(long) achieve["normal"] : 0;
-            var hard = achieve.ContainsKey("hard") ? (int)(long) achieve["hard"] : 0;
-            var master = achieve.ContainsKey("master") ? (int)(long) achieve["master"] : 0;
+            var easy = achieve.ContainsKey("easy") ? (int) (long) achieve["easy"] : 0;
+            var normal = achieve.ContainsKey("normal") ? (int) (long) achieve["normal"] : 0;
+            var hard = achieve.ContainsKey("hard") ? (int) (long) achieve["hard"] : 0;
+            var master = achieve.ContainsKey("master") ? (int) (long) achieve["master"] : 0;
             View.Instance.Achievement = new[] {easy, normal, hard, master};
         }
     }
