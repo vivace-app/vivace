@@ -66,6 +66,12 @@ namespace StartupScene
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
+        public void OnClickCacheClearButton()
+        {
+            Caching.ClearCache();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
         private void _setUserData(object sender, EventArgs eventArgs)
         {
             var user = _auth.GetUser();
