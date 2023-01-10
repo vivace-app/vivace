@@ -8,9 +8,9 @@ namespace Model
 {
     public class QueuedNote
     {
-        public QueuedNote(Note note, int bpm, QueuedNote tailQueuedNote = null)
+        public QueuedNote(Note note, int bpm, int offset, QueuedNote tailQueuedNote = null)
         {
-            timing = 60f * note.num / (bpm * note.LPB);
+            timing = 60f * note.num / (bpm * note.LPB) + offset / (1000 * 60f);
             lane = note.block;
             switch (note.type)
             {

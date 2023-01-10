@@ -105,7 +105,7 @@ namespace PlayScene
                 var childNotesLength = note.notes.Length;
 
                 var tailNote = childNotesLength > 0
-                    ? new QueuedNote(note.notes[childNotesLength - 1], _music.BPM)
+                    ? new QueuedNote(note.notes[childNotesLength - 1], _music.BPM, _music.offset)
                     : null;
 
                 /* （リストに追加） */
@@ -116,7 +116,7 @@ namespace PlayScene
                 }
 
                 /* 2. headNote に、先頭ノーツを代入（通常・フリックノーツ単体、またはロングノーツの始点） */
-                var headNote = new QueuedNote(note, _music.BPM, tailNote);
+                var headNote = new QueuedNote(note, _music.BPM, _music.offset, tailNote);
 
                 /* （リストに追加） */
                 _queueNotes[note.block].Add(headNote);
@@ -130,7 +130,7 @@ namespace PlayScene
             _currentTime = -2f;
             _hasStarted = true;
             isPose = false;
-            Invoke(nameof(Play), 1.75f);
+            Invoke(nameof(Play), 2f);
         }
 
         private void Update()
