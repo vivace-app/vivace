@@ -28,6 +28,14 @@ namespace PlayScene
             CoordYPreserver.AddCoordY(pointerEventData.position.y, lineNum);
         }
 
+        public void Drag(BaseEventData baseEventData)
+        {
+            if (baseEventData is not PointerEventData pointerEventData) return;
+
+            var isFlick = CoordYPreserver.IsFlick(pointerEventData.position.y, lineNum);
+            if (isFlick) ProcessManager.JudgeTiming(lineNum, QueuedNote.NoteType.Flick);
+        }
+
         #region private void OnExit
 
         private void OnExit(BaseEventData baseEventData)
