@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Security.Cryptography;
+using System.Text;
 using Tools.Firestore.Model;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -39,10 +41,17 @@ namespace Tools.AssetBundle
 
         private static IEnumerator DownloadAssetBundle(Music music, Action end, Action<string> error)
         {
+            var sha1 = new SHA1Managed();
+            var textBytes = Encoding.UTF8.GetBytes($"{music.Name}_{music.Version}");
+            var sha1Bytes = sha1.ComputeHash(textBytes);
+            var nameInt = BitConverter.ToUInt32(sha1Bytes, 0);
+            
+            var hash128 = new Hash128(0, nameInt);
+
             var c = new CachedAssetBundle
             {
                 name = music.Name,
-                hash = Hash128.Parse($"{music.Name}_{music.Version}")
+                hash = hash128
             };
 
             var ie = GenerateDownloadUrl(music, error);
