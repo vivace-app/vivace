@@ -36,7 +36,7 @@ namespace Tools.Firestore
 
         private IEnumerator _WriteDoc(DocumentReference doc, IDictionary<string, object> data)
         {
-            var task = doc.SetAsync(data);
+            var task = doc.SetAsync(data, SetOptions.MergeAll);
             yield return new WaitForTaskCompletion(task);
             if (task.IsFaulted || task.IsCanceled)
                 OnErrorOccured.Invoke("通信に失敗しました\nインターネットの接続状況を確認してください");
@@ -177,7 +177,7 @@ namespace Tools.Firestore
                 {level.ToString().ToLower(), (int) achieve},
             };
 
-            var iEnumerator = _UpdateDoc(documentReference, updates);
+            var iEnumerator = _WriteDoc(documentReference, updates);
             yield return iEnumerator;
         }
 
