@@ -16,15 +16,15 @@
       "dependencies": {}
     },
     "com.google.firebase.analytics": {
-      "version": "file:../Assets/Library/GooglePackages/com.google.firebase.analytics-10.2.0.tgz",
+      "version": "file:../Assets/Library/GooglePackages/com.google.firebase.analytics-10.5.0.tgz",
       "depth": 0,
       "source": "local-tarball",
       "dependencies": {
-        "com.google.firebase.app": "10.2.0"
+        "com.google.firebase.app": "10.5.0"
       }
     },
     "com.google.firebase.app": {
-      "version": "file:../Assets/Library/GooglePackages/com.google.firebase.app-10.2.0.tgz",
+      "version": "file:../Assets/Library/GooglePackages/com.google.firebase.app-10.5.0.tgz",
       "depth": 0,
       "source": "local-tarball",
       "dependencies": {
@@ -32,27 +32,35 @@
       }
     },
     "com.google.firebase.auth": {
-      "version": "file:../Assets/Library/GooglePackages/com.google.firebase.auth-10.2.0.tgz",
+      "version": "file:../Assets/Library/GooglePackages/com.google.firebase.auth-10.5.0.tgz",
       "depth": 0,
       "source": "local-tarball",
       "dependencies": {
-        "com.google.firebase.app": "10.2.0"
+        "com.google.firebase.app": "10.5.0"
+      }
+    },
+    "com.google.firebase.crashlytics": {
+      "version": "file:../Assets/Library/GooglePackages/com.google.firebase.crashlytics-10.5.0.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.google.firebase.app": "10.5.0"
       }
     },
     "com.google.firebase.firestore": {
-      "version": "file:../Assets/Library/GooglePackages/com.google.firebase.firestore-10.2.0.tgz",
+      "version": "file:../Assets/Library/GooglePackages/com.google.firebase.firestore-10.5.0.tgz",
       "depth": 0,
       "source": "local-tarball",
       "dependencies": {
-        "com.google.firebase.app": "10.2.0"
+        "com.google.firebase.app": "10.5.0"
       }
     },
     "com.google.firebase.storage": {
-      "version": "file:../Assets/Library/GooglePackages/com.google.firebase.storage-10.2.0.tgz",
+      "version": "file:../Assets/Library/GooglePackages/com.google.firebase.storage-10.5.0.tgz",
       "depth": 0,
       "source": "local-tarball",
       "dependencies": {
-        "com.google.firebase.auth": "10.2.0"
+        "com.google.firebase.auth": "10.5.0"
       }
     },
     "com.lupidan.apple-signin-unity": {
