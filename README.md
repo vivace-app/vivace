@@ -1,40 +1,43 @@
 # VIVACE
+![SCREENSHOT_1](Docs/img/SCREENSHOT_1.webp)
+![SCREENSHOT_2](Docs/img/SCREENSHOT_2.webp)
+![SCREENSHOT_3](Docs/img/SCREENSHOT_3.webp)
+![SCREENSHOT_4](Docs/img/SCREENSHOT_4.webp)
 
-![Screenshot_1](https://raw.githubusercontent.com/smpny7/vivace/main/Screenshot_2208x1242_1.jpg)
-![Screenshot_2](https://raw.githubusercontent.com/smpny7/vivace/main/Screenshot_2208x1242_2.jpg)
-![Screenshot_3](https://raw.githubusercontent.com/smpny7/vivace/main/Screenshot_2208x1242_3.jpg)
-![Screenshot_4](https://raw.githubusercontent.com/smpny7/vivace/main/Screenshot_2208x1242_4.jpg)
-
-
-# Demo Video
+# デモビデオ
 https://youtu.be/wwzEH9N9eUk
 
-
-# Install
-
+# インストール
+```
 AppStore: https://bit.ly/vivace-app-ios
-
 GooglePlayStore: https://bit.ly/vivace-app-android
+```
 
+# 環境構築
+[こちらのドキュメント](Docs/ENVIRONMENT.md) をお読みください
 
-# Contributing
-
-Please read [CONTRIBUTING.md](https://github.com/smpny7/vivace/blob/master/CONTRIBUTION.md) for details on our code of conduct, and the process for submitting pull requests to us.
-
-
-# Producer
-
+# 製作者
 [smpny7](https://github.com/smpny7)<br />
 [chishige1217200](https://github.com/chishige1217200)<br />
 [Natsu-dev](https://github.com/Natsu-dev)<br />
 
+# 著作権
+このプロジェクトには、曲のファイルとカバーアートの画像が含まれています。
+それらの著作権は、MITライセンスではなく、所有者によって留保されています。
+VIVACEプロジェクトはそれらの使用を許可されています。
 
-# License
+詳細が必要な場合、または著作権所有者に連絡する場合は、以下のリンクを参照してください。
 
-This project is licensed under the MIT License - see  [LICENSE.md](https://github.com/smpny7/vivace/blob/master/LICENCE) file for details.
+```
+魔王魂：https：//maoudamashii.jokersounds.com/
+その他：VIVACEプロジェクトの貢献者にメッセージを送ってください
+```
 
-However, files of song and artwork are not licensed under it - see [WORKSRIGHTS.md](https://github.com/smpny7/vivace/blob/master/WORKSRIGHTS.md).
+# ライセンス
+このソフトウェアは、[MITライセンス](LICENCE)のもとで公開されています。
 
-Powered by "CRIWARE".CRIWARE is a trademark of CRI Middleware Co., Ltd.
+ただし、収録曲やアートワーク等の素材についてはその限りではありません。
+
+このソフトウェアには、（株）CRI・ミドルウェアの「CRIWARE (TM)」が使用されています。
 
 *©︎ 2022 VIVACE Project*

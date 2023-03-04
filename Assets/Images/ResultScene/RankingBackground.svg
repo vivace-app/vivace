@@ -1,0 +1,24 @@
+<svg width="884" height="903" viewBox="0 0 884 903" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_b_1583_176)">
+<rect x="3" y="3" width="878" height="897" rx="60" fill="white" fill-opacity="0.5"/>
+<rect x="3" y="3" width="878" height="897" rx="60" stroke="#437581" stroke-width="5"/>
+</g>
+<line x1="63.1914" y1="134" x2="820.809" y2="134" stroke="#75A2AD" stroke-width="2" stroke-linecap="round"/>
+<line x1="63.1914" y1="857" x2="820.809" y2="857" stroke="#75A2AD" stroke-width="2" stroke-linecap="round"/>
+<line x1="63.1914" y1="45" x2="820.809" y2="44.9999" stroke="#75A2AD" stroke-width="2" stroke-linecap="round"/>
+<line x1="63.1914" y1="225" x2="820.809" y2="225" stroke="#75A2AD" stroke-width="2" stroke-linecap="round"/>
+<line x1="63.1914" y1="316" x2="820.809" y2="316" stroke="#75A2AD" stroke-width="2" stroke-linecap="round"/>
+<line x1="63.1914" y1="401" x2="820.809" y2="401" stroke="#75A2AD" stroke-width="2" stroke-linecap="round"/>
+<line x1="63.1914" y1="492" x2="820.809" y2="492" stroke="#75A2AD" stroke-width="2" stroke-linecap="round"/>
+<line x1="63.1914" y1="583" x2="820.809" y2="583" stroke="#75A2AD" stroke-width="2" stroke-linecap="round"/>
+<line x1="63.1914" y1="674" x2="820.809" y2="674" stroke="#75A2AD" stroke-width="2" stroke-linecap="round"/>
+<line x1="63.1914" y1="765" x2="820.809" y2="765" stroke="#75A2AD" stroke-width="2" stroke-linecap="round"/>
+<defs>
+<filter id="filter0_b_1583_176" x="-19.5" y="-19.5" width="923" height="942" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feGaussianBlur in="BackgroundImage" stdDeviation="10"/>
+<feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_1583_176"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_backgroundBlur_1583_176" result="shape"/>
+</filter>
+</defs>
+</svg>

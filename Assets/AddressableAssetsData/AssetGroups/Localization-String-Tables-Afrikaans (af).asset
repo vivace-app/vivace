@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Localization-String-Tables-Afrikaans (af)
+  m_EditorClassIdentifier: 
+  m_GroupName: Localization-String-Tables-Afrikaans (af)
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 944d44686dcee4b55a6dffe7d9090895
+  m_SerializeEntries:
+  - m_GUID: 71e7ec131f4794c9dad366cc01e21b9a
+    m_Address: Localization_af
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-af
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 1
+  m_Settings: {fileID: 11400000, guid: eb18b32551b0c4ccc99e0ed30e5d270b, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 8bd4e8d63f2c5489c9cdbc90f4c1e7cc, type: 2}
+    - {fileID: 11400000, guid: 35d0ffeb6d63e48b392e54ab38a0a4c3, type: 2}
