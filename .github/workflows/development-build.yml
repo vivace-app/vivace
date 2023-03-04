@@ -6,25 +6,30 @@ on:
 jobs:
   build:
     name: Build ${{ matrix.targetPlatform }}
-    runs-on: self-hosted
-
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         targetPlatform:
+          - iOS
           - Android
 
     steps:
       # Checkout
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          lfs: true
 
       # Cache
-      - uses: actions/cache@v2
+      - name: Restore cache
+        uses: actions/cache@v2
         with:
           path: Unity/Library
-          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          key: Library-${{ matrix.targetPlatform }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
+            Library-${{ matrix.targetPlatform }}-
             Library-
 
       # Secrets
