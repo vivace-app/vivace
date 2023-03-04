@@ -869,7 +869,8 @@ PlayerSettings:
     WebPlayer: 0
   il2cppCompilerConfiguration:
     Android: 2
-  il2cppCodeGeneration: {}
+  il2cppCodeGeneration:
+    Android: 1
   managedStrippingLevel: {}
   incrementalIl2cppBuild: {}
   suppressCommonWarnings: 1
