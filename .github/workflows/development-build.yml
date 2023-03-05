@@ -12,6 +12,7 @@ jobs:
       matrix:
         targetPlatform:
           - iOS
+          - Android
 
     steps:
       # Checkout
@@ -41,6 +42,11 @@ jobs:
         env:
           GOOGLE_SERVICE_INFO: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
         run: echo $GOOGLE_SERVICE_INFO | base64 --decode --ignore-garbage > ./Assets/GoogleService-Info.plist
+
+      - name: Add .env
+        env:
+          GOOGLE_SERVICE_INFO: ${{ secrets.ENV_FILE }}
+        run: echo ENV_FILE > .env
 
       # Build
       - name: Build
