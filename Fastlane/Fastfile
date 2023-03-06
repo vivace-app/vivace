@@ -31,10 +31,6 @@ platform :ios do
 #             use_automatic_signing: true,
 #             path: "Builds/iOS/iOS/Unity-iPhone.xcodeproj"
 #         )
-        cocoapods(
-          clean_install: true,
-          podfile: "#{ENV['IOS_BUILD_PATH']}/iOS/"
-        )
         
         update_code_signing_settings(
             use_automatic_signing: false,
