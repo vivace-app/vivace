@@ -65,12 +65,9 @@ namespace Library.Editor
             // proj.SetBuildProperty(target2, "CODE_SIGN_RESOURCE_RULES_PATH", "$(SDKROOT)/ResourceRules.plist");
 
             // フレームワークの検索パスを設定・追加
-            proj.SetBuildProperty(target2, "CODE_SIGNING_ALLOWED", "$(inherited)");
-            proj.AddBuildProperty(target2, "CODE_SIGNING_ALLOWED", "NO");
-
             proj.SetBuildProperty(target2, "FRAMEWORK_SEARCH_PATHS", "$(inherited)");
             proj.AddBuildProperty(target2, "FRAMEWORK_SEARCH_PATHS", "$(PROJECT_DIR)/GoogleSDK");
-
+            
             // 書き出し
             File.WriteAllText(projPath, proj.WriteToString());
         }
