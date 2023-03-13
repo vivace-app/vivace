@@ -14,6 +14,11 @@ platform :ios do
     end
     
     lane :release do
+        cocoapods(
+            clean_install: true,
+            podfile: "#{ENV['IOS_BUILD_PATH']}/iOS/"
+        )
+        
         app_store_connect_api_key(
           key_id: ENV["APPSTORE_KEY_ID"],
           issuer_id: ENV["APPSTORE_ISSUER_ID"],
@@ -21,7 +26,7 @@ platform :ios do
         )
         
         match(
-            type: "appstore",
+            type: "adhoc",
             storage_mode: "git",
             git_url: "git@github.com:#{match_org}/#{match_repo}.git",
             app_identifier: ENV["IOS_BUNDLE_ID"]
@@ -43,13 +48,18 @@ platform :ios do
         )
         
         build_app(
-            project: "#{ENV['IOS_BUILD_PATH']}/iOS/Unity-iPhone.xcodeproj",
+            workspace: "#{ENV['IOS_BUILD_PATH']}/iOS/Unity-iPhone.xcworkspace",
             scheme: "Unity-iPhone",
             configuration: "Debug",
             export_method: "ad-hoc",
-            xcargs: "-allowProvisioningUpdates",
+            export_xcargs: "-allowProvisioningUpdates",
+            export_team_id: ENV['IOS_BUNDLE_ID'],
+            xcargs: "CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO EXPANDED_CODE_SIGN_IDENTITY= -allowProvisioningUpdates",
             export_options: {
-                compileBitcode: false
+                compileBitcode: false,
+#                 provisioningProfiles: {
+#                     ENV["APP_ID"] => ENV["PROVISIONING_PROFILE_DEVELOPMENT"]
+#                 }
             }
         )
         
