@@ -12,6 +12,7 @@ jobs:
       matrix:
         targetPlatform:
           - iOS
+          - Android
 
     steps:
       # Checkout

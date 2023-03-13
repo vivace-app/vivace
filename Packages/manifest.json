@@ -20,7 +20,7 @@
     "com.unity.test-framework": "1.1.33",
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.timeline": "1.7.3",
-    "com.unity.toolchain.macos-x86_64-linux-x86_64": "2.0.2",
+    "com.unity.toolchain.macos-x86_64-linux-x86_64": "2.0.4",
     "com.unity.ugui": "1.0.0",
     "com.unity.vectorgraphics": "2.0.0-preview.20",
     "com.xjine.text_file_read_writer": "https://github.com/XJINE/Unity_TextFileReadWriter.git?path=Assets/Packages/TextFileReadWriter",
